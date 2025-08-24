@@ -1,0 +1,55 @@
+<?php
+
+namespace App\Providers;
+
+use App\Interface\Repository\IPlanFeatureRepo;
+use App\Interface\Repository\IPlanRepo;
+use App\Interface\Repository\IUserCompanyRepo;
+use App\Interface\Repository\IUserRepo;
+use App\Interface\Service\IPlanFeatureService;
+use App\Interface\Service\IPlanService;
+use App\Interface\Service\IUserCompanyService;
+use App\Interface\Service\IUserService;
+use App\Repository\PlanRepo;
+use App\Repository\UserCompanyRepo;
+use App\Repository\UserRepo;
+use App\Repository\PlanFeatureRepo;
+use App\Service\PlanService;
+use App\Service\PlanFeatureService;
+use App\Service\UserCompanyService;
+use App\Service\UserService;
+use Carbon\CarbonInterval;
+use Illuminate\Support\ServiceProvider;
+use Laravel\Passport\Passport;
+
+class AppServiceProvider extends ServiceProvider
+{
+    /**
+     * Register any application services.
+     */
+    public function register(): void
+    {
+        // Repo
+        $this->app->bind(IUserRepo::class, UserRepo::class);
+        $this->app->bind(IPlanRepo::class, PlanRepo::class);
+        $this->app->bind(IUserCompanyRepo::class, UserCompanyRepo::class);
+        $this->app->bind(IPlanFeatureRepo::class, PlanFeatureRepo::class);
+
+        // Services
+        $this->app->bind(IUserService::class, UserService::class);
+        $this->app->bind(IPlanService::class, PlanService::class);
+        $this->app->bind(IUserCompanyService::class, UserCompanyService::class);
+        $this->app->bind(IPlanFeatureService::class, PlanFeatureService::class);
+    }
+
+    /**
+     * Bootstrap any application services.
+     */
+    public function boot(): void
+    {
+        //
+        Passport::tokensExpireIn(CarbonInterval::days(15));
+        Passport::refreshTokensExpireIn(CarbonInterval::days(30));
+        Passport::personalAccessTokensExpireIn(CarbonInterval::months(6));
+    }
+}

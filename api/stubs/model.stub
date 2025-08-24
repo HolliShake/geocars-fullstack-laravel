@@ -1,0 +1,83 @@
+<?php
+
+namespace {{ namespace }};
+
+{{ factoryImport }}
+use Illuminate\Database\Eloquent\Model;
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: "{{ class }}",
+    title: "{{ class }}",
+    type: "object",
+    required: [
+        // Override required
+    ],
+    properties: [
+        // Override fillables
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Paginated{{ class }}",
+    title:"Paginated{{ class }}",
+    type: "object",
+    properties: [
+        new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/{{ class }}")),
+        new OA\Property(property: "current_page", type: "integer"),
+        new OA\Property(property: "last_page", type: "integer"),
+        new OA\Property(property: "per_page", type: "integer"),
+        new OA\Property(property: "total", type: "integer"),
+        new OA\Property(property: "from", type: "integer", nullable: true),
+        new OA\Property(property: "to", type: "integer", nullable: true),
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Paginated{{ class }}Response200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/Paginated{{ class }}")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Get{{ class }}Response200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/{{ class }}")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Create{{ class }}Response200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/{{ class }}")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Update{{ class }}Response200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/{{ class }}")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "Delete{{ class }}Response200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true)
+    ]
+)]
+
+class {{ class }} extends Model
+{
+    {{ factory }}
+}

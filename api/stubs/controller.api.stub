@@ -1,0 +1,244 @@
+<?php
+
+namespace {{ namespace }};
+
+use {{ rootNamespace }}Http\Controllers\Controller;
+use App\Service\{{ class }}Service;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Http\Request;
+use OpenApi\Attributes as OA;
+use Validator;
+
+class {{ class }} extends Controller
+{
+    public function __construct(protected {{ class }}Service $service) {
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
+    #[OA\Get(
+        path: "/api/{{ class }}",
+        summary: "Get paginated list of {{ class }}",
+        tags: ["{{ class }}"],
+        description: "Retrieve a paginated list of {{ class }} with optional search",
+        operationId:"get{{ class }}Paginated",
+    )]
+    #[OA\Parameter(
+        name: "search",
+        in: "query",
+        description: "Search term",
+        required: false,
+        schema: new OA\Schema(type: "string")
+    )]
+    #[OA\Parameter(
+        name: "page",
+        in: "query",
+        description: "Page number",
+        required: false,
+        schema: new OA\Schema(type: "integer", default: 0)
+    )]
+    #[OA\Parameter(
+        name: "rows",
+        in: "query",
+        description: "Number of items per page",
+        required: false,
+        schema: new OA\Schema(type: "integer", default: 10)
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful operation",
+        content: new OA\JsonContent(ref: "#/components/schemas/Paginated{{ class }}Response200")
+    )]
+    public function index(Request $request)
+    {
+        $srch = $request->query("search", '');
+        $page = $request->query("page", 0);
+        $rows = $request->query("rows", 10);
+        return $this->ok($this->service->paginate($page, $rows));
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    #[OA\Get(
+        path: "/api/{{ class }}/{id}",
+        summary: "Get a specific {{ class }}",
+        tags: ["{{ class }}"],
+        description: "Retrieve a {{ class }} by its ID",
+        operationId: "get{{ class }}ById",
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful operation",
+        content: new OA\JsonContent(ref: "#/components/schemas/Get{{ class }}Response200")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "{{ class }} not found"
+    )]
+    public function show($id)
+    {
+        try {
+            return $this->ok($this->service->get($id));
+        } catch (ModelNotFoundException $e) {
+            return $this->notFound('{{ class }} not found');
+        }
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    #[OA\Post(
+        path: "/api/{{ class }}",
+        summary: "Create a new {{ class }}",
+        tags: ["{{ class }}"],
+        description:" Create a new {{ class }} with the provided details",
+        operationId: "create{{ class }}",
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: "#/components/schemas/{{ class }}")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "{{ class }} created successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/Create{{ class }}Response200")
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationErrorResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse")
+    )]
+    public function store(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                
+            ]);
+            
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+    
+            $validated = $validator->validated();
+    
+            return $this->ok($this->service->create($validated));
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    #[OA\Put(
+        path: "/api/{{ class }}/{id}",
+        summary: "Update a {{ class }}",
+        tags: ["{{ class }}"],
+        description: "Update an existing {{ class }} with the provided details",
+        operationId: "update{{ class }}",
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer"),
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: "#/components/schemas/{{ class }}")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "{{ class }} updated successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/Update{{ class }}Response200")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "{{ class }} not found"
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationErrorResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse")
+    )]
+    public function update(Request $request, $id)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                
+            ]);
+            
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            $validated = $validator->validated();
+
+            return $this->ok($this->service->update($id, $validated));
+        } catch (ModelNotFoundException $e) {
+            return $this->notFound('{{ class }} not found');
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    #[OA\Delete(
+        path: "/api/{{ class }}/{id}",
+        summary: "Delete a {{ class }}",
+        tags: ["{{ class }}"],
+        description: "Delete a {{ class }} by its ID",
+        operationId: "delete{{ class }}",
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Response(
+        response: 204,
+        description: "{{ class }} deleted successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/Delete{{ class }}Response200")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "{{ class }} not found"
+    )]
+    #[OA\Response(
+        response: 500,
+        description:" Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse")
+    )]
+    public function destroy(string $id)
+    {
+        try {
+            $this->service->delete($id);
+            return $this->noContent();
+        } catch (ModelNotFoundException $e) {
+            return $this->notFound('{{ class }} not found');
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+}
