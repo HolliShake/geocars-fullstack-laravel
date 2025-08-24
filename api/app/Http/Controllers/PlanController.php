@@ -115,11 +115,11 @@ class PlanController extends Controller
                 "price"       => "required|numeric|min:0",
                 "active"      => "required|boolean",
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
 
             return $this->ok($this->service->create($validated));
@@ -164,11 +164,11 @@ class PlanController extends Controller
                 "price"       => "required|numeric|min:0",
                 "active"      => "required|boolean",
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
 
             return $this->ok($this->service->update($id, $validated));
