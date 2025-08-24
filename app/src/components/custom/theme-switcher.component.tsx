@@ -24,7 +24,6 @@ export default function ThemeSwitcher(): React.ReactNode {
             variant="ghost"
             size="sm"
             onClick={() => {
-              console.log(name);
               setTheme(name as Theme);
             }}
             className={`

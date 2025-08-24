@@ -66,6 +66,7 @@ export default function Providers({ children }: { children: React.ReactNode }): 
         },
       },
       mutations: {
+        retry: 0,
         throwOnError(error) {
           toast.error(captureErrorMessage(error));
           return false;

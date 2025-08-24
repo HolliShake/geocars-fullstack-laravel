@@ -761,16 +761,12 @@ components:
           type: string
       type: object
     AuthResponse200:
-      required:
-        - token
-        - role
       properties:
-        token:
-          description: The token for the user
-          type: string
-        role:
-          description: The role of the user
-          type: string
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Auth'
       type: object
     Plan:
       title: Plan

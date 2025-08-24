@@ -3,10 +3,9 @@
 import { RouteKey } from '@/navigation/route';
 import type { AuthStore } from '@/store/auth.store';
 import useAuthStore from '@/store/auth.store';
-import type { Role } from '@/types/role';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 const AuthContext = createContext<AuthStore | undefined>(undefined);
 
@@ -20,27 +19,36 @@ export const useAuth = () => {
 
 export default function AuthProvider({ children }: { children: React.ReactNode }): React.ReactNode {
   const auth = useAuthStore();
-
+  const location = useLocation();
   const navigate = useNavigate();
 
-  // initialize
+  // Load credentials from localStorage on mount
   useEffect(() => {
-    const token = localStorage.getItem('token');
-    const role = localStorage.getItem('role') as Role;
-    if (token && role) {
-      auth.setCredentials(token, role);
+    auth.initialize(true);
+  }, []);
+
+  // Handle routing based on auth state
+  useEffect(() => {
+    if (!auth.initialized) return; // wait until store is ready
+
+    console.log('LOGGED IN:', auth.isLoggedIn, '|', 'LOGGED OUT:', auth.isLoggedOut);
+
+    const { pathname } = location;
+    const isLoginPage = pathname === RouteKey.Auth.Login.key;
+    const isRegisterPage = pathname === RouteKey.Auth.Register.key;
+    const isAuthPage = isLoginPage || isRegisterPage || pathname == '/';
+
+    // Loggedin but not logged out and on login page
+    if (auth.isLoggedIn && !auth.isLoggedOut && isAuthPage) {
+      navigate(RouteKey.Admin.Dashboard.key, { replace: true });
     }
 
-    if (auth.isLoggedIn && location.pathname !== RouteKey.Auth.Login.key) {
-      navigate(RouteKey.Admin.Dashboard.key);
-    } else if (
-      !auth.isLoggedIn &&
-      location.pathname !== RouteKey.Auth.Login.key &&
-      location.pathname !== RouteKey.Auth.Register.key
-    ) {
-      navigate(RouteKey.Auth.Login.key);
+    // Logged out and not on auth page
+    if (auth.isLoggedOut && !isAuthPage) {
+      navigate(RouteKey.Auth.Login.key, { replace: true });
+      return;
     }
-  }, [auth]);
+  }, [location, auth, navigate]);
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }

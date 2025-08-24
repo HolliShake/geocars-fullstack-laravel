@@ -1,4 +1,5 @@
 import LoginPage from '@/pages/auth/login/page';
+import Page404 from '@/pages/status/page404';
 import type { Route } from '../types/route';
 
 const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
@@ -19,6 +20,15 @@ const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
     element: <LoginPage />,
     layout: 'default',
     sidebar: false,
+  },
+  // 404
+  {
+    title: '404',
+    icon: null,
+    path: '*',
+    index: false,
+    sidebar: false,
+    element: <Page404 />,
   },
 ]);
 

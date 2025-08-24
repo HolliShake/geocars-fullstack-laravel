@@ -13,8 +13,8 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 
 export default function LoginPage(): React.ReactNode {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('redondophilippandrewroa.dev@gmail.com');
+  const [password, setPassword] = useState('admin@user69420');
   const [showPassword, setShowPassword] = useState(false);
   const auth = useAuth();
   const { mutateAsync: loginAsync, isPending: isLoading } = useLoginWithCredentials();
@@ -45,6 +45,16 @@ export default function LoginPage(): React.ReactNode {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setErrorResponse({
+      email: {
+        type: 'value',
+        message: '',
+      },
+      password: {
+        type: 'value',
+        message: '',
+      },
+    });
     try {
       const response = await loginAsync({
         data: {
@@ -52,7 +62,7 @@ export default function LoginPage(): React.ReactNode {
           password,
         },
       });
-      auth.setCredentials(response.token, response.role as Role);
+      auth.setCredentials(response.data?.token as string, response.data?.role as Role);
       toast.success('Login successful');
     } catch (error) {
       renderError(error, setError);

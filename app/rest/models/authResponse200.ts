@@ -5,10 +5,9 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { Auth } from './auth';
 
 export interface AuthResponse200 {
-  /** The token for the user */
-  token: string;
-  /** The role of the user */
-  role: string;
+  success?: boolean;
+  data?: Auth;
 }

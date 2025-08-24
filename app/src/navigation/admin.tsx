@@ -1,3 +1,4 @@
+import { RoleEnum } from '@/constants/role.constant';
 import PlanConfigPage from '@/pages/admin/plan-config';
 import PlanFeaturesPage from '@/pages/admin/plan-config/features/page';
 import UserCompanyConfigPage from '@/pages/admin/user-company-config/page';
@@ -13,6 +14,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.UserConfig.key,
     element: <UserConfigPage />,
     layout: 'dashboard',
+    roles: [RoleEnum.admin],
   },
   {
     title: 'Company Configuration',
@@ -20,6 +22,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.CompanyConfig.key,
     element: <UserCompanyConfigPage />,
     layout: 'dashboard',
+    roles: [RoleEnum.admin],
   },
   {
     title: 'Plan Configuration',
@@ -27,6 +30,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.PlanConfig.key,
     element: <PlanConfigPage />,
     layout: 'dashboard',
+    roles: [RoleEnum.admin],
   },
   // subdir
   {
@@ -36,6 +40,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     element: <PlanFeaturesPage />,
     layout: 'dashboard',
     sidebar: false,
+    roles: [RoleEnum.admin],
   },
 ]);
 

@@ -24,7 +24,7 @@ class UserService extends GenericService implements IUserService
         if (!Hash::check($password, $user->password)) {
             throw new AuthenticationException('Invalid password');
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->accessToken;
         return [
             'token' => $token,
             'role' => $user->role,

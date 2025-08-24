@@ -1,13 +1,14 @@
+import { useAuth } from '@/components/auth.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { Button } from '@/components/ui/button';
 import Routes from '@/navigation';
-import { RouteKey } from '@/navigation/route';
 import useAuthStore from '@/store/auth.store';
+import type { Role } from '@/types/role';
 import type { Route } from '@/types/route';
 import { LogOut, Settings, Wifi } from 'lucide-react';
 import type React from 'react';
 import { useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation } from 'react-router';
 
 type SideBarProps = {
   isSidebarOpen: boolean;
@@ -20,7 +21,7 @@ export default function SideBar({
 }: SideBarProps): React.ReactNode {
   const location = useLocation();
 
-  const navigate = useNavigate();
+  const { initialized, isLoggedIn, role } = useAuth();
 
   const auth = useAuthStore();
 
@@ -28,9 +29,18 @@ export default function SideBar({
     return location.pathname.startsWith(routePath);
   };
 
+  const isLoading = useMemo(() => {
+    return !initialized || !isLoggedIn;
+  }, [initialized, isLoggedIn]);
+
   const computedRoutes = useMemo(() => {
-    return Routes.filter((route) => route.sidebar !== false);
-  }, []);
+    if (isLoading) return [];
+    return Routes.filter(
+      (route) =>
+        route.sidebar === true ||
+        (route.sidebar === undefined && route.roles?.includes(role as Role))
+    );
+  }, [isLoading, role]);
 
   return (
     <aside
@@ -85,6 +95,25 @@ export default function SideBar({
 
       {/* Navigation */}
       <nav className="relative p-3 space-y-3 flex-1 overflow-y-auto scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted">
+        {isLoading && (
+          <div className="space-y-3">
+            {[...Array(5)].map((_, index) => (
+              <div
+                key={index}
+                className="group relative flex items-center p-2 rounded-lg border border-transparent"
+              >
+                <div className="relative flex items-center justify-center w-11 h-11 mr-4 rounded-lg border border-sidebar-border bg-accent/30">
+                  <div className="w-5 h-5 bg-gradient-to-r from-muted via-muted-foreground/20 to-muted rounded animate-pulse"></div>
+                </div>
+                <div className="flex-1 space-y-1">
+                  <div className="h-4 bg-gradient-to-r from-muted via-muted-foreground/20 to-muted rounded animate-pulse"></div>
+                  <div className="h-3 w-3/4 bg-gradient-to-r from-muted via-muted-foreground/20 to-muted rounded animate-pulse"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
         {computedRoutes.map((route: Route, index: number) => {
           const isActive = isActiveRoute(route.path);
 
@@ -271,7 +300,7 @@ export default function SideBar({
                   icon: <LogOut className="w-4 h-4" />,
                   onClick: () => {
                     auth.clearCredentials();
-                    navigate(RouteKey.Auth.Login.key);
+                    // navigate(RouteKey.Auth.Login.key);
                   },
                 },
               ]}
