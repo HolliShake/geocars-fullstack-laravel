@@ -57,16 +57,12 @@ export default function Providers({ children }: { children: React.ReactNode }): 
   const query = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchInterval: 3000, // 3 seconds
-        refetchOnWindowFocus: false,
-        retry: 3,
         throwOnError(error) {
           toast.error(captureErrorMessage(error));
           return false;
         },
       },
       mutations: {
-        retry: 0,
         throwOnError(error) {
           toast.error(captureErrorMessage(error));
           return false;

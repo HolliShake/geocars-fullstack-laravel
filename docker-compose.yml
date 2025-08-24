@@ -9,10 +9,10 @@ services:
     ports:
       - '3000:3000'
     volumes:
-      - ./app:/app
+      - ./app:/app:cached # cached improves macOS/Windows perf
       - /app/node_modules
     environment:
-      - REACT_APP_API_URL=http://localhost:8000
+      - REACT_APP_API_URL=http://backend:8000 # use service name, not localhost
     depends_on:
       - backend
 
@@ -24,12 +24,16 @@ services:
     ports:
       - '8000:8000'
     volumes:
-      - ./api:/var/www/html
+      - ./api:/var/www/html:cached
+      - /var/www/html/vendor
+      - /var/www/html/storage
+      - /var/www/html/bootstrap/cache
     environment:
+      - DB_CONNECTION=mysql
       - DB_HOST=mysql
       - DB_PORT=3306
       - DB_DATABASE=geocars
-      - DB_USERNAME=root
+      - DB_USERNAME=geocars
       - DB_PASSWORD=password
     depends_on:
       - mysql
@@ -45,7 +49,12 @@ services:
       - MYSQL_DATABASE=geocars
       - MYSQL_USER=geocars
       - MYSQL_PASSWORD=password
-    command: --innodb-buffer-pool-size=256M --slow-query-log=1 --long-query-time=2 --innodb-log-file-size=64M --innodb-flush-log-at-trx-commit=2
+    command: >
+      --innodb-buffer-pool-size=512M
+      --slow-query-log=1
+      --long-query-time=2
+      --innodb-log-file-size=128M
+      --innodb-flush-log-at-trx-commit=2
     volumes:
       - mysql_data:/var/lib/mysql
 
