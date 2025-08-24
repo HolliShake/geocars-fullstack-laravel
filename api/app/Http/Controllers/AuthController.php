@@ -49,15 +49,15 @@ class AuthController extends Controller
                 'email'    => 'required|email|exists:users,email',
                 'password' => 'required|min:8|max:255',
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
             $rawEmail = $validated['email'];
             $rawPassword = $validated['password'];
-    
+
             return $this->ok($this->service->login($rawEmail, $rawPassword));
         } catch (AuthenticationException $e) {
             return $this->unauthorized($e->getMessage());

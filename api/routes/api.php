@@ -14,7 +14,7 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::middleware('auth:api')->controller(AuthController::class)->group(function () {
+Route::controller(AuthController::class)->group(function () {
     Route::post('/Auth/login', 'login');
 });
 
