@@ -10,7 +10,16 @@ services:
       - '3000:3000'
     volumes:
       - ./app:/app:cached # cached improves macOS/Windows perf
-      - /app/node_modules
+      - /app/node_modules # exclude node_modules from host mount
+      - /app/dist # exclude Vite build output
+      - /app/.vite # exclude Vite cache
+      - /app/.cache # exclude various cache directories
+      - /app/coverage # exclude test coverage reports
+      - /app/.nyc_output # exclude NYC coverage output
+      - /app/.eslintcache # exclude ESLint cache
+      - /app/.turbo # exclude Turbo cache
+      - /app/.yarn/cache # exclude Yarn cache
+      - /app/.pnpm-store # exclude PNPM store
     environment:
       - REACT_APP_API_URL=http://backend:8000 # use service name, not localhost
     depends_on:

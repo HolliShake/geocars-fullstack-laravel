@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CarController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\UserCompanyController;
@@ -13,7 +14,11 @@ Route::get('/user', function (Request $request) {
 })->middleware('auth:api');
 
 
-Route::controller(PlanController::class)->group(function () {
+Route::middleware('auth:api')->controller(AuthController::class)->group(function () {
+    Route::post('/Auth/login', 'login');
+});
+
+Route::middleware('auth:api')->controller(PlanController::class)->group(function () {
     Route::get('/Plan', 'index');
     Route::get('/Plan/{id}', 'show');
     Route::post('/Plan', 'store');
@@ -21,7 +26,7 @@ Route::controller(PlanController::class)->group(function () {
     Route::delete('/Plan/{id}', 'destroy');
 });
 
-Route::controller(UserController::class)->group(function () {
+Route::middleware('auth:api')->controller(UserController::class)->group(function () {
     Route::get('/User', 'index');
     Route::get('/User/{id}', 'show');
     Route::post('/User', 'store');
@@ -29,7 +34,7 @@ Route::controller(UserController::class)->group(function () {
     Route::delete('/User/{id}', 'destroy');
 });
 
-Route::controller(UserCompanyController::class)->group(function () {
+Route::middleware('auth:api')->controller(UserCompanyController::class)->group(function () {
     Route::get('/UserCompany','index');
     Route::get('/UserCompany/{id}','show');
     Route::post('/UserCompany','store');
@@ -37,7 +42,7 @@ Route::controller(UserCompanyController::class)->group(function () {
     Route::delete('/UserCompany/{id}', 'destroy');
 });
 
-Route::controller(PlanFeatureController::class)->group(function () {
+Route::middleware('auth:api')->controller(PlanFeatureController::class)->group(function () {
     Route::get('/PlanFeature','index');
     Route::get('/PlanFeature/{id}','show');
     Route::post('/PlanFeature','store');
@@ -45,6 +50,10 @@ Route::controller(PlanFeatureController::class)->group(function () {
     Route::delete('/PlanFeature/{id}', 'destroy');
 });
 
-Route::controller(AuthController::class)->group(function () {
-    Route::post('/Auth/login', 'login');
+Route::middleware('auth:api')->controller(CarController::class)->group(function () {
+    Route::get('/Car','index');
+    Route::get('/Car/{id}','show');
+    Route::post('/Car','store');
+    Route::put('/Car/{id}','update');
+    Route::delete('/Car/{id}', 'destroy');
 });

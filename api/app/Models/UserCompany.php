@@ -137,4 +137,13 @@ class UserCompany extends Model
     public function owner() {
         return $this->belongsTo(User::class,'user_id','id');
     }
+
+    /**
+     * Get the cars associated with the company.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function cars() {
+        return $this->hasMany(Car::class,'user_company_id','id');
+    }
 }

@@ -126,6 +126,9 @@ class User extends Authenticatable implements OAuthenticatable
         'email',
         'role',
         'is_active',
+        'password',
+        'email_verified_at',
+        'remember_token',
     ];
 
     /**

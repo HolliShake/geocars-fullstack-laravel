@@ -6,6 +6,7 @@ use App\Interface\Repository\IUserRepo;
 use App\Interface\Service\IUserService;
 use App\Service\GenericService;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Support\Facades\Auth;
 use Hash;
 
 class UserService extends GenericService implements IUserService
@@ -24,6 +25,11 @@ class UserService extends GenericService implements IUserService
         if (!Hash::check($password, $user->password)) {
             throw new AuthenticationException('Invalid password');
         }
+
+        if (!Auth::attempt(['email' => $email, 'password' => $password])) {
+            throw new AuthenticationException('Invalid credentials');
+        }
+
         $token = $user->createToken('auth_token')->accessToken;
         return [
             'token' => $token,

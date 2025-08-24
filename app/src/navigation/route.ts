@@ -19,6 +19,8 @@ type RouteStructure = {
   };
   User: {
     Dashboard: RouteConfig<'/user/dashboard'>;
+    CompanyConfig: RouteConfig<'/user/company-config'>;
+    CompanyCars: RouteConfig<'/user/company-config/cars/:company_id'>;
   };
 };
 
@@ -62,5 +64,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
   },
   User: {
     Dashboard: createRoute('/user/dashboard'),
+    CompanyConfig: createRoute('/user/company-config'),
+    CompanyCars: createRoute('/user/company-config/cars/:company_id'),
   },
 });

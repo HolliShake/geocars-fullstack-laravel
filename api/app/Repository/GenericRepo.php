@@ -54,18 +54,54 @@ class GenericRepo implements IGenericRepo
             $columns = ['*'];
         }
         
-        $query = $this->model
-            ::with($relations)
-            ->where(function ($query) use ($conditions) {
-                foreach ($conditions as $column => $value) {
-                    if (is_array($value) && count($value) === 2) {
-                        [$operator, $val] = $value;   // e.g. ['like', '%Dog%']
-                        $query->where($column, $operator, $val);
-                    } elseif (!is_null($value)) {
-                        $query->where($column, '=', $value);
-                    }
+        // $query = $this->model
+        //     ::with($relations)
+        //     ->where(function ($query) use ($conditions) {
+        //         foreach ($conditions as $column => $value) {
+        //             if (is_array($value) && count($value) === 2) {
+        //                 [$operator, $val] = $value;   // e.g. ['like', '%Dog%']
+        //                 $query->where($column, $operator, $val);
+        //             } elseif (!is_null($value)) {
+        //                 $query->where($column, '=', $value);
+        //             }
+        //         }
+        //     });
+
+        $query = $this->model::with($relations);
+        
+        // Handle search conditions (OR logic for LIKE operations)
+        $searchConditions = [];
+        $filterConditions = [];
+        
+        foreach ($conditions as $column => $value) {
+            if (is_array($value) && count($value) === 2) {
+                [$operator, $val] = $value;
+                
+                if ($operator === 'like' && !empty($val)) {
+                    $searchConditions[] = [$column, 'like', $val];
+                } elseif ($operator === '&=' && !is_null($val)) {
+                    $filterConditions[] = [$column, '=', $val];
+                } elseif (!is_null($val)) {
+                    $filterConditions[] = [$column, $operator, $val];
+                }
+            } elseif (!is_null($value) && $value !== '') {
+                $filterConditions[] = [$column, '=', $value];
+            }
+        }
+        
+        // Apply filter conditions with AND logic
+        foreach ($filterConditions as $condition) {
+            $query->where($condition[0], $condition[1], $condition[2]);
+        }
+        
+        // Apply search conditions with OR logic, but only if there are search conditions
+        if (!empty($searchConditions)) {
+            $query->where(function ($q) use ($searchConditions) {
+                foreach ($searchConditions as $condition) {
+                    $q->orWhere($condition[0], $condition[1], $condition[2]);
                 }
             });
+        }
             
         if (!empty($orderBy)) {
             $query->orderBy(...$orderBy);

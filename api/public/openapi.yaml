@@ -39,6 +39,167 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/InternalServerErrorResponse'
+  /api/Car:
+    get:
+      tags:
+        - Car
+      summary: Get paginated list of Car
+      description: Retrieve a paginated list of Car with optional search
+      operationId: getCarPaginated
+      parameters:
+        - name: search
+          in: query
+          description: Search term
+          required: false
+          schema:
+            type: string
+        - name: page
+          in: query
+          description: Page number
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: rows
+          in: query
+          description: Number of items per page
+          required: false
+          schema:
+            type: integer
+            default: 10
+        - name: user_company_id
+          in: query
+          description: User company ID
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedCarResponse200'
+    post:
+      tags:
+        - Car
+      summary: Create a new Car
+      description: ' Create a new Car with the provided details'
+      operationId: createCar
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Car'
+      responses:
+        '200':
+          description: Car created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CreateCarResponse200'
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+  '/api/Car/{id}':
+    get:
+      tags:
+        - Car
+      summary: Get a specific Car
+      description: Retrieve a Car by its ID
+      operationId: getCarById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GetCarResponse200'
+        '404':
+          description: Car not found
+    put:
+      tags:
+        - Car
+      summary: Update a Car
+      description: Update an existing Car with the provided details
+      operationId: updateCar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Car'
+      responses:
+        '200':
+          description: Car updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdateCarResponse200'
+        '404':
+          description: Car not found
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ValidationErrorResponse'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
+    delete:
+      tags:
+        - Car
+      summary: Delete a Car
+      description: Delete a Car by its ID
+      operationId: deleteCar
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Car deleted successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeleteCarResponse200'
+        '404':
+          description: Car not found
+        '500':
+          description: ' Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InternalServerErrorResponse'
   /api/Plan:
     get:
       tags:
@@ -360,6 +521,13 @@ paths:
           schema:
             type: integer
             default: 10
+        - name: current_user
+          in: query
+          description: User ID
+          required: false
+          schema:
+            type: boolean
+            default: false
       responses:
         '200':
           description: Successful operation
@@ -767,6 +935,136 @@ components:
           example: true
         data:
           $ref: '#/components/schemas/Auth'
+      type: object
+    Car:
+      title: Car
+      required:
+        - user_company_id
+        - brand
+        - model
+        - plate_number
+        - color
+        - type
+        - fuel_type
+        - transmission
+      properties:
+        id:
+          type: integer
+        user_company_id:
+          type: integer
+        brand:
+          type: string
+        model:
+          type: string
+        plate_number:
+          type: string
+        color:
+          type: string
+        type:
+          type: string
+          enum:
+            - sedan
+            - hatchback
+            - suv
+            - mpv
+            - coupe
+            - convertible
+            - other
+        year:
+          type: string
+          nullable: true
+        fuel_type:
+          type: string
+          enum:
+            - petrol
+            - diesel
+            - electric
+            - hybrid
+            - other
+        transmission:
+          type: string
+          enum:
+            - manual
+            - automatic
+            - other
+        engine_capacity:
+          type: string
+          nullable: true
+        engine_power:
+          type: string
+          nullable: true
+        engine_torque:
+          type: string
+          nullable: true
+        engine_type:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+      type: object
+    PaginatedCar:
+      title: PaginatedCar
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Car'
+        current_page:
+          type: integer
+        last_page:
+          type: integer
+        per_page:
+          type: integer
+        total:
+          type: integer
+        from:
+          type: integer
+          nullable: true
+        to:
+          type: integer
+          nullable: true
+      type: object
+    PaginatedCarResponse200:
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/PaginatedCar'
+      type: object
+    GetCarResponse200:
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Car'
+      type: object
+    CreateCarResponse200:
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Car'
+      type: object
+    UpdateCarResponse200:
+      properties:
+        success:
+          type: boolean
+          example: true
+        data:
+          $ref: '#/components/schemas/Car'
+      type: object
+    DeleteCarResponse200:
+      properties:
+        success:
+          type: boolean
+          example: true
       type: object
     Plan:
       title: Plan
@@ -1225,6 +1523,8 @@ components:
 tags:
   - name: Auth
     description: Auth
+  - name: Car
+    description: Car
   - name: Plans
     description: Plans
   - name: PlanFeature

@@ -2,20 +2,24 @@
 
 namespace App\Providers;
 
+use App\Interface\Repository\ICarRepo;
 use App\Interface\Repository\IPlanFeatureRepo;
 use App\Interface\Repository\IPlanRepo;
 use App\Interface\Repository\IUserCompanyRepo;
 use App\Interface\Repository\IUserRepo;
+use App\Interface\Service\ICarService;
 use App\Interface\Service\IPlanFeatureService;
 use App\Interface\Service\IPlanService;
 use App\Interface\Service\IUserCompanyService;
 use App\Interface\Service\IUserService;
+use App\Repository\CarRepo;
+use App\Repository\PlanFeatureRepo;
 use App\Repository\PlanRepo;
 use App\Repository\UserCompanyRepo;
 use App\Repository\UserRepo;
-use App\Repository\PlanFeatureRepo;
-use App\Service\PlanService;
+use App\Service\CarService;
 use App\Service\PlanFeatureService;
+use App\Service\PlanService;
 use App\Service\UserCompanyService;
 use App\Service\UserService;
 use Carbon\CarbonInterval;
@@ -34,12 +38,13 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IPlanRepo::class, PlanRepo::class);
         $this->app->bind(IUserCompanyRepo::class, UserCompanyRepo::class);
         $this->app->bind(IPlanFeatureRepo::class, PlanFeatureRepo::class);
-
+        $this->app->bind(ICarRepo::class, CarRepo::class);
         // Services
         $this->app->bind(IUserService::class, UserService::class);
         $this->app->bind(IPlanService::class, PlanService::class);
         $this->app->bind(IUserCompanyService::class, UserCompanyService::class);
         $this->app->bind(IPlanFeatureService::class, PlanFeatureService::class);
+        $this->app->bind(ICarService::class, CarService::class);
     }
 
     /**

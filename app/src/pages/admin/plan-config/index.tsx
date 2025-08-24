@@ -15,9 +15,9 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import PlanModal from './components/plan.modal';
+import AdminPlanModal from './components/plan.modal';
 
-export default function PlanConfigPage(): React.ReactElement {
+export default function AdminPlanConfigPage(): React.ReactElement {
   const navigate = useNavigate();
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
@@ -153,7 +153,7 @@ export default function PlanConfigPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as Plan)}
       />
 
-      <PlanModal controller={modal} />
+      <AdminPlanModal controller={modal} />
     </PageLayout>
   );
 }

@@ -1,5 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable react-refresh/only-export-components */
+import { RoleEnum } from '@/constants/role.constant';
 import { RouteKey } from '@/navigation/route';
 import type { AuthStore } from '@/store/auth.store';
 import useAuthStore from '@/store/auth.store';
@@ -40,7 +41,24 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
 
     // Loggedin but not logged out and on login page
     if (auth.isLoggedIn && !auth.isLoggedOut && isAuthPage) {
-      navigate(RouteKey.Admin.Dashboard.key, { replace: true });
+      switch (auth.role) {
+        case RoleEnum.admin: {
+          navigate(RouteKey.Admin.Dashboard.key, { replace: true });
+          break;
+        }
+        case RoleEnum.user: {
+          navigate(RouteKey.User.Dashboard.key, { replace: true });
+          break;
+        }
+        case RoleEnum.renter: {
+          // navigate(RouteKey.Renter.Dashboard.key, { replace: true });
+          break;
+        }
+        default: {
+          navigate(RouteKey.Auth.Login.key, { replace: true });
+          auth.clearCredentials();
+        }
+      }
     }
 
     // Logged out and not on auth page

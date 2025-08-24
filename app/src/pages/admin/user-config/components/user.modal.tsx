@@ -52,7 +52,7 @@ const field = () => ({
   is_active: true,
 });
 
-export default function UserModal({
+export default function AdminUserModal({
   controller,
 }: {
   controller: ModalState<User>;

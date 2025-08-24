@@ -28,7 +28,7 @@ const field = () => ({
   plan_id: 0,
 });
 
-export default function PlanFeatureModal({
+export default function AdminPlanFeatureModal({
   controller,
 }: {
   controller: ModalState<PlanFeature>;

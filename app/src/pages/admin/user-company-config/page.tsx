@@ -13,9 +13,9 @@ import { LucideCar, LucideLogs, LucidePen, LucidePlus, LucideTrash2 } from 'luci
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import UserCompanyModal from './components/user-company.modal';
+import AdminUserCompanyModal from './components/user-company.modal';
 
-export default function UserCompanyConfigPage(): React.ReactElement {
+export default function AdminUserCompanyConfigPage(): React.ReactElement {
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
   const [page, setPage] = React.useState(1);
@@ -182,7 +182,7 @@ export default function UserCompanyConfigPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as UserCompany)}
       />
 
-      <UserCompanyModal controller={modal} />
+      <AdminUserCompanyModal controller={modal} />
     </PageLayout>
   );
 }

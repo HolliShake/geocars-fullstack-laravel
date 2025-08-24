@@ -31,7 +31,7 @@ const field = () => ({
   active: false,
 });
 
-export default function PlanModal({
+export default function AdminPlanModal({
   controller,
 }: {
   controller: ModalState<Plan>;

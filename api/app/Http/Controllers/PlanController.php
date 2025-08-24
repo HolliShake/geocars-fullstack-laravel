@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Service\PlanService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use OpenApi\Attributes as OA;
 use Illuminate\Support\Facades\Validator;
+use OpenApi\Attributes as OA;
 
 #[OA\PathItem(
     path: "/plans"

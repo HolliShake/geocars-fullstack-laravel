@@ -26,14 +26,19 @@ import type {
 
 import type {
   AuthResponse200,
+  Car,
+  CreateCarResponse200,
   CreatePlanFeatureResponse200,
   CreatePlanResponse200,
   CreateUserCompanyResponse200,
   CreateUserResponse200,
+  DeleteCarResponse200,
   DeletePlanFeatureResponse200,
   DeletePlanResponse200,
   DeleteUserCompanyResponse200,
   DeleteUserResponse200,
+  GetCarPaginatedParams,
+  GetCarResponse200,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
   GetPlanResponse200,
@@ -45,12 +50,14 @@ import type {
   InternalServerErrorResponse,
   LoginRequest,
   NotFoundResponse,
+  PaginatedCarResponse200,
   PaginatedPlanFeatureResponse200,
   PaginatedPlanResponse200,
   PaginatedUserCompanyResponse200,
   PaginatedUserResponse200,
   Plan,
   PlanFeature,
+  UpdateCarResponse200,
   UpdatePlanFeatureResponse200,
   UpdatePlanResponse200,
   UpdateUserCompanyResponse200,
@@ -123,6 +130,380 @@ export const useLoginWithCredentials = <TError = ValidationErrorResponse | Inter
       > => {
 
       const mutationOptions = getLoginWithCredentialsMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a paginated list of Car with optional search
+ * @summary Get paginated list of Car
+ */
+export const getCarPaginated = (
+    params?: GetCarPaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedCarResponse200>(
+      {url: `/api/Car`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetCarPaginatedQueryKey = (params?: GetCarPaginatedParams,) => {
+    return [`/api/Car`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetCarPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getCarPaginated>>, TError = unknown>(params?: GetCarPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCarPaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCarPaginated>>> = ({ signal }) => getCarPaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCarPaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getCarPaginated>>>
+export type GetCarPaginatedQueryError = unknown
+
+
+export function useGetCarPaginated<TData = Awaited<ReturnType<typeof getCarPaginated>>, TError = unknown>(
+ params: undefined |  GetCarPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCarPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getCarPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCarPaginated<TData = Awaited<ReturnType<typeof getCarPaginated>>, TError = unknown>(
+ params?: GetCarPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCarPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getCarPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCarPaginated<TData = Awaited<ReturnType<typeof getCarPaginated>>, TError = unknown>(
+ params?: GetCarPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of Car
+ */
+
+export function useGetCarPaginated<TData = Awaited<ReturnType<typeof getCarPaginated>>, TError = unknown>(
+ params?: GetCarPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCarPaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ *  Create a new Car with the provided details
+ * @summary Create a new Car
+ */
+export const createCar = (
+    car: Car,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateCarResponse200>(
+      {url: `/api/Car`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: car, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateCarMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext> => {
+
+const mutationKey = ['createCar'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCar>>, {data: Car}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createCar(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateCarMutationResult = NonNullable<Awaited<ReturnType<typeof createCar>>>
+    export type CreateCarMutationBody = Car
+    export type CreateCarMutationError = ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Create a new Car
+ */
+export const useCreateCar = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createCar>>,
+        TError,
+        {data: Car},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateCarMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a Car by its ID
+ * @summary Get a specific Car
+ */
+export const getCarById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetCarResponse200>(
+      {url: `/api/Car/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetCarByIdQueryKey = (id?: number,) => {
+    return [`/api/Car/${id}`] as const;
+    }
+
+    
+export const getGetCarByIdQueryOptions = <TData = Awaited<ReturnType<typeof getCarById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetCarByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getCarById>>> = ({ signal }) => getCarById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetCarByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getCarById>>>
+export type GetCarByIdQueryError = null
+
+
+export function useGetCarById<TData = Awaited<ReturnType<typeof getCarById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCarById>>,
+          TError,
+          Awaited<ReturnType<typeof getCarById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCarById<TData = Awaited<ReturnType<typeof getCarById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getCarById>>,
+          TError,
+          Awaited<ReturnType<typeof getCarById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetCarById<TData = Awaited<ReturnType<typeof getCarById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific Car
+ */
+
+export function useGetCarById<TData = Awaited<ReturnType<typeof getCarById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCarById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetCarByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing Car with the provided details
+ * @summary Update a Car
+ */
+export const updateCar = (
+    id: number,
+    car: Car,
+ ) => {
+      
+      
+      return fetchData<UpdateCarResponse200>(
+      {url: `/api/Car/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: car
+    },
+      );
+    }
+  
+
+
+export const getUpdateCarMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext> => {
+
+const mutationKey = ['updateCar'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCar>>, {id: number;data: Car}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateCar(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateCarMutationResult = NonNullable<Awaited<ReturnType<typeof updateCar>>>
+    export type UpdateCarMutationBody = Car
+    export type UpdateCarMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Update a Car
+ */
+export const useUpdateCar = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateCar>>,
+        TError,
+        {id: number;data: Car},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateCarMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a Car by its ID
+ * @summary Delete a Car
+ */
+export const deleteCar = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteCarResponse200>(
+      {url: `/api/Car/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteCarMutationOptions = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCar>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteCar>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteCar'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteCar>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteCar(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteCarMutationResult = NonNullable<Awaited<ReturnType<typeof deleteCar>>>
+    
+    export type DeleteCarMutationError = null | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a Car
+ */
+export const useDeleteCar = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteCar>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteCar>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteCarMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

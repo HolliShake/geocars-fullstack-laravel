@@ -6,7 +6,7 @@ import Table, { type TableColumn } from '@/components/custom/table.component';
 import PageLayout from '@/components/layout/page.layout';
 import { Button } from '@/components/ui/button';
 import { dumbCurrency } from '@/lib/dumb-currency';
-import PlanModal from '@/pages/admin/plan-config/components/plan.modal';
+import AdminPlanModal from '@/pages/admin/plan-config/components/plan.modal';
 import useSearchStore from '@/store/search.store';
 import { useDeletePlanFeature, useGetPlanById, useGetPlanFeaturePaginated } from '@rest/api';
 import type { Plan, PlanFeature } from '@rest/models';
@@ -22,9 +22,9 @@ import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import PlanFeatureModal from './components/plan-feature.modal';
+import AdminPlanFeatureModal from './components/plan-feature.modal';
 
-export default function PlanFeaturesPage(): React.ReactElement {
+export default function AdminPlanFeaturesPage(): React.ReactElement {
   const { id } = useParams<{ id: string }>();
   const planId = Number(id);
 
@@ -282,8 +282,8 @@ export default function PlanFeaturesPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as PlanFeature)}
       />
 
-      <PlanFeatureModal controller={modal} />
-      <PlanModal controller={planModal} />
+      <AdminPlanFeatureModal controller={modal} />
+      <AdminPlanModal controller={planModal} />
     </PageLayout>
   );
 }

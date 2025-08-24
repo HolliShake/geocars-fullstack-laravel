@@ -43,7 +43,7 @@ const field = () => ({
   days_open: defaultDays,
 });
 
-export default function UserCompanyModal({
+export default function AdminUserCompanyModal({
   controller,
 }: {
   controller: ModalState<UserCompany>;

@@ -1,0 +1,130 @@
+<?php
+
+namespace App\Models;
+
+use Illuminate\Database\Eloquent\Model;
+use OpenApi\Attributes as OA;
+
+#[OA\Schema(
+    schema: "Car",
+    title: "Car",
+    type: "object",
+    required: [
+        "user_company_id",
+        "brand",
+        "model",
+        "plate_number",
+        "color",
+        "type",
+        "fuel_type",
+        "transmission",
+    ],
+    properties: [
+        new OA\Property(property: "id", type: "integer"),
+        new OA\Property(property: "user_company_id", type: "integer"),
+        new OA\Property(property: "brand", type: "string"),
+        new OA\Property(property: "model", type: "string"),
+        new OA\Property(property: "plate_number", type: "string"),
+        new OA\Property(property: "color", type: "string"),
+        new OA\Property(property: "type", type: "string", enum: ["sedan", "hatchback", "suv", "mpv", "coupe", "convertible", "other"]),
+        new OA\Property(property: "year", type: "string", nullable: true),
+        new OA\Property(property: "fuel_type", type: "string", enum: ["petrol", "diesel", "electric", "hybrid", "other"]),
+        new OA\Property(property: "transmission", type: "string", enum: ["manual", "automatic", "other"]),
+        new OA\Property(property: "engine_capacity", type: "string", nullable: true),
+        new OA\Property(property: "engine_power", type: "string", nullable: true),
+        new OA\Property(property: "engine_torque", type: "string", nullable: true),
+        new OA\Property(property: "engine_type", type: "string", nullable: true),
+        new OA\Property(property: "created_at", type: "string", format: "date-time"),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+    ]
+)]
+
+#[OA\Schema(
+    schema: "PaginatedCar",
+    title:"PaginatedCar",
+    type: "object",
+    properties: [
+        new OA\Property(property: "data", type: "array", items: new OA\Items(ref: "#/components/schemas/Car")),
+        new OA\Property(property: "current_page", type: "integer"),
+        new OA\Property(property: "last_page", type: "integer"),
+        new OA\Property(property: "per_page", type: "integer"),
+        new OA\Property(property: "total", type: "integer"),
+        new OA\Property(property: "from", type: "integer", nullable: true),
+        new OA\Property(property: "to", type: "integer", nullable: true),
+    ]
+)]
+
+#[OA\Schema(
+    schema: "PaginatedCarResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/PaginatedCar")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "GetCarResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/Car")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "CreateCarResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/Car")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "UpdateCarResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(property: "data", ref: "#/components/schemas/Car")
+    ]
+)]
+
+#[OA\Schema(
+    schema: "DeleteCarResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true)
+    ]
+)]
+
+class Car extends Model
+{
+    protected $table = 'cars';
+
+    protected $fillable = [
+        'user_company_id',
+        'brand',
+        'model',
+        'plate_number',
+        'color',
+        'type',
+        'year',
+        'fuel_type',
+        'transmission',
+        'engine_capacity',
+        'engine_power',
+        'engine_torque',
+        'engine_type',
+    ];
+
+    /**
+     * Get the user company that owns the car.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function userCompany()
+    {
+        return $this->belongsTo(UserCompany::class, 'user_company_id', 'id');
+    }
+}

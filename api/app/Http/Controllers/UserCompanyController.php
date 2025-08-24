@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Service\UserCompanyService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
 use Validator;
 
@@ -44,6 +45,13 @@ class UserCompanyController extends Controller
         required: false,
         schema: new OA\Schema(type: "integer", default: 10)
     )]
+    #[OA\Parameter(
+        name: "current_user",
+        in: "query",
+        description: "User ID",
+        required: false,
+        schema: new OA\Schema(type: "boolean", default: false)
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
@@ -51,12 +59,25 @@ class UserCompanyController extends Controller
     )]
     public function index(Request $request)
     {
-        $srch = $request->query("search", '');
-        $page = $request->query("page", 0);
-        $rows = $request->query("rows", 10);
-        return $this->ok($this->service->paginate($page, $rows, ['*'], ['owner'], [
-            'name' => $srch ? ['like', "%{$srch}%"] : null
-        ]));
+        try {
+            $srch = $request->query("search", '');
+            $page = $request->query("page", 0);
+            $rows = $request->query("rows", 10);
+            $current_user = $request->query("current_user", false);
+            
+            $conditions = [
+                'name' => $srch ? ['like', "%{$srch}%"] : null
+            ];
+
+            if ($current_user) {
+                $id = Auth::user()->id;
+                $conditions['user_id'] = ['=', $id];
+            }
+
+            return $this->ok($this->service->paginate($page, $rows, ['*'], ['owner'], $conditions));
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
     }
 
     /**

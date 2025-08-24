@@ -12,9 +12,9 @@ import { LucidePen, LucidePlus, LucideTrash2 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import UserModal from './components/user.modal';
+import AdminUserModal from './components/user.modal';
 
-export default function UserConfigPage(): React.ReactElement {
+export default function AdminUserConfigPage(): React.ReactElement {
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
   const [page, setPage] = React.useState(1);
@@ -128,7 +128,7 @@ export default function UserConfigPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as User)}
       />
 
-      <UserModal controller={modal} />
+      <AdminUserModal controller={modal} />
     </PageLayout>
   );
 }
