@@ -4,10 +4,45 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
+    <title>Geocars</title>
+
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:title" content="GeoCars - Car Rental Management System" />
+    <meta
+      property="og:description"
+      content="A comprehensive full-stack car rental management and tracking system built with Laravel API and React TypeScript frontend."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/vite.svg" />
+    <meta property="og:site_name" content="GeoCars" />
+
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="GeoCars - Car Rental Management System" />
+    <meta
+      name="twitter:description"
+      content="A comprehensive full-stack car rental management and tracking system built with Laravel API and React TypeScript frontend."
+    />
+    <meta name="twitter:image" content="/vite.svg" />
+
+    <!-- Additional Meta Tags -->
+    <meta
+      name="description"
+      content="GeoCars is a modern car rental management platform that provides user management, plan management, company management, feature management, real-time tracking, and modern UI with dark/light themes."
+    />
+    <meta
+      name="keywords"
+      content="car rental, management system, Laravel, React, TypeScript, vehicle tracking, analytics"
+    />
+    <meta name="author" content="GeoCars Team" />
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+    <script>
+      const theme = localStorage.getItem('vite-ui-theme') || 'light';
+      document.documentElement.classList.add(theme);
+      document.body.classList.add(theme);
+    </script>
   </body>
 </html>
