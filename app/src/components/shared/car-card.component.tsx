@@ -133,9 +133,9 @@ const CarCard: React.FC<CarCardProps> = ({ car, imageUrl, onClick, actions = [] 
                   e.stopPropagation();
                   action.onClick();
                 }}
-                className="relative overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-105 bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5 hover:from-cyan-500/10 hover:via-blue-500/10 hover:to-purple-500/10 backdrop-blur-sm"
+                className="relative overflow-hidden transition-all duration-300 hover:shadow-md hover:scale-105"
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 opacity-0 group-hover:opacity-10 transition-opacity" />
+                <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 opacity-0 hover:opacity-30 dark:hover:opacity-20 transition-opacity" />
                 {action.label}
               </Button>
             ))}

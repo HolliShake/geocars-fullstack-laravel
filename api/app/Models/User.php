@@ -41,6 +41,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "email", type: "string", format: "email"),
         new OA\Property(property: "role", type: "string", enum: ["admin", "user", "moderator"]),
         new OA\Property(property: "is_active", type: "boolean", example: true),
+        // Computed properties
+        new OA\Property(property: "name", type: "string"),
     ]
 )]
 

@@ -51,6 +51,20 @@ class CarPostingController extends Controller
         required: false,
         schema: new OA\Schema(type: "integer")
     )]
+    #[OA\Parameter(
+        name: "is_available",
+        in: "query",
+        description: "Is available",
+        required: false,
+        schema: new OA\Schema(type: "boolean")
+    )]
+    #[OA\Parameter(
+        name: "status",
+        in: "query",
+        description: "Posting status filter: one of 'all', 'active', 'expired'",
+        required: false,
+        schema: new OA\Schema(type: "string", enum: ["all", "active", "expired"], default: "all")
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
@@ -62,14 +76,27 @@ class CarPostingController extends Controller
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
         $company_id = $request->query("company_id", null);
+        $is_available = $request->query("is_available", null);
+        $status = strtolower($request->query("status", 'all'));
 
         $conditions = [
             "description" => ['like', "%{$srch}%"],
         ];
 
         if ($company_id) {
-            $conditions["company_id"] = ['=', $company_id];
+            $conditions["car.user_company_id"] = ['=', $company_id];
         }
+
+        // Date-based status filtering
+        if ($status === 'active') {
+            $conditions["end_date"] = ['>=', now()];
+            if ($is_available !== null) {
+                $conditions["is_available"] = ['=', $is_available];
+            }
+        } else if ($status === 'expired') {
+            $conditions["end_date"] = ['<', now()];
+        }
+        // For 'all' status, no additional date filtering is applied
 
         return $this->ok($this->service->paginate($page, $rows, ['*'], ['car'], $conditions));
     }
@@ -141,7 +168,13 @@ class CarPostingController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'car_id'         => 'required|integer|exists:cars,id',
+                'company_id'     => 'required|integer|exists:user_companies,id',
+                'start_date'     => 'required|date|after_or_equal:now',
+                'end_date'       => 'required|date|after:start_date',
+                'description'    => 'required|string|max:1000',
+                'price'          => 'required|numeric|min:0|max:999999.99',
+                'force_enabled'  => 'boolean',
             ]);
 
             if ($validator->fails()) {
@@ -199,7 +232,13 @@ class CarPostingController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'car_id'         => 'sometimes|required|integer|exists:cars,id',
+                'company_id'     => 'sometimes|required|integer|exists:user_companies,id',
+                'start_date'     => 'sometimes|required|date|after_or_equal:now',
+                'end_date'       => 'sometimes|required|date|after:start_date',
+                'description'    => 'sometimes|required|string|max:1000',
+                'price'          => 'sometimes|required|numeric|min:0|max:999999.99',
+                'force_enabled'  => 'sometimes|boolean',
             ]);
 
             if ($validator->fails()) {

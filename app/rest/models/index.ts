@@ -33,6 +33,7 @@ export * from './deleteUserCompanyResponse200';
 export * from './deleteUserResponse200';
 export * from './getCarPaginatedParams';
 export * from './getCarPostingPaginatedParams';
+export * from './getCarPostingPaginatedStatus';
 export * from './getCarPostingResponse200';
 export * from './getCarRentalPaginatedParams';
 export * from './getCarRentalResponse200';

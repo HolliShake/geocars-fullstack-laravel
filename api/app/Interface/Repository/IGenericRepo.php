@@ -50,9 +50,9 @@ interface IGenericRepo
      * @return Model|null
      */
     public function find(
-        int   $id, 
-        array $columns    = ['*'], 
-        array $relations  = [], 
+        int   $id,
+        array $columns    = ['*'],
+        array $relations  = [],
         array $conditions = []
     ): ?Model;
 
@@ -69,9 +69,9 @@ interface IGenericRepo
      *
      * @param int $id The record ID
      * @param array $data The data to update the record with
-     * @return bool
+     * @return Model
      */
-    public function update(int $id, array $data): ?Model;
+    public function update(int $id, array $data): Model;
 
     /**
      * Delete a record by ID.

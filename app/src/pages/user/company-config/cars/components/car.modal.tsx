@@ -16,7 +16,6 @@ import { renderError } from '@/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateCar, useUpdateCar } from '@rest/api';
 import type { Car } from '@rest/models/car';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { useParams } from 'react-router';
@@ -313,7 +312,6 @@ export default function UserCompanyCarModal({
             Cancel
           </Button>
           <Button type="submit" variant="default" disabled={isSaving}>
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
         </div>

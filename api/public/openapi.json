@@ -111,6 +111,15 @@
                             "type": "integer",
                             "default": 0
                         }
+                    },
+                    {
+                        "name": "is_available",
+                        "in": "query",
+                        "description": "Is available",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
                     }
                 ],
                 "responses": {
@@ -364,6 +373,30 @@
                         "schema": {
                             "type": "integer"
                         }
+                    },
+                    {
+                        "name": "is_available",
+                        "in": "query",
+                        "description": "Is available",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean"
+                        }
+                    },
+                    {
+                        "name": "status",
+                        "in": "query",
+                        "description": "Posting status filter: one of 'all', 'active', 'expired'",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "default": "all",
+                            "enum": [
+                                "all",
+                                "active",
+                                "expired"
+                            ]
+                        }
                     }
                 ],
                 "responses": {
@@ -607,6 +640,15 @@
                         "schema": {
                             "type": "integer",
                             "default": 10
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "description": "Company ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
                         }
                     }
                 ],
@@ -2788,6 +2830,9 @@
                     "is_active": {
                         "type": "boolean",
                         "example": true
+                    },
+                    "name": {
+                        "type": "string"
                     }
                 },
                 "type": "object"

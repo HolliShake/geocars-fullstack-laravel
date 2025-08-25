@@ -112,15 +112,7 @@ export default function Modal({
             <DialogTitle className={cn('text-lg leading-none tracking-tight')}>{title}</DialogTitle>
           </div>
         )}
-        <div
-          className={cn(
-            'flex-1 overflow-y-auto p-6',
-            'scrollbar-thin scrollbar-track-transparent scrollbar-thumb-muted-foreground/20 hover:scrollbar-thumb-muted-foreground/40 scrollbar-thumb-rounded-lg',
-            size === 'full' && 'p-8'
-          )}
-        >
-          {children}
-        </div>
+        <div className={cn('flex-1 overflow-y-auto p-6', size === 'full' && 'p-8')}>{children}</div>
       </DialogContent>
     </Dialog>
   );

@@ -10,7 +10,6 @@ import getJwtContent from '@/lib/jwt';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateUserCompany, useUpdateUserCompany } from '@rest/api';
 import type { UserCompany } from '@rest/models';
-import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
@@ -340,7 +339,6 @@ export default function UserCompanyModal({
             Cancel
           </Button>
           <Button type="submit" variant="default" disabled={isSaving} className="px-6">
-            {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             {isSaving ? 'Saving...' : 'Save'}
           </Button>
         </div>

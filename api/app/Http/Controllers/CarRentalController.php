@@ -44,6 +44,13 @@ class CarRentalController extends Controller
         required: false,
         schema: new OA\Schema(type: "integer", default: 10)
     )]
+    #[OA\Parameter(
+        name: "company_id",
+        in: "query",
+        description: "Company ID",
+        required: false,
+        schema: new OA\Schema(type: "integer")
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
@@ -54,7 +61,17 @@ class CarRentalController extends Controller
         $srch = $request->query("search", '');
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
-        return $this->ok($this->service->paginate($page, $rows));
+        $company_id = $request->query("company_id", null);
+
+        $conditions = [
+            "user.lastname" => ['like', "%{$srch}%"],
+        ];
+
+        if ($company_id) {
+            $conditions["carPosting.car.user_company_id"] = ['=', $company_id];
+        }
+
+        return $this->ok($this->service->paginate($page, $rows, ['*'], ['user', 'carPosting.car'], $conditions));
     }
 
     /**
@@ -124,7 +141,15 @@ class CarRentalController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'car_posting_id'    => 'required|integer|exists:car_postings,id',
+                'user_id'           => 'required|integer|exists:users,id',
+                'days'              => 'required|integer|min:1',
+                'deposit'           => 'required|numeric|min:0',
+                'start_date'        => 'required|date|after_or_equal:today',
+                'return_date'       => 'required|date|after:start_date',
+                'rental_status'     => 'sometimes|string',
+                'payment_method'    => 'sometimes|string',
+                'payment_reference' => 'nullable|string|max:255',
             ]);
 
             if ($validator->fails()) {
@@ -182,7 +207,15 @@ class CarRentalController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'car_posting_id'    => 'required|integer|exists:car_postings,id',
+                'user_id'           => 'required|integer|exists:users,id',
+                'days'              => 'required|integer|min:1',
+                'deposit'           => 'required|numeric|min:0',
+                'start_date'        => 'required|date|after_or_equal:today',
+                'return_date'       => 'required|date|after:start_date',
+                'rental_status'     => 'sometimes|string',
+                'payment_method'    => 'sometimes|string',
+                'payment_reference' => 'nullable|string|max:255',
             ]);
 
             if ($validator->fails()) {

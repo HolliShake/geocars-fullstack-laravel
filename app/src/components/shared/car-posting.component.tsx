@@ -200,7 +200,10 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
 
         {/* Description */}
         {carPosting.description && (
-          <p className="text-sm text-muted-foreground line-clamp-2">{carPosting.description}</p>
+          <div
+            className="text-sm text-muted-foreground line-clamp-2 prose prose-sm max-w-none [&>*]:text-muted-foreground [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0 [&>h1]:text-sm [&>h2]:text-sm [&>h3]:text-sm [&>h4]:text-sm [&>h5]:text-sm [&>h6]:text-sm"
+            dangerouslySetInnerHTML={{ __html: carPosting.description }}
+          />
         )}
 
         {/* Price */}

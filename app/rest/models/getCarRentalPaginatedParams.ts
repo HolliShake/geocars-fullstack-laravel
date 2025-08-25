@@ -19,4 +19,8 @@ page?: number;
  * Number of items per page
  */
 rows?: number;
+/**
+ * Company ID
+ */
+company_id?: number;
 };

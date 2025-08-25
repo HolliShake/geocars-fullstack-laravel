@@ -111,6 +111,7 @@ class CarPosting extends Model
     ];
 
     protected $casts = [
+        'force_enabled' => 'boolean',
         'start_date' => 'datetime',
         'end_date' => 'datetime',
     ];

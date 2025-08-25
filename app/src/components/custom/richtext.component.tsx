@@ -87,7 +87,7 @@ export const RichTextEditor = forwardRef<ReactQuill, RichTextEditorProps>(
       formats,
       theme = 'snow',
       height,
-      minHeight = '200px',
+      minHeight = 'fit',
       maxHeight,
       toolbar = true,
       showToolbar = true,

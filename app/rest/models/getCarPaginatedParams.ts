@@ -23,4 +23,8 @@ rows?: number;
  * User company ID
  */
 user_company_id?: number;
+/**
+ * Is available
+ */
+is_available?: boolean;
 };

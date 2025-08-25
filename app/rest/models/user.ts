@@ -20,4 +20,5 @@ export interface User {
   email: string;
   role: UserRole;
   is_active: boolean;
+  name?: string;
 }

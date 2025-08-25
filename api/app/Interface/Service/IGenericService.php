@@ -58,9 +58,9 @@ interface IGenericService
      *
      * @param int $id The ID of the record to update
      * @param array $data The data containing ID and update values
-     * @return Model|null
+     * @return Model
      */
-    public function update(int $id, array $data): ?Model;
+    public function update(int $id, array $data): Model;
 
     /**
      * Delete a record.

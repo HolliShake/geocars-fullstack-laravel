@@ -1,15 +1,14 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useConfirm } from '@/components/confirm.provider';
-import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
-import Table, { type TableColumn } from '@/components/custom/table.component';
+import ViewList from '@/components/custom/view.component';
 import PageLayout from '@/components/layout/page.layout';
-import { Badge } from '@/components/ui/badge';
+import CarCard from '@/components/shared/car-card.component';
 import { Button } from '@/components/ui/button';
 import useSearchStore from '@/store/search.store';
 import { useDeleteCar, useGetCarPaginated } from '@rest/api';
 import type { Car } from '@rest/models/car';
-import { LucidePen, LucidePlus, LucideTrash2 } from 'lucide-react';
+import { LucideEdit, LucidePlus, LucideTrash2 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
@@ -21,13 +20,21 @@ export default function UserCompanyCarPage(): React.ReactElement {
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
   const [page, setPage] = React.useState(1);
-  const [rows, setRows] = React.useState(10);
-  const { data, isPending: isLoading } = useGetCarPaginated({
-    search: debounced,
-    page,
-    rows,
-    user_company_id: parseInt(company_id || '0'),
-  });
+  const [rows, setRows] = React.useState(12);
+
+  const { data, isPending: isLoading } = useGetCarPaginated(
+    {
+      search: debounced,
+      page,
+      rows,
+      user_company_id: parseInt(company_id || '0'),
+    },
+    {
+      query: {
+        enabled: !!company_id,
+      },
+    }
+  );
 
   const { mutateAsync: deleteCar } = useDeleteCar();
 
@@ -35,99 +42,28 @@ export default function UserCompanyCarPage(): React.ReactElement {
 
   const confirm = useConfirm();
 
-  const columns = useMemo<TableColumn[]>(
-    () => [
-      {
-        key: 'id',
-        label: 'ID',
-        align: 'left',
-      },
-      {
-        key: 'brand',
-        label: 'Brand',
-        align: 'left',
-      },
-      {
-        key: 'model',
-        label: 'Model',
-        align: 'left',
-      },
-      {
-        key: 'plate_number',
-        label: 'Plate Number',
-        align: 'left',
-      },
-      {
-        key: 'color',
-        label: 'Color',
-        align: 'center',
-      },
-      {
-        key: 'type',
-        label: 'Type',
-        align: 'center',
-        render: (_, row) => <Badge variant="outline">{row?.type}</Badge>,
-      },
-      {
-        key: 'year',
-        label: 'Year',
-        align: 'center',
-      },
-      {
-        key: 'fuel_type',
-        label: 'Fuel Type',
-        align: 'center',
-        render: (_, row) => <Badge variant="secondary">{row?.fuel_type}</Badge>,
-      },
-      {
-        key: 'transmission',
-        label: 'Transmission',
-        align: 'center',
-        render: (_, row) => <Badge variant="outline">{row?.transmission}</Badge>,
-      },
-      {
-        key: 'actions',
-        label: 'Actions',
-        align: 'center',
-        render: (_, row) => (
-          <Menu
-            items={[
-              {
-                label: 'Edit',
-                icon: <LucidePen className="h-4 w-4 text-blue-500" />,
-                onClick: () => modal.openFn(row as Car),
-              },
-              {
-                label: 'Delete',
-                icon: <LucideTrash2 className="h-4 w-4 text-destructive" />,
-                onClick: async () => await handleDelete(row as Car),
-              },
-            ]}
-          />
-        ),
-      },
-    ],
-    []
-  );
-
-  const items = useMemo(() => {
+  const carCards = useMemo(() => {
     if (!data?.data?.data) return [];
-    return data.data?.data.map((item) => ({
-      id: item.id,
-      user_company_id: item.user_company_id,
-      brand: item.brand,
-      model: item.model,
-      plate_number: item.plate_number,
-      color: item.color,
-      type: item.type,
-      year: item.year,
-      fuel_type: item.fuel_type,
-      transmission: item.transmission,
-      engine_capacity: item.engine_capacity,
-      engine_power: item.engine_power,
-      engine_torque: item.engine_torque,
-      engine_type: item.engine_type,
-    }));
+    return data.data.data.map((car) => (
+      <CarCard
+        key={car.id}
+        car={car}
+        imageUrl={car.image_url ?? ''}
+        onClick={(selectedCar) => modal.openFn(selectedCar)}
+        actions={[
+          {
+            label: <LucideEdit className="w-4 h-4" />,
+            variant: 'outline',
+            onClick: () => modal.openFn(car),
+          },
+          {
+            label: <LucideTrash2 className="w-4 h-4" />,
+            variant: 'destructive',
+            onClick: () => handleDelete(car),
+          },
+        ]}
+      />
+    ));
   }, [data]);
 
   const totalItems = useMemo(() => {
@@ -135,11 +71,10 @@ export default function UserCompanyCarPage(): React.ReactElement {
     return data?.data?.total ?? data?.data?.data?.length ?? 1;
   }, [data]);
 
-  const handleDelete = async (data: Car) => {
+  const handleDelete = async (car: Car) => {
     confirm.confirm(async () => {
       try {
-        // Call delete API with data.id
-        await deleteCar({ id: data.id! });
+        await deleteCar({ id: car.id! });
         toast.success('Car deleted successfully!');
       } catch {
         // Handle error if needed
@@ -155,25 +90,26 @@ export default function UserCompanyCarPage(): React.ReactElement {
       <div className="w-full items-end flex justify-end">
         <Button
           onClick={() => {
-            modal.openFn(); // Open the modal without any data
+            modal.openFn();
           }}
         >
           <LucidePlus className="mr-1" />
-          Create
+          Add Car
         </Button>
       </div>
 
-      <Table
-        isLoading={isLoading}
-        columns={columns}
-        data={items}
+      <ViewList
         page={page}
         pageSize={rows}
         totalItems={totalItems}
+        isLoading={isLoading}
         onPageChange={setPage}
         onPageSizeChange={setRows}
-        onRowClick={(row) => modal.openFn(row as Car)}
-      />
+        tilesPerRow={3}
+        gap="gap-6"
+      >
+        {carCards}
+      </ViewList>
 
       <UserCompanyCarModal controller={modal} />
     </PageLayout>

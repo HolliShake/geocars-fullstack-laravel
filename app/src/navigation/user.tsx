@@ -1,11 +1,18 @@
 import { RoleEnum } from '@/constants/role.constant';
 import UserQuickCarPage from '@/pages/user/car-management/page';
 import UserCarPostingPage from '@/pages/user/car-posting/page';
+import UserCarRentalPage from '@/pages/user/car-rental/page';
 import UserCompanyCarPage from '@/pages/user/company-config/cars/page';
 import UserCompanyConfigPage from '@/pages/user/company-config/page';
 import UserDashboardPage from '@/pages/user/dashboard/page';
 import type { Route } from '@/types/route';
-import { LucideBuilding2, LucideCar, LucideLayoutDashboard, LucidePodcast } from 'lucide-react';
+import {
+  LucideBuilding2,
+  LucideCar,
+  LucideLayoutDashboard,
+  LucideMapPinPlus,
+  LucidePodcast,
+} from 'lucide-react';
 import { RouteKey } from './route';
 
 const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
@@ -15,6 +22,15 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.Dashboard.key,
     icon: <LucideLayoutDashboard />,
     element: <UserDashboardPage />,
+    layout: 'dashboard',
+    roles: [RoleEnum.user],
+  },
+  {
+    key: 'User.CarRental',
+    title: 'Car Rental',
+    path: RouteKey.User.CarRental.key,
+    icon: <LucideMapPinPlus />,
+    element: <UserCarRentalPage />,
     layout: 'dashboard',
     roles: [RoleEnum.user],
   },

@@ -53,6 +53,13 @@ class CarController extends Controller
         required: false,
         schema: new OA\Schema(type: "integer", default: 0)
     )]
+    #[OA\Parameter(
+        name: "is_available",
+        in: "query",
+        description: "Is available",
+        required: false,
+        schema: new OA\Schema(type: "boolean")
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
@@ -64,6 +71,7 @@ class CarController extends Controller
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
         $userCompanyId = $request->query("user_company_id", null);
+        $is_available = $request->query("is_available", null);
 
         $conditions = [
             'brand'           => ['like', "%{$srch}%"],
@@ -77,6 +85,10 @@ class CarController extends Controller
 
         if ($userCompanyId) {
             $conditions['user_company_id'] = ['&=', $userCompanyId];
+        }
+
+        if ($is_available) {
+            $conditions['attr:is_available'] = ['=', $is_available];
         }
 
         return $this->ok($this->service->paginate($page, $rows, ['*'], [], $conditions));

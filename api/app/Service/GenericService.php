@@ -9,7 +9,7 @@ use Illuminate\Support\Collection;
 
 class GenericService
 {
-    public function __construct(protected IGenericRepo $repo) 
+    public function __construct(protected IGenericRepo $repo)
     {
     }
 
@@ -80,9 +80,9 @@ class GenericService
      *
      * @param int $id The record ID
      * @param array $data The data to update the record with
-     * @return Model|null
+     * @return Model
      */
-    public function update(int $id, array $data): ?Model
+    public function update(int $id, array $data): Model
     {
         return $this->repo->update($id, $data);
     }

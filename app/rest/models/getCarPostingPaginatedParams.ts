@@ -5,6 +5,7 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { GetCarPostingPaginatedStatus } from './getCarPostingPaginatedStatus';
 
 export type GetCarPostingPaginatedParams = {
 /**
@@ -23,4 +24,12 @@ rows?: number;
  * Company ID
  */
 company_id?: number;
+/**
+ * Is available
+ */
+is_available?: boolean;
+/**
+ * Posting status filter: one of 'all', 'active', 'expired'
+ */
+status?: GetCarPostingPaginatedStatus;
 };
