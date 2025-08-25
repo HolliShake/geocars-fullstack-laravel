@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useConfirm } from '@/components/confirm-provider';
+import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';
@@ -14,9 +14,9 @@ import React, { useMemo } from 'react';
 import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import CarModal from './components/car.modal';
+import UserCompanyCarModal from './components/car.modal';
 
-export default function UserCarsPage(): React.ReactElement {
+export default function UserCompanyCarPage(): React.ReactElement {
   const { company_id } = useParams<{ company_id: string }>();
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
@@ -175,7 +175,7 @@ export default function UserCarsPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as Car)}
       />
 
-      <CarModal controller={modal} />
+      <UserCompanyCarModal controller={modal} />
     </PageLayout>
   );
 }

@@ -1,21 +1,23 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useConfirm } from '@/components/confirm-provider';
+import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';
 import PageLayout from '@/components/layout/page.layout';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { RouteKey } from '@/navigation/route';
 import useSearchStore from '@/store/search.store';
 import { useDeleteUserCompany, useGetUserCompanyPaginated } from '@rest/api';
 import type { UserCompany } from '@rest/models/userCompany';
 import { LucideCar, LucideLogs, LucidePen, LucidePlus, LucideTrash2 } from 'lucide-react';
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import AdminUserCompanyModal from './components/user-company.modal';
+import AdminCompanyModal from './components/company.modal';
 
-export default function AdminUserCompanyConfigPage(): React.ReactElement {
+export default function AdminCompanyConfigPage(): React.ReactElement {
   const { searchQuery } = useSearchStore();
   const [debounced] = useDebounce(searchQuery, 300);
   const [page, setPage] = React.useState(1);
@@ -25,6 +27,8 @@ export default function AdminUserCompanyConfigPage(): React.ReactElement {
     page,
     rows,
   });
+
+  const navigate = useNavigate();
 
   const { mutateAsync: deleteUserCompany } = useDeleteUserCompany();
 
@@ -96,7 +100,7 @@ export default function AdminUserCompanyConfigPage(): React.ReactElement {
               {
                 label: 'Cars',
                 icon: <LucideCar className="h-4 w-4 text-cyan-500" />,
-                onClick: () => void 0,
+                onClick: () => navigate(RouteKey.Admin.CompanyCar.parse(row.id!)),
               },
               {
                 label: 'Logs',
@@ -182,7 +186,7 @@ export default function AdminUserCompanyConfigPage(): React.ReactElement {
         onRowClick={(row) => modal.openFn(row as UserCompany)}
       />
 
-      <AdminUserCompanyModal controller={modal} />
+      <AdminCompanyModal controller={modal} />
     </PageLayout>
   );
 }

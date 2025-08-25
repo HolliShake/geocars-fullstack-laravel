@@ -58,7 +58,7 @@ const field = () => ({
   engine_type: '',
 });
 
-export default function UserCompanyCarModal({
+export default function AdminCompanyCarModal({
   controller,
 }: {
   controller: ModalState<Car>;

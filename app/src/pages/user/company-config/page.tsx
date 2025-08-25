@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useConfirm } from '@/components/confirm-provider';
+import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';
@@ -15,7 +15,7 @@ import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
-import UserCompanyModal from './components/user-company.modal';
+import UserCompanyModal from './components/company.modal';
 
 export default function UserCompanyConfigPage(): React.ReactElement {
   const navigate = useNavigate();
@@ -100,7 +100,7 @@ export default function UserCompanyConfigPage(): React.ReactElement {
               {
                 label: 'Cars',
                 icon: <LucideCar className="h-4 w-4 text-cyan-500" />,
-                onClick: () => navigate(RouteKey.User.CompanyCars.parse(row.id!)),
+                onClick: () => navigate(RouteKey.User.CompanyCar.parse(row.id!)),
               },
               {
                 label: 'Edit',

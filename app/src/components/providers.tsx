@@ -2,8 +2,8 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import AuthProvider from './auth.provider';
-import { ConfirmProvider } from './confirm-provider';
-import { ThemeProvider } from './theme-provider';
+import { ConfirmProvider } from './confirm.provider';
+import { ThemeProvider } from './theme.provider';
 import { Toaster } from './ui/sonner';
 
 const captureErrorMessage = (error: any): string => {

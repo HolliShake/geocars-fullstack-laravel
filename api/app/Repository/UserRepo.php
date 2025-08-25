@@ -4,9 +4,8 @@ namespace App\Repository;
 
 use App\Interface\Repository\IUserRepo;
 use App\Models\User;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Validation\AuthenticationException;
 
 
 class UserRepo extends GenericRepo implements IUserRepo

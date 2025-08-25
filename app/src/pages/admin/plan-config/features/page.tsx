@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useConfirm } from '@/components/confirm-provider';
+import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';
@@ -24,7 +24,7 @@ import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 import AdminPlanFeatureModal from './components/plan-feature.modal';
 
-export default function AdminPlanFeaturesPage(): React.ReactElement {
+export default function AdminPlanFeaturePage(): React.ReactElement {
   const { id } = useParams<{ id: string }>();
   const planId = Number(id);
 

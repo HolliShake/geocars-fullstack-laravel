@@ -13,13 +13,13 @@ import { CarTypeEnum } from '@/constants/car-type.constant';
 import { FuelTypeEnum } from '@/constants/fuel-type.constant';
 import { TransmissionTypeEnum } from '@/constants/transmission-type.constant';
 import { renderError } from '@/lib/error';
+import useCompanyStore from '@/store/company.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateCar, useUpdateCar } from '@rest/api';
 import type { Car } from '@rest/models/car';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
-import { useParams } from 'react-router';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -58,14 +58,13 @@ const field = () => ({
   engine_type: '',
 });
 
-export default function UserCompanyCarModal({
+export default function UserQuickCarModal({
   controller,
 }: {
   controller: ModalState<Car>;
 }): React.ReactElement {
-  const { company_id } = useParams<{ company_id: string }>();
-  const companyId = parseInt(company_id || '0');
-
+  const { selectedCompany } = useCompanyStore();
+  const { id: companyId } = selectedCompany ?? { id: 0 };
   const {
     handleSubmit,
     register,

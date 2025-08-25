@@ -14,13 +14,15 @@ type RouteStructure = {
     Dashboard: RouteConfig<'/admin/dashboard'>;
     UserConfig: RouteConfig<'/admin/user-config'>;
     CompanyConfig: RouteConfig<'/admin/company-config'>;
+    CompanyCar: RouteConfig<'/admin/company-config/cars/:company_id'>;
     PlanConfig: RouteConfig<'/admin/plan-config'>;
     PlanFeatureConfig: RouteConfig<'/admin/plan-config/features/:id'>;
   };
   User: {
     Dashboard: RouteConfig<'/user/dashboard'>;
+    QuickCar: RouteConfig<'/user/quick-car'>;
     CompanyConfig: RouteConfig<'/user/company-config'>;
-    CompanyCars: RouteConfig<'/user/company-config/cars/:company_id'>;
+    CompanyCar: RouteConfig<'/user/company-config/cars/:company_id'>;
   };
 };
 
@@ -59,12 +61,14 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     Dashboard: createRoute('/admin/dashboard'),
     UserConfig: createRoute('/admin/user-config'),
     CompanyConfig: createRoute('/admin/company-config'),
+    CompanyCar: createRoute('/admin/company-config/cars/:company_id'),
     PlanConfig: createRoute('/admin/plan-config'),
     PlanFeatureConfig: createRoute('/admin/plan-config/features/:id'),
   },
   User: {
     Dashboard: createRoute('/user/dashboard'),
+    QuickCar: createRoute('/user/quick-car'),
     CompanyConfig: createRoute('/user/company-config'),
-    CompanyCars: createRoute('/user/company-config/cars/:company_id'),
+    CompanyCar: createRoute('/user/company-config/cars/:company_id'),
   },
 });

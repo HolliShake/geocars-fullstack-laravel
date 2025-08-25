@@ -5,8 +5,8 @@ namespace App\Http\Controllers;
 use App\Service\UserService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
-use Validator;
 
 class UserController extends Controller
 {
@@ -138,13 +138,13 @@ class UserController extends Controller
                 "postal_code" => "nullable|string|max:20",
                 "is_active"   => "required|boolean",
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
-    
+
             return $this->ok($this->service->create($validated));
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
@@ -208,7 +208,7 @@ class UserController extends Controller
                 "postal_code" => "nullable|string|max:20",
                 "is_active"   => "required|boolean",
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }

@@ -37,7 +37,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
     const { pathname } = location;
     const isLoginPage = pathname === RouteKey.Auth.Login.key;
     const isRegisterPage = pathname === RouteKey.Auth.Register.key;
-    const isAuthPage = isLoginPage || isRegisterPage || pathname == '/';
+    const isAuthPage = isLoginPage || isRegisterPage || pathname === '/';
 
     // Loggedin but not logged out and on login page
     if (auth.isLoggedIn && !auth.isLoggedOut && isAuthPage) {

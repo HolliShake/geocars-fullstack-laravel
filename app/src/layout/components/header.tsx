@@ -1,6 +1,9 @@
+import { useAuth } from '@/components/auth.provider';
 import ThemeSwitcher from '@/components/custom/theme-switcher.component';
+import CompanySelect from '@/components/shared/company-select.component';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { RoleEnum } from '@/constants/role.constant';
 import useSearchStore from '@/store/search.store';
 import { Menu, Search } from 'lucide-react';
 import type React from 'react';
@@ -11,6 +14,7 @@ type HeaderProps = {
 
 export default function Header({ setIsSidebarOpen = undefined }: HeaderProps): React.ReactNode {
   const search = useSearchStore();
+  const { role } = useAuth();
 
   return (
     <header className="relative h-20 flex items-center px-6 backdrop-blur-xl border-b border-border shadow-lg shadow-cyan-500/5">
@@ -43,7 +47,10 @@ export default function Header({ setIsSidebarOpen = undefined }: HeaderProps): R
         </div>
 
         {/* Right section */}
-        <ThemeSwitcher />
+        <div className="flex flex-row items-center gap-2">
+          {role === RoleEnum.user && <CompanySelect />}
+          <ThemeSwitcher />
+        </div>
       </div>
 
       {/* Bottom glow effect */}

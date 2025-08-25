@@ -3,6 +3,7 @@ import type { Layout } from './layout';
 import type { Role } from './role';
 
 export type Route = {
+  key: string;
   title: string;
   path: string;
   icon: React.ReactNode;

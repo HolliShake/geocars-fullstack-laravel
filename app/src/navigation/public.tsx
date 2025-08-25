@@ -4,6 +4,7 @@ import type { Route } from '../types/route';
 
 const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
   {
+    key: 'Public.Root',
     title: 'Root',
     icon: null,
     path: '/',
@@ -13,6 +14,7 @@ const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
     sidebar: false,
   },
   {
+    key: 'Public.Login',
     title: 'Login',
     icon: null,
     path: '/auth/login',
@@ -23,6 +25,7 @@ const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
   },
   // 404
   {
+    key: 'Public.404',
     title: '404',
     icon: null,
     path: '*',

@@ -7,7 +7,7 @@ import type { Route } from './types/route';
 
 const router = createBrowserRouter(
   Routes.map((data: Route) => ({
-    key: data.title,
+    key: data.key,
     path: data.path,
     index: data.index === true,
     element:

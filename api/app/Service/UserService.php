@@ -7,7 +7,7 @@ use App\Interface\Service\IUserService;
 use App\Service\GenericService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
-use Hash;
+use Illuminate\Support\Facades\Hash;
 
 class UserService extends GenericService implements IUserService
 {
