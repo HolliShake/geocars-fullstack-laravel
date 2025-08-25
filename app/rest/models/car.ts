@@ -31,4 +31,6 @@ export interface Car {
   engine_type?: string | null;
   created_at?: string;
   updated_at?: string;
+  image_url?: string;
+  is_available?: boolean;
 }

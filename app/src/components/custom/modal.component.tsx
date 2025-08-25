@@ -40,7 +40,7 @@ type ModalComponentProps = {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   controller: ModalState<any>;
   title?: string;
-  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | 'full';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | '2xl' | '3xl' | '4xl' | '5xl' | 'half' | 'full';
   className?: string;
   children?: React.ReactNode;
   closable?: boolean;
@@ -57,21 +57,27 @@ export default function Modal({
   const sizeClasses = useMemo(() => {
     switch (size) {
       case 'sm':
-        return 'max-w-sm w-full';
+        return '!max-w-sm';
       case 'md':
-        return 'max-w-md w-full';
+        return '!max-w-md';
       case 'lg':
-        return 'max-w-lg w-full';
+        return '!max-w-lg';
       case 'xl':
-        return 'max-w-xl w-full';
+        return '!max-w-xl';
       case '2xl':
-        return 'max-w-2xl w-full';
+        return '!max-w-2xl';
       case '3xl':
-        return 'max-w-3xl w-full';
+        return '!max-w-3xl';
+      case '4xl':
+        return '!max-w-4xl';
+      case '5xl':
+        return '!max-w-5xl';
+      case 'half':
+        return '!max-w-[65vw]';
       case 'full':
-        return 'max-w-full w-[95vw] h-[95vh]';
+        return '!max-w-[95vw] max-h-[95vh]';
       default:
-        return 'max-w-md w-full';
+        return '!max-w-md';
     }
   }, [size]);
 
@@ -91,10 +97,11 @@ export default function Modal({
     <Dialog open={controller.isOpen} onOpenChange={controller.closeFn} modal>
       <DialogContent
         className={cn(
-          'p-0 overflow-hidden max-h-[95vh] flex flex-col rounded-xl bg-background',
+          'p-0 overflow-hidden flex flex-col rounded-xl bg-background w-full',
           'transition-all duration-300 ease-out',
           'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
           sizeClasses,
+          size !== 'full' && 'max-h-[85vh]',
           className
         )}
         onPointerDownOutside={handlePointerDownOutside}

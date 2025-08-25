@@ -48,7 +48,7 @@ export default function UserQuickCarPage(): React.ReactElement {
       <CarCard
         key={car.id}
         car={car}
-        imageUrl={`https://placehold.co/600x400?text=${car.brand}+${car.model}`}
+        imageUrl={car.image_url ?? ''}
         onClick={(selectedCar) => modal.openFn(selectedCar)}
         actions={[
           {

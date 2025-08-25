@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Service\UserService;
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Validation\AuthenticationException;
 use OpenApi\Attributes as OA;
 
 class AuthController extends Controller

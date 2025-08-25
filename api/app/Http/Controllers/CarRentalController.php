@@ -2,33 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Service\PlanFeatureService;
+use App\Service\CarRentalService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
-class PlanFeatureController extends Controller
+class CarRentalController extends Controller
 {
-    public function __construct(protected PlanFeatureService $service) {
+    public function __construct(protected CarRentalService $service) {
     }
 
     /**
      * Display a listing of the resource.
      */
     #[OA\Get(
-        path: "/api/PlanFeature",
-        summary: "Get paginated list of PlanFeature",
-        tags: ["PlanFeature"],
-        description: "Retrieve a paginated list of PlanFeature with optional search",
-        operationId:"getPlanFeaturePaginated",
-    )]
-    #[OA\Parameter(
-        name: "plan_id",
-        in: "query",
-        description: "Plan ID",
-        required: false,
-        schema: new OA\Schema(type: "integer", default: 0)
+        path: "/api/CarRental",
+        summary: "Get paginated list of CarRental",
+        tags: ["CarRental"],
+        description: "Retrieve a paginated list of CarRental with optional search",
+        operationId:"getCarRentalPaginated",
     )]
     #[OA\Parameter(
         name: "search",
@@ -54,33 +47,25 @@ class PlanFeatureController extends Controller
     #[OA\Response(
         response: 200,
         description: "Successful operation",
-        content: new OA\JsonContent(ref: "#/components/schemas/PaginatedPlanFeatureResponse200")
+        content: new OA\JsonContent(ref: "#/components/schemas/PaginatedCarRentalResponse200")
     )]
     public function index(Request $request)
     {
         $srch = $request->query("search", '');
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
-        $planId = $request->query("plan_id", null);
-
-        $conditions = [];
-        if ($planId) {
-            $conditions['plan_id'] = ['=', $planId];
-            $conditions['name'] = $srch ? ['like', "%{$srch}%"] : null;
-        }
-
-        return $this->ok($this->service->paginate($page, $rows, ['*'], [], $conditions));
+        return $this->ok($this->service->paginate($page, $rows));
     }
 
     /**
      * Display the specified resource.
      */
     #[OA\Get(
-        path: "/api/PlanFeature/{id}",
-        summary: "Get a specific PlanFeature",
-        tags: ["PlanFeature"],
-        description: "Retrieve a PlanFeature by its ID",
-        operationId: "getPlanFeatureById",
+        path: "/api/CarRental/{id}",
+        summary: "Get a specific CarRental",
+        tags: ["CarRental"],
+        description: "Retrieve a CarRental by its ID",
+        operationId: "getCarRentalById",
     )]
     #[OA\Parameter(
         name: "id",
@@ -91,18 +76,18 @@ class PlanFeatureController extends Controller
     #[OA\Response(
         response: 200,
         description: "Successful operation",
-        content: new OA\JsonContent(ref: "#/components/schemas/GetPlanFeatureResponse200")
+        content: new OA\JsonContent(ref: "#/components/schemas/GetCarRentalResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "PlanFeature not found"
+        description: "CarRental not found"
     )]
     public function show($id)
     {
         try {
             return $this->ok($this->service->get($id));
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('PlanFeature not found');
+            return $this->notFound('CarRental not found');
         }
     }
 
@@ -110,20 +95,20 @@ class PlanFeatureController extends Controller
      * Store a newly created resource in storage.
      */
     #[OA\Post(
-        path: "/api/PlanFeature",
-        summary: "Create a new PlanFeature",
-        tags: ["PlanFeature"],
-        description:" Create a new PlanFeature with the provided details",
-        operationId: "createPlanFeature",
+        path: "/api/CarRental",
+        summary: "Create a new CarRental",
+        tags: ["CarRental"],
+        description:" Create a new CarRental with the provided details",
+        operationId: "createCarRental",
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/PlanFeature")
+        content: new OA\JsonContent(ref: "#/components/schemas/CarRental")
     )]
     #[OA\Response(
         response: 200,
-        description: "PlanFeature created successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/CreatePlanFeatureResponse200")
+        description: "CarRental created successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/CreateCarRentalResponse200")
     )]
     #[OA\Response(
         response: 422,
@@ -139,9 +124,7 @@ class PlanFeatureController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                "plan_id" => "required|exists:plans,id",
-                "name" => "required|string|max:50",
-                "value" => "required|string|max:255",
+
             ]);
 
             if ($validator->fails()) {
@@ -160,11 +143,11 @@ class PlanFeatureController extends Controller
      * Update the specified resource in storage.
      */
     #[OA\Put(
-        path: "/api/PlanFeature/{id}",
-        summary: "Update a PlanFeature",
-        tags: ["PlanFeature"],
-        description: "Update an existing PlanFeature with the provided details",
-        operationId: "updatePlanFeature",
+        path: "/api/CarRental/{id}",
+        summary: "Update a CarRental",
+        tags: ["CarRental"],
+        description: "Update an existing CarRental with the provided details",
+        operationId: "updateCarRental",
     )]
     #[OA\Parameter(
         name: "id",
@@ -174,16 +157,16 @@ class PlanFeatureController extends Controller
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/PlanFeature")
+        content: new OA\JsonContent(ref: "#/components/schemas/CarRental")
     )]
     #[OA\Response(
         response: 200,
-        description: "PlanFeature updated successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/UpdatePlanFeatureResponse200")
+        description: "CarRental updated successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/UpdateCarRentalResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "PlanFeature not found"
+        description: "CarRental not found"
     )]
     #[OA\Response(
         response: 422,
@@ -199,9 +182,7 @@ class PlanFeatureController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                "plan_id" => "required|exists:plans,id",
-                "name" => "required|string|max:50",
-                "value" => "required|string|max:255",
+
             ]);
 
             if ($validator->fails()) {
@@ -212,7 +193,7 @@ class PlanFeatureController extends Controller
 
             return $this->ok($this->service->update($id, $validated));
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('PlanFeature not found');
+            return $this->notFound('CarRental not found');
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }
@@ -222,11 +203,11 @@ class PlanFeatureController extends Controller
      * Remove the specified resource from storage.
      */
     #[OA\Delete(
-        path: "/api/PlanFeature/{id}",
-        summary: "Delete a PlanFeature",
-        tags: ["PlanFeature"],
-        description: "Delete a PlanFeature by its ID",
-        operationId: "deletePlanFeature",
+        path: "/api/CarRental/{id}",
+        summary: "Delete a CarRental",
+        tags: ["CarRental"],
+        description: "Delete a CarRental by its ID",
+        operationId: "deleteCarRental",
     )]
     #[OA\Parameter(
         name: "id",
@@ -236,12 +217,12 @@ class PlanFeatureController extends Controller
     )]
     #[OA\Response(
         response: 204,
-        description: "PlanFeature deleted successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/DeletePlanFeatureResponse200")
+        description: "CarRental deleted successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/DeleteCarRentalResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "PlanFeature not found"
+        description: "CarRental not found"
     )]
     #[OA\Response(
         response: 500,
@@ -254,7 +235,7 @@ class PlanFeatureController extends Controller
             $this->service->delete($id);
             return $this->noContent();
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('PlanFeature not found');
+            return $this->notFound('CarRental not found');
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }

@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 
 class SwaggerGenerate extends Command
 {
-    protected $signature = 'swagger:generate {--mobile}';
+    protected $signature = 'swagger:generate {--mobile} {--yaml}';
     protected $description = 'Generate Swagger JSON/YAML for mobile or dashboard';
 
     public function handle()
@@ -53,13 +53,15 @@ class SwaggerGenerate extends Command
         file_put_contents($outputJson, json_encode($jsonContent, JSON_PRETTY_PRINT));
 
         // Convert to openapi.yaml
-        $this->info('Converting to YAML...');
-        $swaggerCliCommand = sprintf(
-            'npx swagger-cli bundle %s --outfile %s --type yaml',
-            $outputJson,
-            $outputYaml
-        );
-        exec($swaggerCliCommand);
+        if ($this->option('yaml')) {
+            $this->info('Converting to YAML...');
+            $swaggerCliCommand = sprintf(
+                'npx swagger-cli bundle %s --outfile %s --type yaml',
+                $outputJson,
+                $outputYaml
+            );
+            exec($swaggerCliCommand);
+        }
 
         $this->info("Swagger files generated: {$outputJson} and {$outputYaml}");
     }

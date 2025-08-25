@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarController;
+use App\Http\Controllers\CarPostingController;
+use App\Http\Controllers\CarRentalController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\UserCompanyController;
@@ -57,3 +59,20 @@ Route::middleware('auth:api')->controller(CarController::class)->group(function 
     Route::put('/Car/{id}','update');
     Route::delete('/Car/{id}', 'destroy');
 });
+
+Route::middleware('auth:api')->controller(CarPostingController::class)->group(function () {
+    Route::get('/CarPosting','index');
+    Route::get('/CarPosting/{id}','show');
+    Route::post('/CarPosting','store');
+    Route::put('/CarPosting/{id}','update');
+    Route::delete('/CarPosting/{id}', 'destroy');
+});
+
+Route::middleware('auth:api')->controller(CarRentalController::class)->group(function () {
+    Route::get('/CarRental','index');
+    Route::get('/CarRental/{id}','show');
+    Route::post('/CarRental','store');
+    Route::put('/CarRental/{id}','update');
+    Route::delete('/CarRental/{id}', 'destroy');
+});
+

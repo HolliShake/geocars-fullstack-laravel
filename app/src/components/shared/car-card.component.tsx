@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
 import type { Car } from '@rest/models/car';
-import { Calendar, Fuel, Palette, Settings, Zap } from 'lucide-react';
+import { Calendar, Fuel, Gauge, LucideCog, Palette, Settings, Zap } from 'lucide-react';
 import React from 'react';
 
 type CarCardAction = {
@@ -15,20 +15,11 @@ type CarCardAction = {
 type CarCardProps = {
   car: Car;
   imageUrl: string;
-  price?: string;
   onClick?: (car: Car) => void;
   actions?: CarCardAction[];
-  isAvailable?: boolean;
 };
 
-const CarCard: React.FC<CarCardProps> = ({
-  car,
-  imageUrl,
-  price,
-  onClick = undefined,
-  isAvailable = true,
-  actions = [],
-}) => {
+const CarCard: React.FC<CarCardProps> = ({ car, imageUrl, onClick, actions = [] }) => {
   const formatEngineInfo = () => {
     const parts = [];
     if (car.engine_capacity) parts.push(`${car.engine_capacity}`);
@@ -38,7 +29,7 @@ const CarCard: React.FC<CarCardProps> = ({
 
   return (
     <Card
-      className="group overflow-hidden border-border hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.01] bg-card/50 backdrop-blur-sm p-0"
+      className="select-none group overflow-hidden border-border hover:shadow-lg transition-all duration-300 cursor-pointer hover:scale-[1.01] bg-card/50 backdrop-blur-sm p-0"
       onClick={() => onClick?.(car)}
     >
       {/* Image Section */}
@@ -50,12 +41,6 @@ const CarCard: React.FC<CarCardProps> = ({
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent" />
 
-        {price && (
-          <Badge className="absolute bottom-2 left-2 bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 text-primary-foreground">
-            {price}
-          </Badge>
-        )}
-
         <Badge
           variant="outline"
           className="absolute top-2 left-2 bg-background/80 backdrop-blur-sm border-border/50"
@@ -64,16 +49,15 @@ const CarCard: React.FC<CarCardProps> = ({
         </Badge>
 
         <div className="absolute top-2 right-2">
-          <div
+          <Badge
+            variant="outline"
             className={cn(
-              'h-2 w-2 rounded-full ring-2 ring-white/30',
-              isAvailable
-                ? 'bg-gradient-to-r from-green-500/20 to-emerald-500/20'
-                : 'bg-destructive'
+              'bg-background/80 backdrop-blur-sm border-border/50',
+              car.is_available ? 'text-emerald-500' : 'text-destructive'
             )}
           >
-            <span className="sr-only">{isAvailable ? 'Available' : 'Unavailable'}</span>
-          </div>
+            {car.is_available ? 'Available' : 'Unavailable'}
+          </Badge>
         </div>
       </div>
 
@@ -124,13 +108,27 @@ const CarCard: React.FC<CarCardProps> = ({
           </div>
         )}
 
+        {car.engine_torque && (
+          <div className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5 p-1.5 rounded-md backdrop-blur-sm">
+            <Gauge className="h-3.5 w-3.5 text-primary" />
+            <span>{car.engine_torque}</span>
+          </div>
+        )}
+
+        {car.engine_type && (
+          <div className="flex items-center gap-1.5 text-xs bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5 p-1.5 rounded-md backdrop-blur-sm">
+            <LucideCog className="h-3.5 w-3.5 text-primary" />
+            <span>{car.engine_type}</span>
+          </div>
+        )}
+
         {actions.length > 0 && (
-          <div className="flex items-center justify-end gap-2 mt-2">
+          <div className="flex items-center justify-end gap-2 mt-3">
             {actions.map((action, index) => (
               <Button
                 key={`action-${index}`}
                 variant={action.variant ?? 'default'}
-                size="icon"
+                size="sm"
                 onClick={(e) => {
                   e.stopPropagation();
                   action.onClick();

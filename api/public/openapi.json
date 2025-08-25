@@ -318,6 +318,503 @@
                 }
             }
         },
+        "\/api\/CarPosting": {
+            "get": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Get paginated list of CarPosting",
+                "description": "Retrieve a paginated list of CarPosting with optional search",
+                "operationId": "getCarPostingPaginated",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "company_id",
+                        "in": "query",
+                        "description": "Company ID",
+                        "required": false,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedCarPostingResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Create a new CarPosting",
+                "description": " Create a new CarPosting with the provided details",
+                "operationId": "createCarPosting",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/CarPosting"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CarPosting created successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/CreateCarPostingResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/CarPosting\/{id}": {
+            "get": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Get a specific CarPosting",
+                "description": "Retrieve a CarPosting by its ID",
+                "operationId": "getCarPostingById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetCarPostingResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarPosting not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Update a CarPosting",
+                "description": "Update an existing CarPosting with the provided details",
+                "operationId": "updateCarPosting",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/CarPosting"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CarPosting updated successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UpdateCarPostingResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarPosting not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Delete a CarPosting",
+                "description": "Delete a CarPosting by its ID",
+                "operationId": "deleteCarPosting",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "CarPosting deleted successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/DeleteCarPostingResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarPosting not found"
+                    },
+                    "500": {
+                        "description": " Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental": {
+            "get": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Get paginated list of CarRental",
+                "description": "Retrieve a paginated list of CarRental with optional search",
+                "operationId": "getCarRentalPaginated",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedCarRentalResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Create a new CarRental",
+                "description": " Create a new CarRental with the provided details",
+                "operationId": "createCarRental",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/CarRental"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CarRental created successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/CreateCarRentalResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental\/{id}": {
+            "get": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Get a specific CarRental",
+                "description": "Retrieve a CarRental by its ID",
+                "operationId": "getCarRentalById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetCarRentalResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarRental not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Update a CarRental",
+                "description": "Update an existing CarRental with the provided details",
+                "operationId": "updateCarRental",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/CarRental"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "CarRental updated successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UpdateCarRentalResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarRental not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Delete a CarRental",
+                "description": "Delete a CarRental by its ID",
+                "operationId": "deleteCarRental",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "CarRental deleted successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/DeleteCarRentalResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "CarRental not found"
+                    },
+                    "500": {
+                        "description": " Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Plan": {
             "get": {
                 "tags": [
@@ -1549,6 +2046,14 @@
                     "updated_at": {
                         "type": "string",
                         "format": "date-time"
+                    },
+                    "image_url": {
+                        "type": "string",
+                        "example": "https:\/\/placehold.co\/600x400?text=Toyota+Camry"
+                    },
+                    "is_available": {
+                        "type": "boolean",
+                        "example": true
                     }
                 },
                 "type": "object"
@@ -1634,6 +2139,341 @@
                 "type": "object"
             },
             "DeleteCarResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "CarPosting": {
+                "title": "CarPosting",
+                "required": [
+                    "car_id",
+                    "company_id",
+                    "start_date",
+                    "end_date",
+                    "description",
+                    "price",
+                    "force_enabled"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "car_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "car": {
+                        "$ref": "#\/components\/schemas\/Car"
+                    },
+                    "company_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "company": {
+                        "$ref": "#\/components\/schemas\/UserCompany"
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "end_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-31T23:59:59Z"
+                    },
+                    "description": {
+                        "type": "string",
+                        "example": "Luxury sedan available for rent"
+                    },
+                    "price": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 99.99
+                    },
+                    "force_enabled": {
+                        "type": "boolean",
+                        "example": false
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "nullable": true
+                    },
+                    "is_available": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedCarPosting": {
+                "title": "PaginatedCarPosting",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/CarPosting"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedCarPostingResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedCarPosting"
+                    }
+                },
+                "type": "object"
+            },
+            "GetCarPostingResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarPosting"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateCarPostingResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarPosting"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateCarPostingResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarPosting"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteCarPostingResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "CarRental": {
+                "title": "CarRental",
+                "required": [
+                    "car_posting_id",
+                    "user_id",
+                    "days",
+                    "deposit",
+                    "start_date",
+                    "return_date",
+                    "rental_status",
+                    "payment_method",
+                    "payment_reference"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "car_posting_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "car_posting": {
+                        "$ref": "#\/components\/schemas\/CarPosting"
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user": {
+                        "$ref": "#\/components\/schemas\/User"
+                    },
+                    "days": {
+                        "type": "integer",
+                        "example": 3
+                    },
+                    "deposit": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 500
+                    },
+                    "start_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-09-01T10:00:00Z"
+                    },
+                    "return_date": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-09-04T10:00:00Z"
+                    },
+                    "rental_status": {
+                        "type": "string",
+                        "enum": [
+                            "pending",
+                            "confirmed",
+                            "cancelled",
+                            "completed"
+                        ],
+                        "example": "pending"
+                    },
+                    "payment_method": {
+                        "type": "string",
+                        "enum": [
+                            "cash",
+                            "online"
+                        ],
+                        "example": "cash"
+                    },
+                    "payment_reference": {
+                        "type": "string",
+                        "example": "TXN123456",
+                        "nullable": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2023-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedCarRental": {
+                "title": "PaginatedCarRental",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/CarRental"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedCarRentalResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedCarRental"
+                    }
+                },
+                "type": "object"
+            },
+            "GetCarRentalResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarRental"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateCarRentalResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarRental"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateCarRentalResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/CarRental"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteCarRentalResponse200": {
                 "properties": {
                     "success": {
                         "type": "boolean",
@@ -2310,6 +3150,14 @@
         {
             "name": "Car",
             "description": "Car"
+        },
+        {
+            "name": "CarPosting",
+            "description": "CarPosting"
+        },
+        {
+            "name": "CarRental",
+            "description": "CarRental"
         },
         {
             "name": "Plans",

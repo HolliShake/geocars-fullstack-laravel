@@ -6,8 +6,8 @@ use App\Service\UserCompanyService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
-use Validator;
 
 class UserCompanyController extends Controller
 {
@@ -64,7 +64,7 @@ class UserCompanyController extends Controller
             $page = $request->query("page", 0);
             $rows = $request->query("rows", 10);
             $current_user = $request->query("current_user", false);
-            
+
             $conditions = [
                 'name' => $srch ? ['like', "%{$srch}%"] : null
             ];
@@ -157,13 +157,13 @@ class UserCompanyController extends Controller
                 'closing_time' => 'required|date_format:H:i|after:opening_time',
                 'days_open'    => 'sometimes|string|max:255',
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
-    
+
             return $this->ok($this->service->create($validated));
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
@@ -223,7 +223,7 @@ class UserCompanyController extends Controller
                 'closing_time' => 'required|date_format:H:i|after:opening_time',
                 'days_open'    => 'sometimes|string|max:255',
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }

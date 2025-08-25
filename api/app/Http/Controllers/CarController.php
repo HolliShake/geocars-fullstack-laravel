@@ -7,8 +7,8 @@ use App\Enum\TransmissionTypeEnum;
 use App\Service\CarService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
-use Validator;
 
 class CarController extends Controller
 {
@@ -163,13 +163,13 @@ class CarController extends Controller
                 'engine_torque'     => 'nullable|string|max:255',
                 'engine_type'       => 'nullable|string|max:255',
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }
-    
+
             $validated = $validator->validated();
-    
+
             return $this->ok($this->service->create($validated));
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
@@ -233,7 +233,7 @@ class CarController extends Controller
                 'engine_torque'     => 'nullable|string|max:255',
                 'engine_type'       => 'nullable|string|max:255',
             ]);
-            
+
             if ($validator->fails()) {
                 return $this->validationError($validator->errors());
             }

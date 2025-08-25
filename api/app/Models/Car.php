@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enum\RentalStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use OpenApi\Attributes as OA;
 
@@ -36,6 +37,9 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "engine_type", type: "string", nullable: true),
         new OA\Property(property: "created_at", type: "string", format: "date-time"),
         new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+        // Computed properties
+        new OA\Property(property: "image_url", type: "string", example: "https://placehold.co/600x400?text=Toyota+Camry"),
+        new OA\Property(property: "is_available", type: "boolean", example: true),
     ]
 )]
 
@@ -118,6 +122,46 @@ class Car extends Model
         'engine_type',
     ];
 
+    protected $appends = ['is_available', 'image_url'];
+
+    public function getImageUrlAttribute()
+    {
+        // return "https://placehold.co/600x400?text={$this->brand}+{$this->model}";
+        return "https://random.danielpetrica.com/api/random";
+    }
+
+    /**
+     * Get the availability status of the car.
+     *
+     * @return bool
+     */
+    public function getIsAvailableAttribute()
+    {
+        // If no postings exist, car is available
+        if (!$this->carPostings()->exists()) {
+            return true;
+        }
+
+        // Car is unavailable if it has active postings with pending/confirmed rentals
+        if ($this->carPostings()->where('end_date', '>=', now())->exists() || $this->carPostings()->where('force_enabled', true)->exists()) {
+            return false;
+        }
+
+        // Car is unavailable if it has active postings with pending/confirmed rentals
+        return !$this->carPostings()
+            ->where(function ($query) {
+                $query->where('end_date', '>=', now())
+                      ->orWhere('force_enabled', true);
+            })
+            ->whereHas('carRentals', function ($query) {
+                $query->whereIn('rental_status', [
+                    RentalStatusEnum::PENDING->value,
+                    RentalStatusEnum::CONFIRMED->value
+                ]);
+            })
+            ->exists();
+    }
+
     /**
      * Get the user company that owns the car.
      *
@@ -126,5 +170,15 @@ class Car extends Model
     public function userCompany()
     {
         return $this->belongsTo(UserCompany::class, 'user_company_id', 'id');
+    }
+
+    /**
+     * Get the car postings for the car.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function carPostings()
+    {
+        return $this->hasMany(CarPosting::class, 'car_id', 'id');
     }
 }
