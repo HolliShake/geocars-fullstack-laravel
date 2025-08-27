@@ -251,3 +251,20 @@ For support and questions:
 ---
 
 **Built with ❤️ using Laravel and React**
+
+## 📊 Development Progress
+
+### Commit History Graph
+
+![Commit History](https://api.github.com/repos/your-username/geocars-agent/stats/commit_activity)
+
+[![GitHub commit activity](https://img.shields.io/github/commit-activity/m/your-username/geocars-agent)](https://github.com/your-username/geocars-agent/graphs/commit-activity)
+[![GitHub contributors](https://img.shields.io/github/contributors/your-username/geocars-agent)](https://github.com/your-username/geocars-agent/graphs/contributors)
+[![GitHub last commit](https://img.shields.io/github/last-commit/your-username/geocars-agent)](https://github.com/your-username/geocars-agent/commits/main)
+
+**Interactive Graphs:**
+
+- [Commit Activity](https://github.com/your-username/geocars-agent/graphs/commit-activity)
+- [Code Frequency](https://github.com/your-username/geocars-agent/graphs/code-frequency)
+- [Contributors](https://github.com/your-username/geocars-agent/graphs/contributors)
+- [Punch Card](https://github.com/your-username/geocars-agent/graphs/punch-card)
