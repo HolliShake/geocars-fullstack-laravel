@@ -254,10 +254,6 @@ For support and questions:
 
 ## 📊 Development Progress
 
-### Commit History Graph
-
-![Commit History](https://api.github.com/repos/HolliShake/geocars-fullstack-laravel/stats/commit_activity)
-
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/HolliShake/geocars-fullstack-laravel)](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/commit-activity)
 [![GitHub contributors](https://img.shields.io/github/contributors/HolliShake/geocars-fullstack-laravel)](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/contributors)
 [![GitHub last commit](https://img.shields.io/github/last-commit/HolliShake/geocars-fullstack-laravel)](https://github.com/HolliShake/geocars-fullstack-laravel/commits/main)
