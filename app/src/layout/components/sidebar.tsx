@@ -2,13 +2,14 @@ import { useAuth } from '@/components/auth.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { Button } from '@/components/ui/button';
 import Routes from '@/navigation';
+import { RouteKey } from '@/navigation/route';
 import useAuthStore from '@/store/auth.store';
 import type { Role } from '@/types/role';
 import type { Route } from '@/types/route';
-import { LogOut, Settings, Wifi } from 'lucide-react';
+import { LogOut, Settings2, User, Wifi } from 'lucide-react';
 import type React from 'react';
 import { useMemo } from 'react';
-import { useLocation } from 'react-router';
+import { useLocation, useNavigate } from 'react-router';
 
 type SideBarProps = {
   isSidebarOpen: boolean;
@@ -20,6 +21,7 @@ export default function SideBar({
   setIsSidebarOpen = undefined,
 }: SideBarProps): React.ReactNode {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const { initialized, isLoggedIn, role } = useAuth();
 
@@ -286,13 +288,13 @@ export default function SideBar({
 
             {/* Settings button */}
             <Menu
-              icon={<Settings className="w-4 h-4" />}
+              icon={<Settings2 className="w-4 h-4" />}
               items={[
                 {
-                  label: 'Settings',
-                  icon: <Settings className="w-4 h-4" />,
+                  label: 'Profile',
+                  icon: <User className="w-4 h-4" />,
                   onClick: () => {
-                    console.log('Settings');
+                    navigate(RouteKey.Auth.Profile.key);
                   },
                 },
                 {

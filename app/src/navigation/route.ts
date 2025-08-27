@@ -9,6 +9,7 @@ type RouteStructure = {
   Auth: {
     Login: RouteConfig<'/auth/login'>;
     Register: RouteConfig<'/auth/register'>;
+    Profile: RouteConfig<'/profile'>;
   };
   Admin: {
     Dashboard: RouteConfig<'/admin/dashboard'>;
@@ -17,6 +18,7 @@ type RouteStructure = {
     CompanyCar: RouteConfig<'/admin/company-config/cars/:company_id'>;
     PlanConfig: RouteConfig<'/admin/plan-config'>;
     PlanFeatureConfig: RouteConfig<'/admin/plan-config/features/:id'>;
+    RequirementConfig: RouteConfig<'/admin/requirement-config'>;
   };
   User: {
     Dashboard: RouteConfig<'/user/dashboard'>;
@@ -58,6 +60,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
   Auth: {
     Login: createRoute('/auth/login'),
     Register: createRoute('/auth/register'),
+    Profile: createRoute('/profile'),
   },
   Admin: {
     Dashboard: createRoute('/admin/dashboard'),
@@ -66,6 +69,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     CompanyCar: createRoute('/admin/company-config/cars/:company_id'),
     PlanConfig: createRoute('/admin/plan-config'),
     PlanFeatureConfig: createRoute('/admin/plan-config/features/:id'),
+    RequirementConfig: createRoute('/admin/requirement-config'),
   },
   User: {
     Dashboard: createRoute('/user/dashboard'),

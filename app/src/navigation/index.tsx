@@ -1,6 +1,7 @@
 /* eslint-disable react-refresh/only-export-components */
 import type { Route } from '@/types/route';
 import AdminRoutes from './admin';
+import AuthRoutes from './auth';
 import PUBLIC from './public';
 import UseryRoute from './user';
 
@@ -13,4 +14,4 @@ const checkIfDuplicateTitle = (routes: readonly Route[]): readonly Route[] => {
   return routes;
 };
 
-export default checkIfDuplicateTitle([...PUBLIC, ...AdminRoutes, ...UseryRoute]);
+export default checkIfDuplicateTitle([...PUBLIC, ...AdminRoutes, ...UseryRoute, ...AuthRoutes]);

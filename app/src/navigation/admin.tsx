@@ -4,11 +4,13 @@ import AdminCompanyConfigPage from '@/pages/admin/company-config/page';
 import AdminDashboardPage from '@/pages/admin/dashboard/page';
 import AdminPlanConfigPage from '@/pages/admin/plan-config';
 import AdminPlanFeaturePage from '@/pages/admin/plan-config/features/page';
+import AdminRequirementConfigPage from '@/pages/admin/requirement-config/page';
 import AdminUserConfigPage from '@/pages/admin/user-config/page';
 import type { Route } from '@/types/route';
 import {
   LucideBuilding2,
   LucideCar,
+  LucideCheck,
   LucideLayoutDashboard,
   LucideRocket,
   LucideUsers,
@@ -72,6 +74,15 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     element: <AdminPlanFeaturePage />,
     layout: 'dashboard',
     sidebar: false,
+    roles: [RoleEnum.admin],
+  },
+  {
+    key: 'Admin.RequirementConfig',
+    title: 'Requirement Configuration',
+    icon: <LucideCheck />,
+    path: RouteKey.Admin.RequirementConfig.key,
+    element: <AdminRequirementConfigPage />,
+    layout: 'dashboard',
     roles: [RoleEnum.admin],
   },
 ]);

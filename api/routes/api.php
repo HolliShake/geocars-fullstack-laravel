@@ -6,8 +6,10 @@ use App\Http\Controllers\CarPostingController;
 use App\Http\Controllers\CarRentalController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PlanFeatureController;
+use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\UserCompanyController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserRequirementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -74,5 +76,21 @@ Route::middleware('auth:api')->controller(CarRentalController::class)->group(fun
     Route::post('/CarRental','store');
     Route::put('/CarRental/{id}','update');
     Route::delete('/CarRental/{id}', 'destroy');
+});
+
+Route::middleware('auth:api')->controller(RequirementController::class)->group(function () {
+    Route::get('/Requirement','index');
+    Route::get('/Requirement/{id}','show');
+    Route::post('/Requirement','store');
+    Route::put('/Requirement/{id}','update');
+    Route::delete('/Requirement/{id}', 'destroy');
+});
+
+Route::middleware('auth:api')->controller(UserRequirementController::class)->group(function () {
+    Route::get('/UserRequirement','index');
+    Route::get('/UserRequirement/{id}','show');
+    Route::post('/UserRequirement','store');
+    Route::put('/UserRequirement/{id}','update');
+    Route::delete('/UserRequirement/{id}', 'destroy');
 });
 

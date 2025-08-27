@@ -4,7 +4,7 @@ This comprehensive React component demonstrates a full-featured admin page with 
 
 ```tsx
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useConfirm } from '@/components/confirm-provider';
+import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
 import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';

@@ -1,28 +1,28 @@
 <?php
 
-namespace {{ namespace }};
+namespace App\Http\Controllers;
 
-use {{ rootNamespace }}Http\Controllers\Controller;
-use App\Service\{{ class }}Service;
+use App\Enum\RoleEnum;
+use App\Service\UserRequirementService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
-class {{ class }} extends Controller
+class UserRequirementController extends Controller
 {
-    public function __construct(protected {{ class }}Service $service) {
+    public function __construct(protected UserRequirementService $service) {
     }
 
     /**
      * Display a listing of the resource.
      */
     #[OA\Get(
-        path: "/api/{{ class }}",
-        summary: "Get paginated list of {{ class }}",
-        tags: ["{{ class }}"],
-        description: "Retrieve a paginated list of {{ class }} with optional search",
-        operationId:"get{{ class }}Paginated",
+        path: "/api/UserRequirement",
+        summary: "Get paginated list of UserRequirement",
+        tags: ["UserRequirement"],
+        description: "Retrieve a paginated list of UserRequirement with optional search",
+        operationId:"getUserRequirementPaginated",
     )]
     #[OA\Parameter(
         name: "search",
@@ -45,28 +45,35 @@ class {{ class }} extends Controller
         required: false,
         schema: new OA\Schema(type: "integer", default: 10)
     )]
+    #[OA\Parameter(
+        name: "role",
+        in: "query",
+        description: "Role",
+        required: false,
+        schema: new OA\Schema(type: "string", default: "USER")
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
-        content: new OA\JsonContent(ref: "#/components/schemas/Paginated{{ class }}Response200")
+        content: new OA\JsonContent(ref: "#/components/schemas/PaginatedUserRequirementResponse200")
     )]
     public function index(Request $request)
     {
         $srch = $request->query("search", '');
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
-        return $this->ok($this->service->paginate($page, $rows));
+        return $this->ok($this->service->paginate($page, $rows, ['*'], [], []));
     }
 
     /**
      * Display the specified resource.
      */
     #[OA\Get(
-        path: "/api/{{ class }}/{id}",
-        summary: "Get a specific {{ class }}",
-        tags: ["{{ class }}"],
-        description: "Retrieve a {{ class }} by its ID",
-        operationId: "get{{ class }}ById",
+        path: "/api/UserRequirement/{id}",
+        summary: "Get a specific UserRequirement",
+        tags: ["UserRequirement"],
+        description: "Retrieve a UserRequirement by its ID",
+        operationId: "getUserRequirementById",
     )]
     #[OA\Parameter(
         name: "id",
@@ -77,18 +84,18 @@ class {{ class }} extends Controller
     #[OA\Response(
         response: 200,
         description: "Successful operation",
-        content: new OA\JsonContent(ref: "#/components/schemas/Get{{ class }}Response200")
+        content: new OA\JsonContent(ref: "#/components/schemas/GetUserRequirementResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "{{ class }} not found"
+        description: "UserRequirement not found"
     )]
     public function show($id)
     {
         try {
             return $this->ok($this->service->get($id));
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('{{ class }} not found');
+            return $this->notFound('UserRequirement not found');
         }
     }
 
@@ -96,20 +103,20 @@ class {{ class }} extends Controller
      * Store a newly created resource in storage.
      */
     #[OA\Post(
-        path: "/api/{{ class }}",
-        summary: "Create a new {{ class }}",
-        tags: ["{{ class }}"],
-        description:" Create a new {{ class }} with the provided details",
-        operationId: "create{{ class }}",
+        path: "/api/UserRequirement",
+        summary: "Create a new UserRequirement",
+        tags: ["UserRequirement"],
+        description:" Create a new UserRequirement with the provided details",
+        operationId: "createUserRequirement",
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/{{ class }}")
+        content: new OA\JsonContent(ref: "#/components/schemas/UserRequirement")
     )]
     #[OA\Response(
         response: 200,
-        description: "{{ class }} created successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/Create{{ class }}Response200")
+        description: "UserRequirement created successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/CreateUserRequirementResponse200")
     )]
     #[OA\Response(
         response: 422,
@@ -125,7 +132,8 @@ class {{ class }} extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'user_id'        => 'required|integer|exists:users,id',
+                'requirement_id' => 'required|integer|exists:requirements,id',
             ]);
 
             if ($validator->fails()) {
@@ -144,11 +152,11 @@ class {{ class }} extends Controller
      * Update the specified resource in storage.
      */
     #[OA\Put(
-        path: "/api/{{ class }}/{id}",
-        summary: "Update a {{ class }}",
-        tags: ["{{ class }}"],
-        description: "Update an existing {{ class }} with the provided details",
-        operationId: "update{{ class }}",
+        path: "/api/UserRequirement/{id}",
+        summary: "Update a UserRequirement",
+        tags: ["UserRequirement"],
+        description: "Update an existing UserRequirement with the provided details",
+        operationId: "updateUserRequirement",
     )]
     #[OA\Parameter(
         name: "id",
@@ -158,16 +166,16 @@ class {{ class }} extends Controller
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/{{ class }}")
+        content: new OA\JsonContent(ref: "#/components/schemas/UserRequirement")
     )]
     #[OA\Response(
         response: 200,
-        description: "{{ class }} updated successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/Update{{ class }}Response200")
+        description: "UserRequirement updated successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/UpdateUserRequirementResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "{{ class }} not found"
+        description: "UserRequirement not found"
     )]
     #[OA\Response(
         response: 422,
@@ -183,7 +191,8 @@ class {{ class }} extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-
+                'user_id'        => 'required|integer|exists:users,id',
+                'requirement_id' => 'required|integer|exists:requirements,id',
             ]);
 
             if ($validator->fails()) {
@@ -194,7 +203,7 @@ class {{ class }} extends Controller
 
             return $this->ok($this->service->update($id, $validated));
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('{{ class }} not found');
+            return $this->notFound('UserRequirement not found');
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }
@@ -204,11 +213,11 @@ class {{ class }} extends Controller
      * Remove the specified resource from storage.
      */
     #[OA\Delete(
-        path: "/api/{{ class }}/{id}",
-        summary: "Delete a {{ class }}",
-        tags: ["{{ class }}"],
-        description: "Delete a {{ class }} by its ID",
-        operationId: "delete{{ class }}",
+        path: "/api/UserRequirement/{id}",
+        summary: "Delete a UserRequirement",
+        tags: ["UserRequirement"],
+        description: "Delete a UserRequirement by its ID",
+        operationId: "deleteUserRequirement",
     )]
     #[OA\Parameter(
         name: "id",
@@ -218,12 +227,12 @@ class {{ class }} extends Controller
     )]
     #[OA\Response(
         response: 204,
-        description: "{{ class }} deleted successfully",
-        content: new OA\JsonContent(ref: "#/components/schemas/Delete{{ class }}Response200")
+        description: "UserRequirement deleted successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/DeleteUserRequirementResponse200")
     )]
     #[OA\Response(
         response: 404,
-        description: "{{ class }} not found"
+        description: "UserRequirement not found"
     )]
     #[OA\Response(
         response: 500,
@@ -236,7 +245,7 @@ class {{ class }} extends Controller
             $this->service->delete($id);
             return $this->noContent();
         } catch (ModelNotFoundException $e) {
-            return $this->notFound('{{ class }} not found');
+            return $this->notFound('UserRequirement not found');
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }
