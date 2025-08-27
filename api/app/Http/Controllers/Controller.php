@@ -33,6 +33,24 @@ use OpenApi\Attributes as OA;
     ]
 )]
 #[OA\Schema(
+    schema: 'UnauthorizedResponse',
+    type: 'object',
+    required: ['status', 'message'],
+    properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'error'),
+        new OA\Property(property: 'message', type: 'string', example: 'Unauthorized.'),
+    ]
+)]
+#[OA\Schema(
+    schema: 'ForbiddenResponse',
+    type: 'object',
+    required: ['status', 'message'],
+    properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'error'),
+        new OA\Property(property: 'message', type: 'string', example: 'Forbidden.'),
+    ]
+)]
+#[OA\Schema(
     schema: 'NotFoundResponse',
     description: 'Standard not found response',
     type: 'object',
@@ -76,6 +94,14 @@ use OpenApi\Attributes as OA;
     ]
 )]
 #[OA\Schema(
+    schema: 'NoContentResponse',
+    type: 'object',
+    description: 'Standard no content response',
+    properties: [
+        new OA\Property(property: 'status', type: 'string', example: 'success'),
+    ]
+)]
+#[OA\Schema(
     schema: 'InternalServerErrorResponse',
     type: 'object',
     description: 'Standard internal server error response',
@@ -112,7 +138,7 @@ abstract class Controller
     #[OA\Response(
         response: 204,
         description: 'No content response',
-        content: new OA\JsonContent(ref: '#/components/schemas/SuccessResponse')
+        content: new OA\JsonContent(ref: '#/components/schemas/NoContentResponse')
     )]
     public function noContent() {
         return response()->json([
@@ -148,7 +174,7 @@ abstract class Controller
     #[OA\Response(
         response: 403,
         description: 'Forbidden',
-        content: new OA\JsonContent(ref: '#/components/schemas/BadRequestResponse')
+        content: new OA\JsonContent(ref: '#/components/schemas/ForbiddenResponse')
     )]
     public function forbidden($data) {
         return response()->json([

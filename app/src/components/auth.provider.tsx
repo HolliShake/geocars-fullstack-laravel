@@ -4,6 +4,7 @@ import { RoleEnum } from '@/constants/role.constant';
 import { RouteKey } from '@/navigation/route';
 import type { AuthStore } from '@/store/auth.store';
 import useAuthStore from '@/store/auth.store';
+import { api } from '@rest/axios';
 import type React from 'react';
 import { createContext, useContext, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router';
@@ -67,6 +68,19 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       return;
     }
   }, [location, auth, navigate]);
+
+  useEffect(() => {
+    const fetchSession = async () => {
+      if (!auth.isLoggedIn) return;
+      try {
+        const response = await api.get('api/Auth/session');
+        auth.setCredentials(response.data.data.token, response.data.data.role);
+      } catch (error) {
+        console.error('Error fetching session:', error);
+      }
+    };
+    fetchSession();
+  }, []);
 
   return <AuthContext.Provider value={auth}>{children}</AuthContext.Provider>;
 }

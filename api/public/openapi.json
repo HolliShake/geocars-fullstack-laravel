@@ -64,6 +64,100 @@
                 }
             }
         },
+        "\/api\/Auth\/logout": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Logout",
+                "description": "Logout the current user",
+                "operationId": "logout",
+                "responses": {
+                    "204": {
+                        "description": "Logout successful",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/NoContentResponse"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Auth\/session": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Session",
+                "description": "Get the current session",
+                "operationId": "getSession",
+                "responses": {
+                    "200": {
+                        "description": "Session retrieved successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/AuthResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Forbidden",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ForbiddenResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Car": {
             "get": {
                 "tags": [
@@ -2359,6 +2453,40 @@
                 },
                 "type": "object"
             },
+            "UnauthorizedResponse": {
+                "required": [
+                    "status",
+                    "message"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "error"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Unauthorized."
+                    }
+                },
+                "type": "object"
+            },
+            "ForbiddenResponse": {
+                "required": [
+                    "status",
+                    "message"
+                ],
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "error"
+                    },
+                    "message": {
+                        "type": "string",
+                        "example": "Forbidden."
+                    }
+                },
+                "type": "object"
+            },
             "NotFoundResponse": {
                 "description": "Standard not found response",
                 "properties": {
@@ -2420,6 +2548,16 @@
                         "description": "The data returned by the API",
                         "type": "object",
                         "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "NoContentResponse": {
+                "description": "Standard no content response",
+                "properties": {
+                    "status": {
+                        "type": "string",
+                        "example": "success"
                     }
                 },
                 "type": "object"
@@ -3864,7 +4002,7 @@
                 "content": {
                     "application\/json": {
                         "schema": {
-                            "$ref": "#\/components\/schemas\/SuccessResponse"
+                            "$ref": "#\/components\/schemas\/NoContentResponse"
                         }
                     }
                 }
@@ -3894,7 +4032,7 @@
                 "content": {
                     "application\/json": {
                         "schema": {
-                            "$ref": "#\/components\/schemas\/BadRequestResponse"
+                            "$ref": "#\/components\/schemas\/ForbiddenResponse"
                         }
                     }
                 }

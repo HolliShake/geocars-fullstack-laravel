@@ -6,6 +6,7 @@ import { RouteKey } from '@/navigation/route';
 import useAuthStore from '@/store/auth.store';
 import type { Role } from '@/types/role';
 import type { Route } from '@/types/route';
+import { useLogout } from '@rest/api';
 import { LogOut, Settings2, User, Wifi } from 'lucide-react';
 import type React from 'react';
 import { useMemo } from 'react';
@@ -24,6 +25,8 @@ export default function SideBar({
   const navigate = useNavigate();
 
   const { initialized, isLoggedIn, role } = useAuth();
+
+  const { mutateAsync: logoutAsync } = useLogout();
 
   const auth = useAuthStore();
 
@@ -300,9 +303,13 @@ export default function SideBar({
                 {
                   label: 'Logout',
                   icon: <LogOut className="w-4 h-4" />,
-                  onClick: () => {
-                    auth.clearCredentials();
-                    // navigate(RouteKey.Auth.Login.key);
+                  onClick: async () => {
+                    try {
+                      await logoutAsync();
+                      auth.clearCredentials();
+                    } catch (error) {
+                      console.error(error);
+                    }
                   },
                 },
               ]}

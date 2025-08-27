@@ -36,4 +36,27 @@ class UserService extends GenericService implements IUserService
             'role' => $user->role,
         ];
     }
+
+    public function logout(): void
+    {
+        $user = Auth::user();
+        if (!$user) {
+            throw new AuthenticationException('Unauthenticated');
+        }
+        $token = $user->token();
+        $token->revoke();
+        $token->delete();
+    }
+
+    public function getSession(): array
+    {
+        $user = Auth::user();
+        if (!$user) {
+            throw new AuthenticationException('Unauthenticated');
+        }
+        return [
+            'token' => $user->createToken('auth_token')->accessToken,
+            'role' => $user->role,
+        ];
+    }
 }

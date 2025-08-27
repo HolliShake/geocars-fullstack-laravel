@@ -5,9 +5,8 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
-import type { NoContentResponse } from './noContentResponse';
 
-/**
- * No content response
- */
-export type N204Response = NoContentResponse;
+export interface UnauthorizedResponse {
+  status: string;
+  message: string;
+}

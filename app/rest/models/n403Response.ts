@@ -5,9 +5,9 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
-import type { BadRequestResponse } from './badRequestResponse';
+import type { ForbiddenResponse } from './forbiddenResponse';
 
 /**
  * Forbidden
  */
-export type N403Response = BadRequestResponse;
+export type N403Response = ForbiddenResponse;
