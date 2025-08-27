@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import Modal, { useModal } from '@/components/custom/modal.component';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,13 +13,16 @@ import {
 } from '@/components/ui/select';
 import { Separator } from '@/components/ui/separator';
 import { Switch } from '@/components/ui/switch';
+import { renderError } from '@/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { useGetUser, useUpdateUser, type UpdateUserMutationBody } from '@rest/api';
 import {
   AtSign,
   CheckCircle,
   Edit3,
   Globe,
   Home,
+  Lock,
   Mail,
   MapPin,
   Phone,
@@ -26,22 +30,39 @@ import {
   User,
 } from 'lucide-react';
 import type React from 'react';
+import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'sonner';
 import z from 'zod';
 
-const schema = z.object({
-  firstname: z.string().min(1, 'First name is required'),
-  lastname: z.string().min(1, 'Last name is required'),
-  username: z.string().min(1, 'Username is required'),
-  email: z.email('Invalid email address'),
-  phone: z.string().optional(),
-  country: z.string().optional(),
-  city: z.string().optional(),
-  address: z.string().optional(),
-  postal_code: z.string().optional(),
-  role: z.string().optional(),
-  is_active: z.boolean().optional(),
-});
+const schema = z
+  .object({
+    firstname: z.string().min(1, 'First name is required'),
+    lastname: z.string().min(1, 'Last name is required'),
+    username: z.string().min(1, 'Username is required'),
+    password: z.string().optional(),
+    confirmPassword: z.string().optional(),
+    email: z.email('Invalid email address'),
+    phone: z.string().optional(),
+    country: z.string().optional(),
+    city: z.string().optional(),
+    address: z.string().optional(),
+    postal_code: z.string().optional(),
+    role: z.string().optional(),
+    is_active: z.boolean().optional(),
+  })
+  .refine(
+    (data) => {
+      if (data.password && data.password.length > 0) {
+        return data.password === data.confirmPassword;
+      }
+      return true;
+    },
+    {
+      message: "Passwords don't match",
+      path: ['confirmPassword'],
+    }
+  );
 
 type FormData = z.infer<typeof schema>;
 
@@ -69,6 +90,8 @@ export default function InfoTab(): React.ReactElement {
   const {
     register,
     handleSubmit,
+    reset,
+    setError,
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(schema),
@@ -82,121 +105,149 @@ export default function InfoTab(): React.ReactElement {
       city: 'San Francisco',
       address: '123 Main Street',
       postal_code: '94105',
+      role: 'user',
+      is_active: true,
     },
   });
+
+  const { data: user } = useGetUser();
+
+  const { mutateAsync: updateInfo, isPending: isUpdating } = useUpdateUser();
 
   const controller = useModal<Field>();
 
   const onSubmit = async (data: FormData) => {
     try {
-      console.log('Form data:', data);
-      // TODO: Implement API call to update profile
+      await updateInfo({
+        id: 0,
+        data: data as UpdateUserMutationBody,
+      });
+      toast.success('Profile updated successfully');
+      controller.closeFn();
     } catch (error) {
-      console.error('Error updating profile:', error);
+      renderError(error, setError);
     }
   };
 
-  const fields: Field[] = [
-    {
-      key: 'firstname',
-      label: 'First Name',
-      value: 'John',
-      type: 'text',
-      icon: <User className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: true,
-    },
-    {
-      key: 'lastname',
-      label: 'Last Name',
-      value: 'Doe',
-      type: 'text',
-      icon: <User className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: true,
-    },
-    {
-      key: 'username',
-      label: 'Username',
-      value: 'johndoe',
-      type: 'text',
-      icon: <AtSign className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: true,
-    },
-    {
-      key: 'email',
-      label: 'Email',
-      value: 'john.doe@example.com',
-      type: 'email',
-      icon: <Mail className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: true,
-    },
-    {
-      key: 'phone',
-      label: 'Phone',
-      value: '+1 (555) 123-4567',
-      type: 'phone',
-      icon: <Phone className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: false,
-    },
-    {
-      key: 'country',
-      label: 'Country',
-      value: 'United States',
-      type: 'text',
-      icon: <Globe className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: false,
-    },
-    {
-      key: 'city',
-      label: 'City',
-      value: 'San Francisco',
-      type: 'text',
-      icon: <MapPin className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: false,
-    },
-    {
-      key: 'address',
-      label: 'Address',
-      value: '123 Main Street',
-      type: 'text',
-      icon: <Home className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: false,
-    },
-    {
-      key: 'postal_code',
-      label: 'Postal Code',
-      value: '94102',
-      type: 'text',
-      icon: <MapPin className="h-4 w-4" />,
-      isEditable: true,
-      isRequired: false,
-    },
-    {
-      key: 'role',
-      label: 'Role',
-      value: 'User',
-      type: 'select',
-      icon: <Shield className="h-4 w-4" />,
-      isEditable: false,
-      isRequired: true,
-    },
-    {
-      key: 'is_active',
-      label: 'Status',
-      value: 'Active',
-      type: 'checkbox',
-      icon: <CheckCircle className="h-4 w-4" />,
-      isEditable: false,
-      isRequired: false,
-    },
-  ];
+  const fields: Field[] = useMemo(
+    () => [
+      {
+        key: 'firstname',
+        label: 'First Name',
+        value: user?.data?.firstname ?? '',
+        type: 'text',
+        icon: <User className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: true,
+      },
+      {
+        key: 'lastname',
+        label: 'Last Name',
+        value: user?.data?.lastname ?? '',
+        type: 'text',
+        icon: <User className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: true,
+      },
+      {
+        key: 'username',
+        label: 'Username',
+        value: user?.data?.username ?? '',
+        type: 'text',
+        icon: <AtSign className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: true,
+      },
+      {
+        key: 'email',
+        label: 'Email',
+        value: user?.data?.email ?? '',
+        type: 'email',
+        icon: <Mail className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: true,
+      },
+      {
+        key: 'password',
+        label: 'Password',
+        value: '********',
+        type: 'password',
+        icon: <Lock className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'phone',
+        label: 'Phone',
+        value: user?.data?.phone ?? '',
+        type: 'phone',
+        icon: <Phone className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'country',
+        label: 'Country',
+        value: user?.data?.country ?? '',
+        type: 'text',
+        icon: <Globe className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'city',
+        label: 'City',
+        value: user?.data?.city ?? '',
+        type: 'text',
+        icon: <MapPin className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'address',
+        label: 'Address',
+        value: user?.data?.address ?? '',
+        type: 'text',
+        icon: <Home className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'postal_code',
+        label: 'Postal Code',
+        value: user?.data?.postal_code ?? '',
+        type: 'text',
+        icon: <MapPin className="h-4 w-4" />,
+        isEditable: true,
+        isRequired: false,
+      },
+      {
+        key: 'role',
+        label: 'Role',
+        value: user?.data?.role ?? '',
+        type: 'select',
+        icon: <Shield className="h-4 w-4" />,
+        isEditable: false,
+        isRequired: true,
+      },
+      {
+        key: 'is_active',
+        label: 'Status',
+        value: user?.data?.is_active ? 'Active' : 'Inactive',
+        type: 'checkbox',
+        icon: <CheckCircle className="h-4 w-4" />,
+        isEditable: false,
+        isRequired: false,
+      },
+    ],
+    [user]
+  );
+
+  useEffect(() => {
+    if (user) {
+      reset(user.data);
+    }
+  }, [user]);
 
   return (
     <>
@@ -262,7 +313,7 @@ export default function InfoTab(): React.ReactElement {
           </div>
         </CardContent>
       </Card>
-      <Modal controller={controller}>
+      <Modal controller={controller} title={controller.data?.label ?? 'Edit Profile'}>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
           {(() => {
             if (!controller.data) return null;
@@ -307,10 +358,28 @@ export default function InfoTab(): React.ReactElement {
                         type="password"
                         {...register(field.key)}
                         className="border-border focus:ring-ring"
+                        placeholder="Enter new password"
                       />
                       {errors[field.key] && (
                         <p className="text-destructive text-sm mt-1">
                           {errors[field.key]?.message}
+                        </p>
+                      )}
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-2 text-foreground">
+                        Confirm Password
+                        {field.isRequired && <span className="text-destructive ml-1">*</span>}
+                      </label>
+                      <Input
+                        type="password"
+                        {...register('confirmPassword')}
+                        className="border-border focus:ring-ring"
+                        placeholder="Confirm new password"
+                      />
+                      {errors.confirmPassword && (
+                        <p className="text-destructive text-sm mt-1">
+                          {errors.confirmPassword.message}
                         </p>
                       )}
                     </div>
@@ -449,9 +518,10 @@ export default function InfoTab(): React.ReactElement {
             </Button>
             <Button
               type="submit"
+              disabled={isUpdating}
               className="bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 hover:from-cyan-600 hover:via-blue-600 hover:to-purple-700 text-primary-foreground"
             >
-              Save
+              {isUpdating ? 'Saving...' : 'Save'}
             </Button>
           </div>
         </form>

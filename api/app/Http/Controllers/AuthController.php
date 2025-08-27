@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Service\UserService;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -131,6 +132,39 @@ class AuthController extends Controller
     {
         try {
             return $this->ok($this->service->getSession());
+        } catch (AuthenticationException $e) {
+            return $this->unauthorized($e->getMessage());
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
+    #[OA\Get(
+        path: "/api/Auth/user",
+        summary: "User",
+        tags: ["Auth"],
+        description: "Get the current user",
+        operationId: "getUser",
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "User retrieved successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/GetUserResponse200")
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "Unauthorized",
+        content: new OA\JsonContent(ref: "#/components/schemas/UnauthorizedResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse")
+    )]
+    public function user(Request $request)
+    {
+        try {
+            return $this->ok(Auth::user());
         } catch (AuthenticationException $e) {
             return $this->unauthorized($e->getMessage());
         } catch (\Exception $e) {

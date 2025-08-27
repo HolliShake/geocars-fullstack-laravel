@@ -76,11 +76,11 @@ Route::middleware(['auth:api', 'role:admin,user'])->controller(UserCompanyContro
     Route::delete('/UserCompany/{id}', 'destroy');
 });
 
-Route::middleware(['auth:api', 'role:admin'])->controller(UserController::class)->group(function () {
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserController::class)->group(function () {
     Route::get('/User', 'index');
     Route::get('/User/{id}', 'show');
     Route::post('/User', 'store');
-    Route::put('/User/{id}', 'update');
+    Route::middleware('role:user,renter')->put('/User/{id}', 'update');
     Route::delete('/User/{id}', 'destroy');
 });
 

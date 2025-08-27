@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Service\UserService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -137,6 +138,7 @@ class UserController extends Controller
                 "address"     => "nullable|string|max:255",
                 "postal_code" => "nullable|string|max:20",
                 "is_active"   => "required|boolean",
+                "password"    => "sometimes|string|min:8|confirmed",
             ]);
 
             if ($validator->fails()) {
@@ -194,19 +196,21 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         try {
+            $user = Auth::user();
+            $use_id = $id == 0 ? $user->id : $id; // Use current user's id if id is 0, otherwise use route parameter
             $validator = Validator::make($request->all(), [
-                "id"          => "required|integer|exists:users,id",
                 "firstname"   => "required|string|max:255",
                 "lastname"    => "required|string|max:255",
-                "email"       => "required|email|max:255|unique:users,email,$id",
-                "role"        => "required|in:admin,user,renter",
-                "username"    => "required|string|max:255|unique:users,username,$id",
+                "email"       => "required|email|max:255|unique:users,email,$use_id",
+                "role"        => "sometimes|in:admin,user,renter",
+                "username"    => "required|string|max:255|unique:users,username,$use_id",
                 "phone"       => "nullable|string|max:20",
                 "country"     => "nullable|string|max:100",
                 "city"        => "nullable|string|max:100",
                 "address"     => "nullable|string|max:255",
                 "postal_code" => "nullable|string|max:20",
-                "is_active"   => "required|boolean",
+                "is_active"   => "sometimes|boolean",
+                "password"    => "nullable|string|min:8",
             ]);
 
             if ($validator->fails()) {
@@ -215,7 +219,7 @@ class UserController extends Controller
 
             $validated = $validator->validated();
 
-            return $this->ok($this->service->update($id, $validated));
+            return $this->ok($this->service->update($use_id, [...$validated, 'id' => $use_id]));
         } catch (ModelNotFoundException $e) {
             return $this->notFound('User not found');
         } catch (\Exception $e) {

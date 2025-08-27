@@ -4,12 +4,15 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useGetUser } from '@rest/api';
 import { Camera, Edit3, FileText, Mail, MapPin, Phone, Shield, User } from 'lucide-react';
 import type React from 'react';
 import InfoTab from './components/info.tab';
 import RequirementTab from './components/requirement.tab';
 
 export default function ProfilePage(): React.ReactElement {
+  const { data: user } = useGetUser();
+
   return (
     <PageLayout title="Profile" description="Manage your profile information and files.">
       <div className="space-y-8">
@@ -34,29 +37,35 @@ export default function ProfilePage(): React.ReactElement {
               <div className="flex-1 space-y-2">
                 <div className="flex items-center space-x-3">
                   <h2 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                    John Doe
+                    {user?.data?.firstname && user?.data?.lastname
+                      ? `${user.data.firstname} ${user.data.lastname}`
+                      : 'John Doe'}
                   </h2>
                   <Badge
                     variant="secondary"
                     className="bg-green-500/20 text-green-400 border-green-500/20 backdrop-blur-sm"
                   >
                     <Shield className="h-3 w-3 mr-1" />
-                    Verified
+                    {user?.data?.is_active ? 'Active' : 'Inactive'}
                   </Badge>
                 </div>
                 <div className="flex flex-col sm:flex-row sm:items-center space-y-1 sm:space-y-0 sm:space-x-4 text-muted-foreground">
                   <div className="flex items-center space-x-2">
                     <Mail className="h-4 w-4 text-cyan-400" />
-                    <span>john.doe@example.com</span>
+                    <span>{user?.data?.email ?? 'john.doe@example.com'}</span>
                   </div>
                   <div className="flex items-center space-x-2">
                     <Phone className="h-4 w-4 text-blue-400" />
-                    <span>+1 (555) 123-4567</span>
+                    <span>{user?.data?.phone ?? '+1 (555) 123-4567'}</span>
                   </div>
                 </div>
                 <div className="flex items-center space-x-2 text-muted-foreground">
                   <MapPin className="h-4 w-4 text-purple-400" />
-                  <span>San Francisco, CA</span>
+                  <span>
+                    {user?.data?.city && user?.data?.country
+                      ? `${user.data.city}, ${user.data.country}`
+                      : (user?.data?.city ?? user?.data?.country ?? 'San Francisco, CA')}
+                  </span>
                 </div>
                 <div className="flex items-center space-x-4 mt-4">
                   <Button className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 hover:from-cyan-500 hover:via-blue-600 hover:to-purple-700 shadow-lg border-0 rounded-lg">
