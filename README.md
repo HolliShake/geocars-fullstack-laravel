@@ -267,4 +267,3 @@ For support and questions:
 - [Commit Activity](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/commit-activity)
 - [Code Frequency](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/code-frequency)
 - [Contributors](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/contributors)
-- [Punch Card](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/punch-card)
