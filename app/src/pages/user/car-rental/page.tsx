@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useConfirm } from '@/components/confirm.provider';
 import { Menu } from '@/components/custom/menu.component';
-import { useModal } from '@/components/custom/modal.component';
 import Table, { type TableColumn } from '@/components/custom/table.component';
 import PageLayout from '@/components/layout/page.layout';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 import { dumbCurrency } from '@/lib/dumb-currency';
+import { RouteKey } from '@/navigation/route';
 import useCompanyStore from '@/store/company.store';
 import useSearchStore from '@/store/search.store';
 import { useDeleteCarRental, useGetCarRentalPaginated } from '@rest/api';
 import type { CarRental } from '@rest/models/carRental';
-import { LucidePen, LucidePlus, LucideTrash2 } from 'lucide-react';
+import { LucideEye, LucideTrash2 } from 'lucide-react';
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 
@@ -38,9 +38,9 @@ export default function UserCarRentalPage(): React.ReactElement {
 
   const { mutateAsync: deleteCarRental } = useDeleteCarRental();
 
-  const modal = useModal<CarRental>();
-
   const confirm = useConfirm();
+
+  const navigate = useNavigate();
 
   const columns = useMemo<TableColumn[]>(
     () => [
@@ -119,9 +119,9 @@ export default function UserCarRentalPage(): React.ReactElement {
           <Menu
             items={[
               {
-                label: 'Edit',
-                icon: <LucidePen className="h-4 w-4 text-blue-500" />,
-                onClick: () => modal.openFn(row as CarRental),
+                label: 'View',
+                icon: <LucideEye className="h-4 w-4 text-yellow-500" />,
+                onClick: () => navigate(RouteKey.User.CarRentalApplication.parse(row.id!)),
               },
               {
                 label: 'Delete',
@@ -172,17 +172,6 @@ export default function UserCarRentalPage(): React.ReactElement {
 
   return (
     <PageLayout title="Car Rental Management" description="Manage car rentals for your company.">
-      <div className="w-full items-end flex justify-end">
-        <Button
-          onClick={() => {
-            modal.openFn(); // Open the modal without any data
-          }}
-        >
-          <LucidePlus className="mr-1" />
-          Create
-        </Button>
-      </div>
-
       <Table
         isLoading={isLoading}
         columns={columns}
@@ -192,7 +181,7 @@ export default function UserCarRentalPage(): React.ReactElement {
         totalItems={totalItems}
         onPageChange={setPage}
         onPageSizeChange={setRows}
-        onRowClick={(row) => modal.openFn(row as CarRental)}
+        onRowClick={(row) => navigate(RouteKey.User.CarRentalApplication.parse(row.id!))}
       />
     </PageLayout>
   );

@@ -99,7 +99,7 @@ export default function UserCompanyConfigPage(): React.ReactElement {
             items={[
               {
                 label: 'Cars',
-                icon: <LucideCar className="h-4 w-4 text-cyan-500" />,
+                icon: <LucideCar className="h-4 w-4 text-yellow-500" />,
                 onClick: () => navigate(RouteKey.User.CompanyCar.parse(row.id!)),
               },
               {

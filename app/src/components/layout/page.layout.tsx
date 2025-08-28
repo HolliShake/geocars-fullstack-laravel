@@ -1,5 +1,8 @@
+import { ArrowLeft } from 'lucide-react';
 import React, { useMemo } from 'react';
+import { useNavigate } from 'react-router';
 import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbSeparator } from '../ui/breadcrumb';
+import { Button } from '../ui/button';
 
 type BreadcrumbProps = {
   path: string;
@@ -11,6 +14,7 @@ type PageLayoutProps = {
   title?: string;
   description?: string;
   breadcrumbs?: BreadcrumbProps[];
+  withBack?: boolean;
   children: React.ReactNode;
 };
 
@@ -19,7 +23,10 @@ export default function PageLayout({
   title = 'Page Title',
   description = 'Page Description',
   breadcrumbs = [],
+  withBack = false,
 }: PageLayoutProps): React.ReactNode {
+  const navigate = useNavigate();
+
   const computedBreadcrumbs: React.ReactNode[] = useMemo(() => {
     let breadcrumbsToUse: BreadcrumbProps[] = breadcrumbs;
     if (breadcrumbs?.length === 0) {
@@ -48,6 +55,12 @@ export default function PageLayout({
 
   return (
     <section className="space-y-8">
+      {withBack && (
+        <Button variant="outline" onClick={() => navigate(-1)}>
+          <ArrowLeft className="h-4 w-4" />
+          Back
+        </Button>
+      )}
       {/* Enhanced Header Section without card styling */}
       <div className="flex items-center justify-between py-6">
         {/* Left side - Title and Description */}

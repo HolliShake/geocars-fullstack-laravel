@@ -1,6 +1,7 @@
 import { RoleEnum } from '@/constants/role.constant';
 import UserQuickCarPage from '@/pages/user/car-management/page';
 import UserCarPostingPage from '@/pages/user/car-posting/page';
+import UserCarRentalApplicationPage from '@/pages/user/car-rental/application/page';
 import UserCarRentalPage from '@/pages/user/car-rental/page';
 import UserCompanyCarPage from '@/pages/user/company-config/cars/page';
 import UserCompanyConfigPage from '@/pages/user/company-config/page';
@@ -31,6 +32,16 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.CarRental.key,
     icon: <LucideMapPinPlus />,
     element: <UserCarRentalPage />,
+    layout: 'dashboard',
+    roles: [RoleEnum.user],
+  },
+  // Car Rental Application
+  {
+    key: 'User.CarRentalApplication',
+    title: 'Car Rental Application',
+    path: RouteKey.User.CarRentalApplication.key,
+    icon: <LucideMapPinPlus />,
+    element: <UserCarRentalApplicationPage />,
     layout: 'dashboard',
     roles: [RoleEnum.user],
   },
