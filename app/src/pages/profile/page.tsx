@@ -4,14 +4,40 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { useGetUser } from '@rest/api';
-import { Camera, Edit3, FileText, Mail, MapPin, Phone, Shield, User } from 'lucide-react';
+import { useGetUser, useUploadProfilePicture } from '@rest/api';
+import { Camera, FileText, Mail, MapPin, Phone, Shield, User } from 'lucide-react';
 import type React from 'react';
 import InfoTab from './components/info.tab';
 import RequirementTab from './components/requirement.tab';
 
 export default function ProfilePage(): React.ReactElement {
   const { data: user } = useGetUser();
+  const { mutateAsync: uploadProfilePicture } = useUploadProfilePicture();
+
+  const handleUploadProfilePicture = () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/jpeg,image/png,image/jpg,image/gif,image/svg+xml,image/webp';
+    input.onchange = (e) => {
+      const file = (e.target as HTMLInputElement).files?.[0];
+      if (!file) {
+        alert('The file field is required.');
+        return;
+      }
+
+      // Validate file size (max 2MB)
+      if (file.size > 2048 * 1024) {
+        alert('File size must be less than 2MB');
+        return;
+      }
+
+      uploadProfilePicture({
+        id: user?.data?.id ?? 0,
+        data: { file: file as unknown as Blob },
+      });
+    };
+    input.click();
+  };
 
   return (
     <PageLayout title="Profile" description="Manage your profile information and files.">
@@ -22,7 +48,7 @@ export default function ProfilePage(): React.ReactElement {
             <div className="flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-6">
               <div className="relative">
                 <Avatar className="h-32 w-32 border-4 border-white shadow-lg ring-2 ring-ring">
-                  <AvatarImage src="/placeholder-avatar.jpg" alt="Profile picture" />
+                  <AvatarImage src={user?.data?.profile_picture ?? ''} alt="Profile picture" />
                   <AvatarFallback className="bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 text-white text-2xl">
                     <User className="h-16 w-16" />
                   </AvatarFallback>
@@ -68,13 +94,10 @@ export default function ProfilePage(): React.ReactElement {
                   </span>
                 </div>
                 <div className="flex items-center space-x-4 mt-4">
-                  <Button className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 hover:from-cyan-500 hover:via-blue-600 hover:to-purple-700 shadow-lg border-0 rounded-lg">
-                    <Edit3 className="h-4 w-4 mr-2" />
-                    Edit Profile
-                  </Button>
                   <Button
                     variant="outline"
                     className="border-border hover:bg-gradient-to-r hover:from-cyan-500/10 hover:via-blue-500/10 hover:to-purple-500/10 rounded-lg"
+                    onClick={handleUploadProfilePicture}
                   >
                     <Camera className="h-4 w-4 mr-2" />
                     Change Photo

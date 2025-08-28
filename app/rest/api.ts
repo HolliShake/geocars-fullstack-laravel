@@ -26,9 +26,9 @@ import type {
 
 import type {
   AuthResponse200,
-  Car,
   CarPosting,
   CarRental,
+  CreateCarBody,
   CreateCarPostingResponse200,
   CreateCarRentalResponse200,
   CreateCarResponse200,
@@ -83,6 +83,7 @@ import type {
   PlanFeature,
   Requirement,
   UnauthorizedResponse,
+  UpdateCarBody,
   UpdateCarPostingResponse200,
   UpdateCarRentalResponse200,
   UpdateCarResponse200,
@@ -92,6 +93,7 @@ import type {
   UpdateUserCompanyResponse200,
   UpdateUserRequirementResponse200,
   UpdateUserResponse200,
+  UploadProfilePictureBody,
   User,
   UserCompany,
   UserRequirement,
@@ -502,15 +504,51 @@ export function useGetCarPaginated<TData = Awaited<ReturnType<typeof getCarPagin
  * @summary Create a new Car
  */
 export const createCar = (
-    car: Car,
+    createCarBody: CreateCarBody,
  signal?: AbortSignal
 ) => {
       
-      
+      const formData = new FormData();
+if(createCarBody.id !== undefined) {
+ formData.append(`id`, createCarBody.id.toString())
+ }
+formData.append(`user_company_id`, createCarBody.user_company_id.toString())
+formData.append(`brand`, createCarBody.brand)
+formData.append(`model`, createCarBody.model)
+formData.append(`plate_number`, createCarBody.plate_number)
+formData.append(`color`, createCarBody.color)
+formData.append(`type`, createCarBody.type)
+if(createCarBody.year !== undefined && createCarBody.year !== null) {
+ formData.append(`year`, createCarBody.year)
+ }
+formData.append(`fuel_type`, createCarBody.fuel_type)
+formData.append(`transmission`, createCarBody.transmission)
+if(createCarBody.engine_capacity !== undefined && createCarBody.engine_capacity !== null) {
+ formData.append(`engine_capacity`, createCarBody.engine_capacity)
+ }
+if(createCarBody.engine_power !== undefined && createCarBody.engine_power !== null) {
+ formData.append(`engine_power`, createCarBody.engine_power)
+ }
+if(createCarBody.engine_torque !== undefined && createCarBody.engine_torque !== null) {
+ formData.append(`engine_torque`, createCarBody.engine_torque)
+ }
+if(createCarBody.engine_type !== undefined && createCarBody.engine_type !== null) {
+ formData.append(`engine_type`, createCarBody.engine_type)
+ }
+if(createCarBody.created_at !== undefined) {
+ formData.append(`created_at`, createCarBody.created_at)
+ }
+if(createCarBody.updated_at !== undefined) {
+ formData.append(`updated_at`, createCarBody.updated_at)
+ }
+if(createCarBody.images !== undefined) {
+ createCarBody.images.forEach(value => formData.append(`images`, value));
+ }
+
       return fetchData<CreateCarResponse200>(
       {url: `/api/Car`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: car, signal
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
     },
       );
     }
@@ -518,8 +556,8 @@ export const createCar = (
 
 
 export const getCreateCarMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: CreateCarBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: CreateCarBody}, TContext> => {
 
 const mutationKey = ['createCar'];
 const {mutation: mutationOptions} = options ?
@@ -531,7 +569,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCar>>, {data: Car}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createCar>>, {data: CreateCarBody}> = (props) => {
           const {data} = props ?? {};
 
           return  createCar(data,)
@@ -543,18 +581,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type CreateCarMutationResult = NonNullable<Awaited<ReturnType<typeof createCar>>>
-    export type CreateCarMutationBody = Car
+    export type CreateCarMutationBody = CreateCarBody
     export type CreateCarMutationError = ValidationErrorResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a new Car
  */
 export const useCreateCar = <TError = ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: Car}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createCar>>, TError,{data: CreateCarBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createCar>>,
         TError,
-        {data: Car},
+        {data: CreateCarBody},
         TContext
       > => {
 
@@ -658,14 +696,51 @@ export function useGetCarById<TData = Awaited<ReturnType<typeof getCarById>>, TE
  */
 export const updateCar = (
     id: number,
-    car: Car,
- ) => {
+    updateCarBody: UpdateCarBody,
+ signal?: AbortSignal
+) => {
       
-      
+      const formData = new FormData();
+if(updateCarBody.id !== undefined) {
+ formData.append(`id`, updateCarBody.id.toString())
+ }
+formData.append(`user_company_id`, updateCarBody.user_company_id.toString())
+formData.append(`brand`, updateCarBody.brand)
+formData.append(`model`, updateCarBody.model)
+formData.append(`plate_number`, updateCarBody.plate_number)
+formData.append(`color`, updateCarBody.color)
+formData.append(`type`, updateCarBody.type)
+if(updateCarBody.year !== undefined && updateCarBody.year !== null) {
+ formData.append(`year`, updateCarBody.year)
+ }
+formData.append(`fuel_type`, updateCarBody.fuel_type)
+formData.append(`transmission`, updateCarBody.transmission)
+if(updateCarBody.engine_capacity !== undefined && updateCarBody.engine_capacity !== null) {
+ formData.append(`engine_capacity`, updateCarBody.engine_capacity)
+ }
+if(updateCarBody.engine_power !== undefined && updateCarBody.engine_power !== null) {
+ formData.append(`engine_power`, updateCarBody.engine_power)
+ }
+if(updateCarBody.engine_torque !== undefined && updateCarBody.engine_torque !== null) {
+ formData.append(`engine_torque`, updateCarBody.engine_torque)
+ }
+if(updateCarBody.engine_type !== undefined && updateCarBody.engine_type !== null) {
+ formData.append(`engine_type`, updateCarBody.engine_type)
+ }
+if(updateCarBody.created_at !== undefined) {
+ formData.append(`created_at`, updateCarBody.created_at)
+ }
+if(updateCarBody.updated_at !== undefined) {
+ formData.append(`updated_at`, updateCarBody.updated_at)
+ }
+if(updateCarBody.images !== undefined) {
+ updateCarBody.images.forEach(value => formData.append(`images`, value));
+ }
+
       return fetchData<UpdateCarResponse200>(
-      {url: `/api/Car/${id}`, method: 'PUT',
-      headers: {'Content-Type': 'application/json', },
-      data: car
+      {url: `/api/Car/${id}`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
     },
       );
     }
@@ -673,8 +748,8 @@ export const updateCar = (
 
 
 export const getUpdateCarMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: UpdateCarBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: UpdateCarBody}, TContext> => {
 
 const mutationKey = ['updateCar'];
 const {mutation: mutationOptions} = options ?
@@ -686,7 +761,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCar>>, {id: number;data: Car}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateCar>>, {id: number;data: UpdateCarBody}> = (props) => {
           const {id,data} = props ?? {};
 
           return  updateCar(id,data,)
@@ -698,18 +773,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type UpdateCarMutationResult = NonNullable<Awaited<ReturnType<typeof updateCar>>>
-    export type UpdateCarMutationBody = Car
+    export type UpdateCarMutationBody = UpdateCarBody
     export type UpdateCarMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
 
     /**
  * @summary Update a Car
  */
 export const useUpdateCar = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: Car}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateCar>>, TError,{id: number;data: UpdateCarBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof updateCar>>,
         TError,
-        {id: number;data: Car},
+        {id: number;data: UpdateCarBody},
         TContext
       > => {
 
@@ -3395,6 +3470,75 @@ export const useDeleteUser = <TError = NotFoundResponse | InternalServerErrorRes
       > => {
 
       const mutationOptions = getDeleteUserMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Upload a profile picture for the current user
+ * @summary Upload a profile picture
+ */
+export const uploadProfilePicture = (
+    id: number,
+    uploadProfilePictureBody: UploadProfilePictureBody,
+ signal?: AbortSignal
+) => {
+      
+      const formData = new FormData();
+formData.append(`file`, uploadProfilePictureBody.file)
+
+      return fetchData<string>(
+      {url: `/api/User/uploadProfilePicture/${id}`, method: 'POST',
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
+    },
+      );
+    }
+  
+
+
+export const getUploadProfilePictureMutationOptions = <TError = UnauthorizedResponse | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadProfilePicture>>, TError,{id: number;data: UploadProfilePictureBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof uploadProfilePicture>>, TError,{id: number;data: UploadProfilePictureBody}, TContext> => {
+
+const mutationKey = ['uploadProfilePicture'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof uploadProfilePicture>>, {id: number;data: UploadProfilePictureBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  uploadProfilePicture(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UploadProfilePictureMutationResult = NonNullable<Awaited<ReturnType<typeof uploadProfilePicture>>>
+    export type UploadProfilePictureMutationBody = UploadProfilePictureBody
+    export type UploadProfilePictureMutationError = UnauthorizedResponse | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Upload a profile picture
+ */
+export const useUploadProfilePicture = <TError = UnauthorizedResponse | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof uploadProfilePicture>>, TError,{id: number;data: UploadProfilePictureBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof uploadProfilePicture>>,
+        TError,
+        {id: number;data: UploadProfilePictureBody},
+        TContext
+      > => {
+
+      const mutationOptions = getUploadProfilePictureMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

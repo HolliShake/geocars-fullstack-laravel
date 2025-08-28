@@ -10,7 +10,7 @@ import { useLogout } from '@rest/api';
 import { LogOut, Settings2, User, Wifi } from 'lucide-react';
 import type React from 'react';
 import { useMemo } from 'react';
-import { useLocation, useNavigate } from 'react-router';
+import { Link, useLocation, useNavigate } from 'react-router';
 
 type SideBarProps = {
   isSidebarOpen: boolean;
@@ -124,8 +124,8 @@ export default function SideBar({
 
           return (
             <div key={index} className="space-y-1">
-              <a
-                href={route.path}
+              <Link
+                to={route.path}
                 className={`group relative flex items-center p-1.5 rounded-md transition-all duration-300 ease-out border backdrop-blur-sm ${
                   isActive
                     ? 'bg-gradient-to-r from-cyan-500/35 via-blue-500/35 to-purple-500/35 border-cyan-500/50 text-cyan-400'
@@ -204,7 +204,7 @@ export default function SideBar({
                     d="M9 5l7 7-7 7"
                   />
                 </svg>
-              </a>
+              </Link>
 
               {/* Children routes */}
               {route.children && route.children.length > 0 && (
@@ -213,9 +213,9 @@ export default function SideBar({
                     const isChildActive = isActiveRoute(child.path);
 
                     return (
-                      <a
+                      <Link
                         key={childIndex}
-                        href={child.path}
+                        to={child.path}
                         className={`group relative flex items-center p-2 rounded-sm transition-all duration-200 border ${
                           isChildActive
                             ? 'bg-accent/70 border-cyan-500/50 text-cyan-400'
@@ -251,7 +251,7 @@ export default function SideBar({
                         >
                           {child.title}
                         </span>
-                      </a>
+                      </Link>
                     );
                   })}
                 </div>

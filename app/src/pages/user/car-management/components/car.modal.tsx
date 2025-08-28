@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/exhaustive-deps */
 import Modal, { type ModalState } from '@/components/custom/modal.component';
 import { Button } from '@/components/ui/button';
@@ -17,8 +18,8 @@ import useCompanyStore from '@/store/company.store';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useCreateCar, useUpdateCar } from '@rest/api';
 import type { Car } from '@rest/models/car';
-import { Loader2 } from 'lucide-react';
-import { useEffect, useMemo } from 'react';
+import { Loader2, Upload, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
@@ -38,6 +39,7 @@ const schema = z.object({
   engine_power: z.string().nullable().optional(),
   engine_torque: z.string().nullable().optional(),
   engine_type: z.string().nullable().optional(),
+  images: z.array(z.instanceof(File)).optional(),
 });
 
 type Schema = z.infer<typeof schema>;
@@ -56,6 +58,7 @@ const field = () => ({
   engine_power: '',
   engine_torque: '',
   engine_type: '',
+  images: [],
 });
 
 export default function UserQuickCarModal({
@@ -65,6 +68,8 @@ export default function UserQuickCarModal({
 }): React.ReactElement {
   const { selectedCompany } = useCompanyStore();
   const { id: companyId } = selectedCompany ?? { id: 0 };
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+
   const {
     handleSubmit,
     register,
@@ -84,23 +89,35 @@ export default function UserQuickCarModal({
 
   const isEdit = useMemo(() => {
     return !!controller.data?.id;
-  }, [controller.data]);
+  }, [controller]);
 
   const isSaving = useMemo(() => isCreating || isUpdating, [isCreating, isUpdating]);
+
+  const handleFileSelect = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (files) {
+      const fileArray = Array.from(files);
+      setSelectedFiles(fileArray);
+      setValue('images', fileArray);
+    }
+  };
+
+  const removeFile = (index: number) => {
+    const updatedFiles = selectedFiles.filter((_, i) => i !== index);
+    setSelectedFiles(updatedFiles);
+    setValue('images', updatedFiles);
+  };
 
   const onSubmit = async (data: Schema) => {
     try {
       if (isEdit) {
         await updateCar({
           id: controller.data?.id || 0,
-          data: {
-            ...controller?.data,
-            ...data,
-          } as Car,
+          data: data as any,
         });
       } else {
         await createCar({
-          data: data as Car,
+          data: data as any,
         });
       }
       controller.closeFn();
@@ -111,11 +128,17 @@ export default function UserQuickCarModal({
   };
 
   useEffect(() => {
-    if (!controller?.data) return reset({ ...field(), user_company_id: companyId });
+    if (!controller?.data) {
+      reset({ ...field(), user_company_id: companyId });
+      setSelectedFiles([]);
+      return;
+    }
     reset({
       ...controller.data,
       user_company_id: companyId,
+      images: [],
     });
+    setSelectedFiles([]);
   }, [controller, companyId]);
 
   return (
@@ -303,6 +326,73 @@ export default function UserQuickCarModal({
             />
             {errors.engine_type && (
               <p className="mt-1 text-sm text-red-600">{errors.engine_type.message}</p>
+            )}
+          </div>
+        </div>
+
+        {/* File Upload Section */}
+        <div className="space-y-4 pt-4 border-t">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">Car Images</label>
+            <div className="flex items-center justify-center w-full">
+              <label className="flex flex-col items-center justify-center w-full h-40 border-2 border-dashed rounded-xl cursor-pointer transition-all duration-300 ease-in-out border-border/50 bg-background/50 hover:bg-muted hover:border-border hover:shadow-lg">
+                <div className="flex flex-col items-center justify-center pt-6 pb-6">
+                  <div className="w-12 h-12 mb-4 bg-muted rounded-full flex items-center justify-center">
+                    <Upload className="w-6 h-6 text-primary" />
+                  </div>
+                  <p className="mb-2 text-sm text-foreground text-center">
+                    <span className="font-semibold text-primary">Click to upload</span> or drag and
+                    drop
+                  </p>
+                  <p className="text-xs text-muted-foreground text-center">
+                    PNG, JPG, JPEG, GIF up to 2MB each
+                  </p>
+                  <p className="text-xs text-primary mt-1 font-medium">Multiple files supported</p>
+                </div>
+                <input
+                  type="file"
+                  className="hidden"
+                  multiple
+                  accept="image/*"
+                  onChange={handleFileSelect}
+                  disabled={isSaving}
+                />
+              </label>
+            </div>
+
+            {/* Selected Files Preview */}
+            {selectedFiles.length > 0 && (
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-700">Selected Files:</p>
+                <div className="space-y-2 max-h-32 overflow-y-auto">
+                  {selectedFiles.map((file, index) => (
+                    <div
+                      key={index}
+                      className="flex items-center justify-between bg-gray-50 p-2 rounded"
+                    >
+                      <div className="flex items-center space-x-2">
+                        <div className="w-8 h-8 bg-blue-100 rounded flex items-center justify-center">
+                          <Upload className="w-4 h-4 text-blue-600" />
+                        </div>
+                        <span className="text-sm text-gray-700 truncate max-w-xs">{file.name}</span>
+                        <span className="text-xs text-gray-500">
+                          ({(file.size / 1024).toFixed(1)} KB)
+                        </span>
+                      </div>
+                      <Button
+                        type="button"
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => removeFile(index)}
+                        disabled={isSaving}
+                        className="h-6 w-6 p-0"
+                      >
+                        <X className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             )}
           </div>
         </div>

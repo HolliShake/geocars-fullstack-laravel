@@ -44,6 +44,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     element: <UserCarRentalApplicationPage />,
     layout: 'dashboard',
     roles: [RoleEnum.user],
+    sidebar: false,
   },
   {
     key: 'User.CarPosting',

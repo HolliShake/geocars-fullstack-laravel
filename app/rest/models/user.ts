@@ -21,4 +21,5 @@ export interface User {
   role: UserRole;
   is_active: boolean;
   name?: string;
+  profile_picture?: string;
 }

@@ -8,12 +8,13 @@ export const api = axios.create({
 // Add a request interceptor
 api.interceptors.request.use(
   (config) => {
-    // You can add custom headers or modify the request here
-    config.headers['Content-Type'] = 'application/json';
-    // For example, you can add an authorization token if needed
     const token = localStorage.getItem('token');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    // Ensure proper headers for FormData
+    if (config.data instanceof FormData) {
+      config.headers['Content-Type'] = 'multipart/form-data';
     }
     return config;
   },

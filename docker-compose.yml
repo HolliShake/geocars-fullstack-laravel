@@ -35,8 +35,10 @@ services:
     volumes:
       - ./api:/var/www/html:cached
       - /var/www/html/vendor
-      - /var/www/html/storage
       - /var/www/html/bootstrap/cache
+      - ./api/storage:/var/www/html/storage
+      - ./api/public:/var/www/html/public
+      - laravel_storage:/var/www/html/storage
     environment:
       - DB_CONNECTION=mysql
       - DB_HOST=mysql
@@ -82,3 +84,4 @@ services:
 
 volumes:
   mysql_data:
+  laravel_storage:
