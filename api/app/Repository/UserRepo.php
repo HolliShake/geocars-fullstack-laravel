@@ -33,6 +33,8 @@ class UserRepo extends GenericRepo implements IUserRepo
         }
         if (isset($data['password'])) {
             $data['password'] = Hash::make($data['password']);
+        } else {
+            $data['password'] = $user->password;
         }
         return tap($user, fn($m) => $m->forceFill($data)->save());
     }

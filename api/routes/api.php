@@ -78,10 +78,10 @@ Route::middleware(['auth:api', 'role:admin,user'])->controller(UserCompanyContro
 
 Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserController::class)->group(function () {
     Route::get('/User', 'index');
-    Route::get('/User/{id}', 'show');
-    Route::post('/User', 'store');
-    Route::middleware('role:user,renter')->put('/User/{id}', 'update');
-    Route::delete('/User/{id}', 'destroy');
+    Route::middleware('role:admin')->get('/User/{id}', 'show');
+    Route::middleware('role:admin')->post('/User', 'store');
+    Route::middleware('role:admin,user,renter')->put('/User/{id}', 'update');
+    Route::middleware('role:admin')->delete('/User/{id}', 'destroy');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(UserRequirementController::class)->group(function () {
