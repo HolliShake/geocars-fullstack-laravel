@@ -9,6 +9,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Passport\Contracts\OAuthenticatable;
 use Laravel\Passport\HasApiTokens;
 use OpenApi\Attributes as OA;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 
 #[OA\Schema(
     schema: "User",
@@ -43,6 +46,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "is_active", type: "boolean", example: true),
         // Computed properties
         new OA\Property(property: "name", type: "string"),
+        new OA\Property(property: "profile_picture", type: "string", format: "uri"),
     ]
 )]
 
@@ -105,9 +109,9 @@ use OpenApi\Attributes as OA;
     ]
 )]
 
-class User extends Authenticatable implements OAuthenticatable
+class User extends Authenticatable implements HasMedia, OAuthenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, InteractsWithMedia;
 
     protected $table = "users";
 
@@ -140,6 +144,7 @@ class User extends Authenticatable implements OAuthenticatable
      */
     protected $appends = [
         'name',
+        'profile_picture',
     ];
 
     /**
@@ -169,5 +174,16 @@ class User extends Authenticatable implements OAuthenticatable
     public function getNameAttribute(): string
     {
         return $this->firstname . ' ' . $this->lastname;
+    }
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('profile')
+            ->singleFile();
+    }
+
+    public function getProfilePictureAttribute(): string
+    {
+        return $this->getFirstMediaUrl('profile', 'thumb');
     }
 }

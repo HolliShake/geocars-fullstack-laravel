@@ -5,6 +5,7 @@ namespace App\Service;
 use App\Interface\Repository\IUserRepo;
 use App\Interface\Service\IUserService;
 use App\Service\GenericService;
+use Http\Discovery\Exception\NotFoundException;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;

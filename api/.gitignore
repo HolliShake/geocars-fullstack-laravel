@@ -16,8 +16,15 @@
 /public/build
 /public/hot
 /public/storage
+/public/uploads
 /storage/*.key
 /storage/pail
+/storage/app/public/uploads
+/storage/uploads
+/storage/oauth-public.key
+/storage/oauth-private.key
+/storage/oauth-private.key
+/storage/oauth-public.key
 /vendor
 Homestead.json
 Homestead.yaml

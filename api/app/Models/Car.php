@@ -5,6 +5,8 @@ namespace App\Models;
 use App\Enum\RentalStatusEnum;
 use Illuminate\Database\Eloquent\Model;
 use OpenApi\Attributes as OA;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
 #[OA\Schema(
     schema: "Car",
@@ -102,8 +104,10 @@ use OpenApi\Attributes as OA;
     ]
 )]
 
-class Car extends Model
+class Car extends Model implements HasMedia
 {
+    use InteractsWithMedia;
+
     protected $table = 'cars';
 
     protected $fillable = [
@@ -124,10 +128,24 @@ class Car extends Model
 
     protected $appends = ['is_available', 'image_url'];
 
+    /**
+     * Register the media collections for the car.
+     *
+     * @return void
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('cars');
+    }
+
+    /**
+     * Get the image url for the car.
+     *
+     * @return string
+     */
     public function getImageUrlAttribute()
     {
-        // return "https://placehold.co/600x400?text={$this->brand}+{$this->model}";
-        return "https://random.danielpetrica.com/api/random";
+        return $this->getFirstMediaUrl('cars') ?? 'https://placehold.co/600x400?text=Toyota+Camry';
     }
 
     /**

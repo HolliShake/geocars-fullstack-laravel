@@ -7,6 +7,7 @@ use App\Enum\TransmissionTypeEnum;
 use App\Service\CarService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -140,7 +141,42 @@ class CarController extends Controller
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/Car")
+        content: [
+            new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    type: "object",
+                    required: ["user_company_id", "brand", "model", "plate_number", "color", "type", "fuel_type", "transmission"],
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "user_company_id", type: "integer"),
+                        new OA\Property(property: "brand", type: "string"),
+                        new OA\Property(property: "model", type: "string"),
+                        new OA\Property(property: "plate_number", type: "string"),
+                        new OA\Property(property: "color", type: "string"),
+                        new OA\Property(property: "type", type: "string", enum: ["sedan", "hatchback", "suv", "mpv", "coupe", "convertible", "other"]),
+                        new OA\Property(property: "year", type: "string", nullable: true),
+                        new OA\Property(property: "fuel_type", type: "string", enum: ["petrol", "diesel", "electric", "hybrid", "other"]),
+                        new OA\Property(property: "transmission", type: "string", enum: ["manual", "automatic", "other"]),
+                        new OA\Property(property: "engine_capacity", type: "string", nullable: true),
+                        new OA\Property(property: "engine_power", type: "string", nullable: true),
+                        new OA\Property(property: "engine_torque", type: "string", nullable: true),
+                        new OA\Property(property: "engine_type", type: "string", nullable: true),
+                        new OA\Property(property: "created_at", type: "string", format: "date-time"),
+                        new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+                        new OA\Property(
+                            property: "images",
+                            type: "array",
+                            items: new OA\Items(
+                                type: "string",
+                                format: "binary"
+                            ),
+                            description: "Car images"
+                        )
+                    ]
+                )
+            )
+        ]
     )]
     #[OA\Response(
         response: 200,
@@ -174,6 +210,7 @@ class CarController extends Controller
                 'engine_power'      => 'nullable|string|max:255',
                 'engine_torque'     => 'nullable|string|max:255',
                 'engine_type'       => 'nullable|string|max:255',
+                'images.*'          => 'image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -181,8 +218,17 @@ class CarController extends Controller
             }
 
             $validated = $validator->validated();
+            $car = $this->service->create($validated);
 
-            return $this->ok($this->service->create($validated));
+            $car->clearMediaCollection('cars');
+            if ($request->hasFile('images')) {
+                $car->clearMediaCollection('cars');
+                $car->addMultipleMediaFromRequest(['images'])
+                ->each(function ($fileAdder) {
+                    $fileAdder->toMediaCollection('cars');
+                });
+            }
+            return $this->ok($car);
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }
@@ -191,7 +237,7 @@ class CarController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    #[OA\Put(
+    #[OA\Post(
         path: "/api/Car/{id}",
         summary: "Update a Car",
         tags: ["Car"],
@@ -206,7 +252,42 @@ class CarController extends Controller
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/Car")
+        content: [
+            new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    type: "object",
+                    required: ["user_company_id", "brand", "model", "plate_number", "color", "type", "fuel_type", "transmission"],
+                    properties: [
+                        new OA\Property(property: "id", type: "integer"),
+                        new OA\Property(property: "user_company_id", type: "integer"),
+                        new OA\Property(property: "brand", type: "string"),
+                        new OA\Property(property: "model", type: "string"),
+                        new OA\Property(property: "plate_number", type: "string"),
+                        new OA\Property(property: "color", type: "string"),
+                        new OA\Property(property: "type", type: "string", enum: ["sedan", "hatchback", "suv", "mpv", "coupe", "convertible", "other"]),
+                        new OA\Property(property: "year", type: "string", nullable: true),
+                        new OA\Property(property: "fuel_type", type: "string", enum: ["petrol", "diesel", "electric", "hybrid", "other"]),
+                        new OA\Property(property: "transmission", type: "string", enum: ["manual", "automatic", "other"]),
+                        new OA\Property(property: "engine_capacity", type: "string", nullable: true),
+                        new OA\Property(property: "engine_power", type: "string", nullable: true),
+                        new OA\Property(property: "engine_torque", type: "string", nullable: true),
+                        new OA\Property(property: "engine_type", type: "string", nullable: true),
+                        new OA\Property(property: "created_at", type: "string", format: "date-time"),
+                        new OA\Property(property: "updated_at", type: "string", format: "date-time"),
+                        new OA\Property(
+                            property: "images",
+                            type: "array",
+                            items: new OA\Items(
+                                type: "string",
+                                format: "binary"
+                            ),
+                            description: "Car images"
+                        )
+                    ]
+                )
+            )
+        ]
     )]
     #[OA\Response(
         response: 200,
@@ -236,7 +317,7 @@ class CarController extends Controller
                 'model'             => 'required|string|max:255',
                 'plate_number'      => 'required|string|max:255',
                 'color'             => 'required|string|max:255',
-                'type'              => 'required|string|max:255',
+                'type'              => 'required|string|in:sedan,hatchback,suv,mpv,coupe,convertible,other',
                 'year'              => 'nullable|string|max:255',
                 'fuel_type'         => 'required|string|in:'.implode(',', array_column(FuelTypeEnum::cases(), 'value')),
                 'transmission'      => 'required|string|in:'.implode(',', array_column(TransmissionTypeEnum::cases(), 'value')),
@@ -244,6 +325,7 @@ class CarController extends Controller
                 'engine_power'      => 'nullable|string|max:255',
                 'engine_torque'     => 'nullable|string|max:255',
                 'engine_type'       => 'nullable|string|max:255',
+                'images.*' => 'sometimes|file|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
             ]);
 
             if ($validator->fails()) {
@@ -252,7 +334,20 @@ class CarController extends Controller
 
             $validated = $validator->validated();
 
-            return $this->ok($this->service->update($id, $validated));
+            // Remove _method from validated data if it exists
+            unset($validated['_method']);
+
+            $car = $this->service->update($id, $validated);
+
+            if ($request->hasFile('images')) {
+                $car->clearMediaCollection('cars');
+                $car->addMultipleMediaFromRequest(['images'])
+                    ->each(function ($fileAdder) {
+                        $fileAdder->toMediaCollection('cars');
+                    });
+            }
+
+            return $this->ok($car);
         } catch (ModelNotFoundException $e) {
             return $this->notFound('Car not found');
         } catch (\Exception $e) {

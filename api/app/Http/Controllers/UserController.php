@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Service\UserService;
+use Http\Discovery\Exception\NotFoundException;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -265,6 +266,92 @@ class UserController extends Controller
             return $this->noContent();
         } catch (ModelNotFoundException $e) {
             return $this->notFound('User not found');
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
+    #[OA\Post(
+        path: "/api/User/uploadProfilePicture/{id}",
+        summary: "Upload a profile picture",
+        tags: ["User"],
+        description: "Upload a profile picture for the current user",
+        operationId: "uploadProfilePicture",
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+
+    #[OA\RequestBody(
+        required: true,
+        content: [
+            new OA\MediaType(
+                mediaType: "multipart/form-data",
+                schema: new OA\Schema(
+                    type: "object",
+                    required: ["file"],
+                    properties: [
+                        new OA\Property(
+                            property: "file",
+                            type: "string",
+                            format: "binary",
+                            description: "Profile picture file"
+                        )
+                    ]
+                )
+            )
+        ]
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Profile picture uploaded successfully",
+        content: new OA\JsonContent(type: "string")
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "Unauthorized",
+        content: new OA\JsonContent(ref: "#/components/schemas/UnauthorizedResponse")
+    )]
+    #[OA\Response(
+        response: 422,
+        description: "Validation error",
+        content: new OA\JsonContent(ref: "#/components/schemas/ValidationErrorResponse")
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse")
+    )]
+    public function uploadProfilePicture(Request $request, string $id)
+    {
+        $validator = Validator::make($request->all(), [
+            'file' => 'required|file|image|mimes:jpeg,png,jpg,gif,svg,webp|max:2048',
+        ]);
+
+        if ($validator->fails()) {
+            return $this->validationError($validator->errors());
+        }
+
+        try {
+            if (!$request->hasFile('file')) {
+                return $this->validationError(['file' => ['File is required']]);
+            }
+
+            $file = $request->file('file');
+            if (!$file->isValid()) {
+                return $this->validationError(['file' => ['Invalid file upload']]);
+            }
+
+            $user = $this->service->get($id);
+            $user->clearMediaCollection('profile');
+            $media = $user->addMediaFromRequest('file')
+                ->toMediaCollection('profile');
+            return $this->ok($media->getUrl());
+        } catch (NotFoundException $e) {
+            return $this->notFound($e->getMessage());
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }

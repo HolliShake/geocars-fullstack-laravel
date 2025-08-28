@@ -281,9 +281,105 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "multipart\/form-data": {
                             "schema": {
-                                "$ref": "#\/components\/schemas\/Car"
+                                "required": [
+                                    "user_company_id",
+                                    "brand",
+                                    "model",
+                                    "plate_number",
+                                    "color",
+                                    "type",
+                                    "fuel_type",
+                                    "transmission"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "user_company_id": {
+                                        "type": "integer"
+                                    },
+                                    "brand": {
+                                        "type": "string"
+                                    },
+                                    "model": {
+                                        "type": "string"
+                                    },
+                                    "plate_number": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sedan",
+                                            "hatchback",
+                                            "suv",
+                                            "mpv",
+                                            "coupe",
+                                            "convertible",
+                                            "other"
+                                        ]
+                                    },
+                                    "year": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "fuel_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "petrol",
+                                            "diesel",
+                                            "electric",
+                                            "hybrid",
+                                            "other"
+                                        ]
+                                    },
+                                    "transmission": {
+                                        "type": "string",
+                                        "enum": [
+                                            "manual",
+                                            "automatic",
+                                            "other"
+                                        ]
+                                    },
+                                    "engine_capacity": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_power": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_torque": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_type": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "created_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "updated_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "images": {
+                                        "description": "Car images",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -356,7 +452,7 @@
                     }
                 }
             },
-            "put": {
+            "post": {
                 "tags": [
                     "Car"
                 ],
@@ -376,9 +472,105 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "multipart\/form-data": {
                             "schema": {
-                                "$ref": "#\/components\/schemas\/Car"
+                                "required": [
+                                    "user_company_id",
+                                    "brand",
+                                    "model",
+                                    "plate_number",
+                                    "color",
+                                    "type",
+                                    "fuel_type",
+                                    "transmission"
+                                ],
+                                "properties": {
+                                    "id": {
+                                        "type": "integer"
+                                    },
+                                    "user_company_id": {
+                                        "type": "integer"
+                                    },
+                                    "brand": {
+                                        "type": "string"
+                                    },
+                                    "model": {
+                                        "type": "string"
+                                    },
+                                    "plate_number": {
+                                        "type": "string"
+                                    },
+                                    "color": {
+                                        "type": "string"
+                                    },
+                                    "type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "sedan",
+                                            "hatchback",
+                                            "suv",
+                                            "mpv",
+                                            "coupe",
+                                            "convertible",
+                                            "other"
+                                        ]
+                                    },
+                                    "year": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "fuel_type": {
+                                        "type": "string",
+                                        "enum": [
+                                            "petrol",
+                                            "diesel",
+                                            "electric",
+                                            "hybrid",
+                                            "other"
+                                        ]
+                                    },
+                                    "transmission": {
+                                        "type": "string",
+                                        "enum": [
+                                            "manual",
+                                            "automatic",
+                                            "other"
+                                        ]
+                                    },
+                                    "engine_capacity": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_power": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_torque": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "engine_type": {
+                                        "type": "string",
+                                        "nullable": true
+                                    },
+                                    "created_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "updated_at": {
+                                        "type": "string",
+                                        "format": "date-time"
+                                    },
+                                    "images": {
+                                        "description": "Car images",
+                                        "type": "array",
+                                        "items": {
+                                            "type": "string",
+                                            "format": "binary"
+                                        }
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -2225,6 +2417,88 @@
                 }
             }
         },
+        "\/api\/User\/uploadProfilePicture\/{id}": {
+            "post": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Upload a profile picture",
+                "description": "Upload a profile picture for the current user",
+                "operationId": "uploadProfilePicture",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "multipart\/form-data": {
+                            "schema": {
+                                "required": [
+                                    "file"
+                                ],
+                                "properties": {
+                                    "file": {
+                                        "description": "Profile picture file",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Profile picture uploaded successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthorized",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UnauthorizedResponse"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/UserRequirement": {
             "get": {
                 "tags": [
@@ -3653,6 +3927,10 @@
                     },
                     "name": {
                         "type": "string"
+                    },
+                    "profile_picture": {
+                        "type": "string",
+                        "format": "uri"
                     }
                 },
                 "type": "object"

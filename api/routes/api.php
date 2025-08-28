@@ -22,72 +22,73 @@ Route::controller(AuthController::class)->group(function () {
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(CarController::class)->group(function () {
     Route::get('/Car','index');
-    Route::get('/Car/{id}','show');
+    Route::get('/Car/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/Car','store');
-    Route::middleware('role:user')->put('/Car/{id}','update');
-    Route::middleware('role:user')->delete('/Car/{id}', 'destroy');
+    Route::middleware('role:user')->post('/Car/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user')->delete('/Car/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(CarPostingController::class)->group(function () {
     Route::get('/CarPosting','index');
-    Route::get('/CarPosting/{id}','show');
+    Route::get('/CarPosting/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/CarPosting','store');
-    Route::middleware('role:user')->put('/CarPosting/{id}','update');
-    Route::middleware('role:user')->delete('/CarPosting/{id}', 'destroy');
+    Route::middleware('role:user')->put('/CarPosting/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user')->delete('/CarPosting/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(CarRentalController::class)->group(function () {
     Route::get('/CarRental','index');
-    Route::get('/CarRental/{id}','show');
+    Route::get('/CarRental/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/CarRental','store');
-    Route::middleware('role:user')->put('/CarRental/{id}','update');
-    Route::middleware('role:user')->delete('/CarRental/{id}', 'destroy');
+    Route::middleware('role:user')->put('/CarRental/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user')->delete('/CarRental/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin'])->controller(PlanController::class)->group(function () {
     Route::get('/Plan', 'index');
-    Route::get('/Plan/{id}', 'show');
+    Route::get('/Plan/{id}', 'show')->where('id', '[0-9]+');
     Route::post('/Plan', 'store');
-    Route::put('/Plan/{id}', 'update');
-    Route::delete('/Plan/{id}', 'destroy');
+    Route::put('/Plan/{id}', 'update')->where('id', '[0-9]+');
+    Route::delete('/Plan/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin'])->controller(PlanFeatureController::class)->group(function () {
     Route::get('/PlanFeature','index');
-    Route::get('/PlanFeature/{id}','show');
+    Route::get('/PlanFeature/{id}','show')->where('id', '[0-9]+');
     Route::post('/PlanFeature','store');
-    Route::put('/PlanFeature/{id}','update');
-    Route::delete('/PlanFeature/{id}', 'destroy');
+    Route::put('/PlanFeature/{id}','update')->where('id', '[0-9]+');
+    Route::delete('/PlanFeature/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(RequirementController::class)->group(function () {
     Route::get('/Requirement','index');
-    Route::get('/Requirement/{id}','show');
+    Route::get('/Requirement/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:admin')->post('/Requirement','store');
-    Route::middleware('role:admin')->put('/Requirement/{id}','update');
-    Route::middleware('role:admin')->delete('/Requirement/{id}', 'destroy');
+    Route::middleware('role:admin')->put('/Requirement/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:admin')->delete('/Requirement/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(UserCompanyController::class)->group(function () {
     Route::get('/UserCompany','index');
-    Route::get('/UserCompany/{id}','show');
+    Route::get('/UserCompany/{id}','show')->where('id', '[0-9]+');
     Route::post('/UserCompany','store');
-    Route::put('/UserCompany/{id}','update');
-    Route::delete('/UserCompany/{id}', 'destroy');
+    Route::put('/UserCompany/{id}','update')->where('id', '[0-9]+');
+    Route::delete('/UserCompany/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserController::class)->group(function () {
     Route::get('/User', 'index');
-    Route::middleware('role:admin')->get('/User/{id}', 'show');
+    Route::middleware('role:admin')->get('/User/{id}', 'show')->where('id', '[0-9]+');
     Route::middleware('role:admin')->post('/User', 'store');
-    Route::middleware('role:admin,user,renter')->put('/User/{id}', 'update');
-    Route::middleware('role:admin')->delete('/User/{id}', 'destroy');
+    Route::middleware('role:admin,user,renter')->put('/User/{id}', 'update')->where('id', '[0-9]+');
+    Route::middleware('role:admin')->delete('/User/{id}', 'destroy')->where('id', '[0-9]+');
+    Route::post('/User/uploadProfilePicture/{id}', 'uploadProfilePicture')->where('id', '[0-9]+');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(UserRequirementController::class)->group(function () {
     Route::get('/UserRequirement','index');
-    Route::get('/UserRequirement/{id}','show');
+    Route::get('/UserRequirement/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/UserRequirement','store');
-    Route::middleware('role:user')->put('/UserRequirement/{id}','update');
-    Route::middleware('role:user')->delete('/UserRequirement/{id}', 'destroy');
+    Route::middleware('role:user')->put('/UserRequirement/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user')->delete('/UserRequirement/{id}', 'destroy')->where('id', '[0-9]+');
 });
