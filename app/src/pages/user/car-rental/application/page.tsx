@@ -457,18 +457,14 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                         </div>
 
                         <div className="flex flex-col sm:flex-row gap-3">
-                          <Button
-                            size="lg"
-                            className="flex-1 h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
-                          >
+                          <Button className="flex-1 h-14 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
                             <CheckCircle className="h-5 w-5 mr-2" />
                             Accept Booking
                           </Button>
 
                           <Button
                             variant="outline"
-                            size="lg"
-                            className="flex-1 h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                            className="flex-1 h-14 sm:h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
                           >
                             <XCircle className="h-5 w-5 mr-2" />
                             Reject Booking
