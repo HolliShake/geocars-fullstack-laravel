@@ -15,4 +15,5 @@ export const CarRentalRentalStatus = {
   confirmed: 'confirmed',
   cancelled: 'cancelled',
   completed: 'completed',
+  rejected: 'rejected',
 } as const;

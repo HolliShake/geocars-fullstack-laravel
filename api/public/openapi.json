@@ -3432,7 +3432,8 @@
                             "pending",
                             "confirmed",
                             "cancelled",
-                            "completed"
+                            "completed",
+                            "rejected"
                         ],
                         "example": "pending"
                     },

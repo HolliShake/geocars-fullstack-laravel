@@ -8,4 +8,5 @@ enum RentalStatusEnum: string
     case CONFIRMED = 'confirmed';
     case CANCELLED = 'cancelled';
     case COMPLETED = 'completed';
+    case REJECTED  = 'rejected';
 }

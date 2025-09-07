@@ -32,7 +32,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "deposit", type: "number", format: "float", example: 500.00),
         new OA\Property(property: "start_date", type: "string", format: "date-time", example: "2023-09-01T10:00:00Z"),
         new OA\Property(property: "return_date", type: "string", format: "date-time", example: "2023-09-04T10:00:00Z"),
-        new OA\Property(property: "rental_status", type: "string", enum: ["pending", "confirmed", "cancelled", "completed"], example: "pending"),
+        new OA\Property(property: "rental_status", type: "string", enum: ["pending", "confirmed", "cancelled", "completed", "rejected"], example: "pending"),
         new OA\Property(property: "payment_method", type: "string", enum: ["cash", "online"], example: "cash"),
         new OA\Property(property: "payment_reference", type: "string", nullable: true, example: "TXN123456"),
         new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2023-01-01T00:00:00Z"),

@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
+import { useConfirm } from '@/components/confirm.provider';
 import PageLayout from '@/components/layout/page.layout';
 import { FileViewer } from '@/components/shared/file-viewer.component';
 import { Badge } from '@/components/ui/badge';
@@ -7,8 +8,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { dumbCurrency } from '@/lib/dumb-currency';
-import { useGetCarRentalById } from '@rest/api';
-import { CarRentalRentalStatus, type UserRequirement } from '@rest/models';
+import { useGetCarRentalById, useUpdateCarRental } from '@rest/api';
+import { CarRentalRentalStatus, type CarRental, type UserRequirement } from '@rest/models';
 import {
   AlertTriangle,
   Calendar,
@@ -32,13 +33,50 @@ import {
 import type React from 'react';
 import { useEffect } from 'react';
 import { useParams } from 'react-router';
+import { toast } from 'sonner';
 
 export default function UserCarRentalApplicationPage(): React.ReactElement {
   const { id } = useParams();
 
-  const { data, isLoading } = useGetCarRentalById(Number(id));
+  const { data, isLoading, refetch: refetchRental } = useGetCarRentalById(Number(id));
 
   const rental = data?.data;
+
+  const { mutateAsync: updateRental } = useUpdateCarRental();
+
+  const confirm = useConfirm();
+
+  const handleApproveRental = async (id: number) => {
+    try {
+      await updateRental({
+        id,
+        data: {
+          ...rental,
+          rental_status: CarRentalRentalStatus.confirmed,
+        } as CarRental,
+      });
+      toast.success('Rental approved successfully');
+      refetchRental();
+    } catch {
+      toast.error('Failed to approve rental');
+    }
+  };
+
+  const handleRejectRental = async (id: number) => {
+    try {
+      await updateRental({
+        id,
+        data: {
+          ...rental,
+          rental_status: CarRentalRentalStatus.rejected,
+        } as CarRental,
+      });
+      toast.success('Rental rejected successfully');
+      refetchRental();
+    } catch {
+      toast.error('Failed to reject rental');
+    }
+  };
 
   useEffect(() => {
     console.log(JSON.stringify(data?.data ?? {}, null, 2));
@@ -159,13 +197,6 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                 {rental.rental_status.charAt(0).toUpperCase() + rental.rental_status.slice(1)}
               </Badge>
             </div>
-            <Button
-              variant="outline"
-              className="border-border/50 bg-card/50 backdrop-blur-sm hover:bg-gradient-to-r hover:from-cyan-500/10 hover:via-blue-500/10 hover:to-purple-500/10"
-            >
-              <FileText className="h-4 w-4 mr-2" />
-              Download Receipt
-            </Button>
           </div>
 
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
@@ -604,7 +635,14 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                         </div>
 
                         <div className="flex flex-col gap-3">
-                          <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group">
+                          <Button
+                            className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group"
+                            onClick={() =>
+                              confirm.confirm(
+                                async () => await handleApproveRental(rental.id as number)
+                              )
+                            }
+                          >
                             <CheckCircle className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             Accept Booking
                           </Button>
@@ -612,6 +650,11 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                           <Button
                             variant="outline"
                             className="w-full h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group"
+                            onClick={() =>
+                              confirm.confirm(
+                                async () => await handleRejectRental(rental.id as number)
+                              )
+                            }
                           >
                             <XCircle className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             Reject Booking

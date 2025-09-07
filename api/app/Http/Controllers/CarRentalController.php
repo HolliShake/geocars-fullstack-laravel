@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\RentalStatusEnum;
 use App\Service\CarRentalService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
@@ -147,7 +148,7 @@ class CarRentalController extends Controller
                 'deposit'           => 'required|numeric|min:0',
                 'start_date'        => 'required|date|after_or_equal:today',
                 'return_date'       => 'required|date|after:start_date',
-                'rental_status'     => 'sometimes|string',
+                'rental_status'     => 'sometimes|in:' . implode(',', array_column(RentalStatusEnum::cases(), 'value')),
                 'payment_method'    => 'sometimes|string',
                 'payment_reference' => 'nullable|string|max:255',
             ]);
@@ -211,9 +212,10 @@ class CarRentalController extends Controller
                 'user_id'           => 'required|integer|exists:users,id',
                 'days'              => 'required|integer|min:1',
                 'deposit'           => 'required|numeric|min:0',
-                'start_date'        => 'required|date|after_or_equal:today',
-                'return_date'       => 'required|date|after:start_date',
-                'rental_status'     => 'sometimes|string',
+                // Do not validate day
+                // 'start_date'        => 'required|date|after_or_equal:today',
+                // 'return_date'       => 'required|date|after:start_date',
+                'rental_status'     => 'sometimes|in:' . implode(',', array_column(RentalStatusEnum::cases(), 'value')),
                 'payment_method'    => 'sometimes|string',
                 'payment_reference' => 'nullable|string|max:255',
             ]);
