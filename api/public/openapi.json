@@ -2499,6 +2499,47 @@
                 }
             }
         },
+        "\/api\/UserRequirement\/User": {
+            "get": {
+                "tags": [
+                    "UserRequirement"
+                ],
+                "summary": "Get user requirements",
+                "description": "Retrieve user requirements by user ID",
+                "operationId": "getUserRequirements",
+                "parameters": [
+                    {
+                        "name": "userId",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UserRequirementResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UserRequirement not found"
+                    },
+                    "401": {
+                        "description": "Unauthorized"
+                    },
+                    "500": {
+                        "description": "Internal server error"
+                    }
+                }
+            }
+        },
         "\/api\/UserRequirement": {
             "get": {
                 "tags": [
@@ -2571,9 +2612,29 @@
                 "requestBody": {
                     "required": true,
                     "content": {
-                        "application\/json": {
+                        "multipart\/form-data": {
                             "schema": {
-                                "$ref": "#\/components\/schemas\/UserRequirement"
+                                "required": [
+                                    "user_id",
+                                    "requirement_id",
+                                    "file"
+                                ],
+                                "properties": {
+                                    "user_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "requirement_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "file": {
+                                        "description": "File to upload",
+                                        "type": "string",
+                                        "format": "binary"
+                                    }
+                                },
+                                "type": "object"
                             }
                         }
                     }
@@ -3490,6 +3551,38 @@
                 },
                 "type": "object"
             },
+            "Media": {
+                "title": "Media",
+                "required": [
+                    "id",
+                    "file_name",
+                    "mime_type",
+                    "size",
+                    "url",
+                    "original_url"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer"
+                    },
+                    "file_name": {
+                        "type": "string"
+                    },
+                    "mime_type": {
+                        "type": "string"
+                    },
+                    "size": {
+                        "type": "integer"
+                    },
+                    "url": {
+                        "type": "string"
+                    },
+                    "original_url": {
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "Plan": {
                 "title": "Plan",
                 "required": [
@@ -3770,7 +3863,12 @@
                         "type": "boolean"
                     },
                     "role": {
-                        "type": "string"
+                        "type": "string",
+                        "enum": [
+                            "admin",
+                            "user",
+                            "renter"
+                        ]
                     }
                 },
                 "type": "object"
@@ -3918,7 +4016,7 @@
                         "enum": [
                             "admin",
                             "user",
-                            "moderator"
+                            "renter"
                         ]
                     },
                     "is_active": {
@@ -3931,6 +4029,12 @@
                     "profile_picture": {
                         "type": "string",
                         "format": "uri"
+                    },
+                    "requirements": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/UserRequirement"
+                        }
                     }
                 },
                 "type": "object"
@@ -4212,6 +4316,15 @@
                         "type": "string",
                         "format": "date-time",
                         "example": "2024-01-01T00:00:00Z"
+                    },
+                    "requirement": {
+                        "$ref": "#\/components\/schemas\/Requirement"
+                    },
+                    "user": {
+                        "$ref": "#\/components\/schemas\/User"
+                    },
+                    "uploads": {
+                        "$ref": "#\/components\/schemas\/Media"
                     }
                 },
                 "type": "object"
@@ -4256,6 +4369,103 @@
                     },
                     "data": {
                         "$ref": "#\/components\/schemas\/PaginatedUserRequirement"
+                    }
+                },
+                "type": "object"
+            },
+            "UserRequirementResponse200": {
+                "title": "UserRequirementResponse200",
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "id": {
+                                    "type": "integer",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "created_at": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "updated_at": {
+                                    "type": "string",
+                                    "format": "date-time",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "name": {
+                                    "type": "string",
+                                    "example": "Vehicle Registration"
+                                },
+                                "description": {
+                                    "type": "string",
+                                    "example": "Provide the Official Receipt (OR) and Certificate of Registration (CR) for all rental vehicles."
+                                },
+                                "is_required": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "is_active": {
+                                    "type": "integer",
+                                    "example": 1
+                                },
+                                "role": {
+                                    "type": "enum",
+                                    "example": [
+                                        "admin",
+                                        "user",
+                                        "renter"
+                                    ]
+                                },
+                                "user_id": {
+                                    "type": "integer",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "requirement_id": {
+                                    "type": "integer",
+                                    "example": null,
+                                    "nullable": true
+                                },
+                                "media": {
+                                    "type": "array",
+                                    "items": {
+                                        "properties": {
+                                            "id": {
+                                                "type": "integer",
+                                                "example": 1
+                                            },
+                                            "file_name": {
+                                                "type": "string",
+                                                "example": "vehicle_registration.pdf"
+                                            },
+                                            "mime_type": {
+                                                "type": "string",
+                                                "example": "application\/pdf"
+                                            },
+                                            "size": {
+                                                "type": "integer",
+                                                "example": 1000
+                                            },
+                                            "url": {
+                                                "type": "string",
+                                                "example": "https:\/\/example.com\/vehicle_registration.pdf"
+                                            }
+                                        },
+                                        "type": "object"
+                                    }
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"

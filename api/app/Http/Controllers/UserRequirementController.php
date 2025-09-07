@@ -14,6 +14,41 @@ class UserRequirementController extends Controller
     public function __construct(protected UserRequirementService $service) {
     }
 
+    #[OA\Get(
+        path: "/api/UserRequirement/User",
+        summary: "Get user requirements",
+        tags: ["UserRequirement"],
+        description: "Retrieve user requirements by user ID",
+        operationId: "getUserRequirements",
+    )]
+    #[OA\Parameter(
+        name: "userId",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful operation",
+        content: new OA\JsonContent(ref: "#/components/schemas/UserRequirementResponse200")
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "UserRequirement not found"
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "Unauthorized"
+    )]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error"
+    )]
+    public function getUserRequirements(Request $request)
+    {
+        return $this->ok($this->service->getUserRequirements($request->user()->id, $request->user()->role));
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -111,7 +146,18 @@ class UserRequirementController extends Controller
     )]
     #[OA\RequestBody(
         required: true,
-        content: new OA\JsonContent(ref: "#/components/schemas/UserRequirement")
+        content: new OA\MediaType(
+            mediaType: "multipart/form-data",
+            schema: new OA\Schema(
+                type: "object",
+                required: ["user_id", "requirement_id", "file"],
+                properties: [
+                    new OA\Property(property: "user_id", type: "integer", example: 1),
+                    new OA\Property(property: "requirement_id", type: "integer", example: 1),
+                    new OA\Property(property: "file", type: "string", format: "binary", description: "File to upload"),
+                ]
+            )
+        )
     )]
     #[OA\Response(
         response: 200,
@@ -141,8 +187,14 @@ class UserRequirementController extends Controller
             }
 
             $validated = $validator->validated();
+            $result = $this->service->create($validated);
 
-            return $this->ok($this->service->create($validated));
+            $userRequirement = $this->service->get($result->id);
+            $userRequirement->clearMediaCollection('user_requirements');
+            $userRequirement->addMediaFromRequest('file')
+                ->toMediaCollection('user_requirements');
+
+            return $this->ok($result);
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }

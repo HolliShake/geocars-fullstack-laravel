@@ -7,12 +7,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useGetUser, useUploadProfilePicture } from '@rest/api';
 import { Camera, FileText, Mail, MapPin, Phone, Shield, User } from 'lucide-react';
 import type React from 'react';
+import { useEffect, useState } from 'react';
 import InfoTab from './components/info.tab';
 import RequirementTab from './components/requirement.tab';
 
 export default function ProfilePage(): React.ReactElement {
   const { data: user } = useGetUser();
   const { mutateAsync: uploadProfilePicture } = useUploadProfilePicture();
+
+  const [activeTab, setActiveTab] = useState<string>('information');
+
+  const handleTabChange = (tab: string) => {
+    localStorage.setItem(window.location.href, tab);
+    setActiveTab(tab);
+  };
 
   const handleUploadProfilePicture = () => {
     const input = document.createElement('input');
@@ -38,6 +46,13 @@ export default function ProfilePage(): React.ReactElement {
     };
     input.click();
   };
+
+  useEffect(() => {
+    const tab = localStorage.getItem(window.location.href);
+    if (tab === 'information' || tab === 'requirement') {
+      setActiveTab(tab);
+    }
+  }, []);
 
   return (
     <PageLayout title="Profile" description="Manage your profile information and files.">
@@ -109,7 +124,11 @@ export default function ProfilePage(): React.ReactElement {
         </Card>
 
         {/* Enhanced Profile Tabs with Web3 Design */}
-        <Tabs defaultValue="information">
+        <Tabs
+          defaultValue={activeTab}
+          value={activeTab}
+          onValueChange={(value) => handleTabChange(value)}
+        >
           <TabsList className="grid grid-cols-2 h-12 p-1 bg-muted/50 backdrop-blur-sm rounded-xl">
             <TabsTrigger
               value="information"

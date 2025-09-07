@@ -42,11 +42,12 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
         new OA\Property(property: "address", type: "string"),
         new OA\Property(property: "postal_code", type: "string"),
         new OA\Property(property: "email", type: "string", format: "email"),
-        new OA\Property(property: "role", type: "string", enum: ["admin", "user", "moderator"]),
+        new OA\Property(property: "role", type: "string", enum: ["admin", "user", "renter"]),
         new OA\Property(property: "is_active", type: "boolean", example: true),
         // Computed properties
         new OA\Property(property: "name", type: "string"),
         new OA\Property(property: "profile_picture", type: "string", format: "uri"),
+        new OA\Property(property: "requirements", type: "array", items: new OA\Items(ref: "#/components/schemas/UserRequirement")),
     ]
 )]
 
@@ -185,5 +186,9 @@ class User extends Authenticatable implements HasMedia, OAuthenticatable
     public function getProfilePictureAttribute(): string
     {
         return $this->getFirstMediaUrl('profile', 'thumb');
+    }
+
+    public function requirements() {
+        return $this->hasMany(UserRequirement::class, 'user_id', 'id');
     }
 }

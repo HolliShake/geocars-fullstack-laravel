@@ -24,7 +24,7 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "description", type: "string"),
         new OA\Property(property: "is_required", type: "boolean"),
         new OA\Property(property: "is_active", type: "boolean"),
-        new OA\Property(property: "role", type: "string"),
+        new OA\Property(property: "role", type: "string", enum: ["admin", "user", "renter"]),
     ]
 )]
 

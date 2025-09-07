@@ -58,10 +58,6 @@ export default function SideBar({
         shadow-2xl shadow-cyan-500/5
       `}
     >
-      {/* Animated background gradient */}
-      <div className="absolute inset-0 opacity-95"></div>
-      <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/15 via-blue-500/15 to-purple-500/15 animate-pulse"></div>
-
       {/* Header */}
       <div className="relative flex items-center justify-between h-20 px-6 border-b border-sidebar-border">
         <div className="flex items-center space-x-3">
@@ -70,7 +66,6 @@ export default function SideBar({
             <div className="w-6 h-6 bg-sidebar rounded-sm flex items-center justify-center">
               <div className="w-3 h-3 bg-gradient-to-br from-cyan-400 to-purple-600 rounded-sm"></div>
             </div>
-            <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-cyan-400/20 to-purple-600/20 animate-pulse"></div>
           </div>
 
           <div>
@@ -264,16 +259,12 @@ export default function SideBar({
       {/* Enhanced bottom section with Web3 styling */}
       <div className="relative p-4">
         <div className="relative p-4 bg-accent/50 rounded-lg border border-sidebar-border backdrop-blur-sm overflow-hidden">
-          {/* Animated background */}
-          <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/15 via-blue-500/15 to-purple-500/15 animate-pulse"></div>
-
           <div className="relative flex items-center space-x-4">
             {/* Avatar with Web3 styling */}
             <div className="relative w-12 h-12 rounded-lg bg-gradient-to-br from-cyan-400 via-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-cyan-500/25">
               <div className="w-8 h-8 bg-sidebar rounded-md flex items-center justify-center">
                 <div className="w-4 h-4 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full"></div>
               </div>
-              <div className="absolute inset-0 rounded-lg bg-gradient-to-br from-cyan-400/20 to-purple-600/20 animate-pulse"></div>
             </div>
 
             <div className="flex-1 min-w-0">
@@ -284,7 +275,7 @@ export default function SideBar({
               </div>
 
               <div className="flex items-center space-x-2 mt-1">
-                <Wifi className="w-3 h-3 text-green-400 animate-pulse" />
+                <Wifi className="w-3 h-3 text-green-400" />
                 <p className="text-xs text-sidebar-foreground/70">Connected to Web3</p>
               </div>
             </div>

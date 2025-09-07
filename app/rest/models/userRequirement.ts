@@ -5,6 +5,9 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { Requirement } from './requirement';
+import type { User } from './user';
+import type { Media } from './media';
 
 export interface UserRequirement {
   id?: number;
@@ -12,4 +15,7 @@ export interface UserRequirement {
   requirement_id: number;
   created_at?: string;
   updated_at?: string;
+  requirement?: Requirement;
+  user?: User;
+  uploads?: Media;
 }

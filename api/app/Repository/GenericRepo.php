@@ -5,6 +5,7 @@ namespace App\Repository;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Collection;
 use App\Interface\Repository\IGenericRepo;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 
 /**
@@ -35,6 +36,15 @@ class GenericRepo implements IGenericRepo
         }
 
         $this->model = $model;
+    }
+
+    /**
+     * Get the query builder for the model
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function query(): Builder {
+        return $this->model::query();
     }
 
     /**

@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import PageLayout from '@/components/layout/page.layout';
+import { FileViewer } from '@/components/shared/file-viewer.component';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,14 +8,16 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { dumbCurrency } from '@/lib/dumb-currency';
 import { useGetCarRentalById } from '@rest/api';
-import { CarRentalRentalStatus } from '@rest/models';
+import { CarRentalRentalStatus, type UserRequirement } from '@rest/models';
 import {
-  AlertCircle,
+  AlertTriangle,
   Calendar,
   Car,
   CheckCircle,
+  CheckCircle2,
   Clock,
   CreditCard,
+  Eye,
   FileText,
   Hash,
   Mail,
@@ -22,20 +25,26 @@ import {
   Phone,
   Shield,
   TrendingUp,
+  Upload,
   User,
   XCircle,
 } from 'lucide-react';
 import type React from 'react';
+import { useEffect } from 'react';
 import { useParams } from 'react-router';
 
 export default function UserCarRentalApplicationPage(): React.ReactElement {
   const { id } = useParams();
 
-  const { data } = useGetCarRentalById(Number(id));
+  const { data, isLoading } = useGetCarRentalById(Number(id));
 
   const rental = data?.data;
 
-  if (!rental) {
+  useEffect(() => {
+    console.log(JSON.stringify(data?.data ?? {}, null, 2));
+  }, [data]);
+
+  if (isLoading || !rental) {
     return (
       <PageLayout
         title="Car Rental Booking Request"
@@ -81,11 +90,13 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
   const getStatusIcon = (status: string) => {
     switch (status) {
       case 'confirmed':
-        return <CheckCircle className="h-4 w-4" />;
+        return <CheckCircle2 className="h-4 w-4" />;
       case 'cancelled':
         return <XCircle className="h-4 w-4" />;
       case 'pending':
-        return <AlertCircle className="h-4 w-4" />;
+        return <AlertTriangle className="h-4 w-4" />;
+      case 'completed':
+        return <CheckCircle className="h-4 w-4" />;
       default:
         return <Clock className="h-4 w-4" />;
     }
@@ -99,8 +110,25 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
         return 'destructive';
       case 'pending':
         return 'secondary';
+      case 'completed':
+        return 'default';
       default:
         return 'outline';
+    }
+  };
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'confirmed':
+        return 'bg-green-100 text-green-800 border-green-200 animate-pulse';
+      case 'cancelled':
+        return 'bg-red-100 text-red-800 border-red-200';
+      case 'pending':
+        return 'bg-yellow-100 text-yellow-800 border-yellow-200 animate-pulse';
+      case 'completed':
+        return 'bg-blue-100 text-blue-800 border-blue-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
     }
   };
 
@@ -111,7 +139,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
       withBack={true}
     >
       <div className="min-h-screen bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 backdrop-blur-sm">
-        <div className="container mx-auto p-6 max-w-7xl space-y-8">
+        <div className="container mx-auto p-4 sm:p-6 max-w-7xl space-y-6 lg:space-y-8">
           {/* Header Section */}
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div className="space-y-2">
@@ -119,13 +147,13 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                 <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-600/20 backdrop-blur-sm">
                   <Hash className="h-6 w-6 text-primary" />
                 </div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                <h1 className="text-2xl sm:text-3xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent break-words">
                   Booking Request #{rental.id}
                 </h1>
               </div>
               <Badge
                 variant={getStatusVariant(rental.rental_status)}
-                className="w-fit gap-2 text-sm font-medium px-3 py-1"
+                className={`w-fit gap-2 text-sm font-medium px-3 py-1 ${getStatusColor(rental.rental_status)}`}
               >
                 {getStatusIcon(rental.rental_status)}
                 {rental.rental_status.charAt(0).toUpperCase() + rental.rental_status.slice(1)}
@@ -140,9 +168,9 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
             </Button>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 lg:gap-8">
             {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+            <div className="xl:col-span-2 space-y-4 lg:space-y-6">
               {/* Booking Information */}
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300">
                 <CardHeader className="pb-4">
@@ -154,7 +182,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <Clock className="h-4 w-4" />
@@ -171,17 +199,20 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                         {new Date(rental.start_date).toLocaleDateString()}
                       </p>
                     </div>
-                    <div className="space-y-1">
-                      <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
-                        <Calendar className="h-4 w-4" />
-                        Return Date
+                    {(rental.rental_status === CarRentalRentalStatus.confirmed ||
+                      rental.rental_status === CarRentalRentalStatus.completed) && (
+                      <div className="space-y-1">
+                        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                          <Calendar className="h-4 w-4" />
+                          Return Date
+                        </div>
+                        <p className="text-foreground font-semibold">
+                          {rental.return_date
+                            ? new Date(rental.return_date).toLocaleDateString()
+                            : 'Not returned yet'}
+                        </p>
                       </div>
-                      <p className="text-foreground font-semibold">
-                        {rental.return_date
-                          ? new Date(rental.return_date).toLocaleDateString()
-                          : 'Not returned yet'}
-                      </p>
-                    </div>
+                    )}
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <Shield className="h-4 w-4" />
@@ -195,7 +226,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
 
                   <Separator className="bg-border/50" />
 
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <CreditCard className="h-4 w-4" />
@@ -211,7 +242,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                           <Hash className="h-4 w-4" />
                           Payment Reference
                         </div>
-                        <p className="text-foreground font-semibold font-mono text-sm bg-muted/50 px-2 py-1 rounded">
+                        <p className="text-foreground font-semibold font-mono text-sm bg-muted/50 px-2 py-1 rounded break-all">
                           {rental.payment_reference}
                         </p>
                       </div>
@@ -230,21 +261,25 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                     Customer Information
                   </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <CardContent className="space-y-6">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <User className="h-4 w-4" />
                         Name
                       </div>
-                      <p className="text-foreground font-semibold">{rental.user?.name || 'N/A'}</p>
+                      <p className="text-foreground font-semibold break-words">
+                        {rental.user?.name || 'N/A'}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
                         <Mail className="h-4 w-4" />
                         Email
                       </div>
-                      <p className="text-foreground font-semibold">{rental.user?.email || 'N/A'}</p>
+                      <p className="text-foreground font-semibold break-all">
+                        {rental.user?.email || 'N/A'}
+                      </p>
                     </div>
                     <div className="space-y-1">
                       <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
@@ -258,11 +293,109 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                         <MapPin className="h-4 w-4" />
                         Address
                       </div>
-                      <p className="text-foreground font-semibold">
+                      <p className="text-foreground font-semibold break-words">
                         {rental.user?.address || 'N/A'}
                       </p>
                     </div>
                   </div>
+
+                  {/* Requirements Section */}
+                  {rental.user?.requirements && rental.user.requirements.length > 0 && (
+                    <>
+                      <Separator className="bg-border/50" />
+                      <div className="space-y-6">
+                        <div className="flex items-center gap-3">
+                          <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-600/20">
+                            <Upload className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <h3 className="text-lg font-semibold text-foreground">Requirements</h3>
+                            <p className="text-sm text-muted-foreground">
+                              Customer submitted documents and requirements
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 gap-4">
+                          {rental.user.requirements.map(
+                            (requirement: UserRequirement, index: number) => (
+                              <Card
+                                key={index}
+                                className="border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-md transition-all duration-200"
+                              >
+                                <CardContent className="p-4">
+                                  <div className="space-y-4">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <div className="p-2 rounded-lg bg-gradient-to-r from-cyan-400/20 via-blue-500/20 to-purple-600/20">
+                                          <FileText className="h-4 w-4 text-primary" />
+                                        </div>
+                                        <div>
+                                          <h4 className="font-semibold text-foreground">
+                                            {requirement.requirement?.name || 'Unnamed Requirement'}
+                                          </h4>
+                                          <p className="text-sm text-muted-foreground">
+                                            {requirement.requirement?.description ||
+                                              'No description available'}
+                                          </p>
+                                        </div>
+                                      </div>
+                                      <Badge
+                                        variant={requirement.uploads ? 'default' : 'secondary'}
+                                        className={
+                                          requirement.uploads
+                                            ? 'bg-green-100 text-green-800 border-green-200'
+                                            : 'bg-yellow-100 text-yellow-800 border-yellow-200'
+                                        }
+                                      >
+                                        {requirement.uploads ? (
+                                          <>
+                                            <CheckCircle2 className="h-3 w-3 mr-1" />
+                                            Submitted
+                                          </>
+                                        ) : (
+                                          <>
+                                            <AlertTriangle className="h-3 w-3 mr-1" />
+                                            Pending
+                                          </>
+                                        )}
+                                      </Badge>
+                                    </div>
+
+                                    {requirement.uploads && (
+                                      <div className="space-y-3">
+                                        <div className="flex items-center gap-2 text-sm font-medium text-muted-foreground">
+                                          <Eye className="h-4 w-4" />
+                                          Uploaded Document
+                                        </div>
+                                        <FileViewer
+                                          file={requirement.uploads}
+                                          className="hover:shadow-lg transition-all duration-200"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {!requirement.uploads && (
+                                      <div className="flex items-center justify-center py-8 text-center">
+                                        <div className="space-y-2">
+                                          <div className="p-3 rounded-full bg-muted/50 w-12 h-12 flex items-center justify-center mx-auto">
+                                            <Upload className="h-6 w-6 text-muted-foreground" />
+                                          </div>
+                                          <p className="text-sm text-muted-foreground">
+                                            No document uploaded yet
+                                          </p>
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )
+                          )}
+                        </div>
+                      </div>
+                    </>
+                  )}
                 </CardContent>
               </Card>
 
@@ -279,25 +412,39 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                 <CardContent>
                   {rental.car_posting ? (
                     <div className="space-y-6">
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 lg:gap-6">
                         <div className="space-y-4">
                           {rental.car_posting.car?.image_url && (
-                            <div className="relative overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 p-1">
+                            <div className="relative group overflow-hidden rounded-xl bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 p-1">
                               <img
                                 src={rental.car_posting.car.image_url}
                                 alt={`${rental.car_posting.car?.brand || 'Unknown'} ${rental.car_posting.car?.model || 'Vehicle'}`}
-                                className="w-full h-48 object-cover rounded-lg"
+                                className="w-full h-48 sm:h-56 lg:h-64 object-cover rounded-lg transition-transform duration-300 group-hover:scale-105"
                               />
+                              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 rounded-lg" />
+                              <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <Button
+                                  variant="secondary"
+                                  size="sm"
+                                  className="h-8 w-8 p-0 bg-white/90 hover:bg-white"
+                                  onClick={() =>
+                                    rental.car_posting?.car?.image_url &&
+                                    window.open(rental.car_posting.car.image_url, '_blank')
+                                  }
+                                >
+                                  <Eye className="h-4 w-4" />
+                                </Button>
+                              </div>
                             </div>
                           )}
                         </div>
                         <div className="space-y-4">
-                          <div className="grid grid-cols-2 gap-4">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div className="space-y-1">
                               <span className="text-sm font-medium text-muted-foreground">
                                 Model
                               </span>
-                              <p className="text-foreground font-semibold">
+                              <p className="text-foreground font-semibold break-words">
                                 {rental.car_posting.car?.brand || 'Unknown'}{' '}
                                 {rental.car_posting.car?.model || 'Vehicle'}
                               </p>
@@ -314,7 +461,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                               <span className="text-sm font-medium text-muted-foreground">
                                 License Plate
                               </span>
-                              <p className="text-foreground font-semibold font-mono text-sm bg-muted/50 px-2 py-1 rounded w-fit">
+                              <p className="text-foreground font-semibold font-mono text-sm bg-muted/50 px-2 py-1 rounded break-all">
                                 {rental.car_posting.car?.plate_number || 'N/A'}
                               </p>
                             </div>
@@ -382,7 +529,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
             </div>
 
             {/* Sidebar - Order Summary */}
-            <div className="space-y-6">
+            <div className="space-y-4 lg:space-y-6">
               <Card className="border-border/50 bg-card/50 backdrop-blur-sm hover:shadow-lg transition-all duration-300 sticky top-6">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl">
@@ -433,9 +580,9 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                   <Separator className="bg-border/50" />
 
                   <div className="p-4 rounded-lg bg-gradient-to-r from-cyan-500/10 via-blue-500/10 to-purple-500/10 backdrop-blur-sm">
-                    <div className="flex justify-between items-center">
+                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
                       <span className="text-lg font-semibold text-foreground">Total Amount</span>
-                      <span className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                      <span className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent break-all">
                         ₱
                         {(
                           Number(rental.car_posting?.price || 0) * rental.days +
@@ -456,17 +603,17 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                           Action Required
                         </div>
 
-                        <div className="flex flex-col sm:flex-row gap-3">
-                          <Button className="flex-1 h-14 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]">
-                            <CheckCircle className="h-5 w-5 mr-2" />
+                        <div className="flex flex-col gap-3">
+                          <Button className="w-full h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group">
+                            <CheckCircle className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             Accept Booking
                           </Button>
 
                           <Button
                             variant="outline"
-                            className="flex-1 h-14 sm:h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98]"
+                            className="w-full h-12 border-2 border-red-200 text-red-600 hover:bg-red-50 hover:border-red-300 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group"
                           >
-                            <XCircle className="h-5 w-5 mr-2" />
+                            <XCircle className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                             Reject Booking
                           </Button>
                         </div>

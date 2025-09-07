@@ -36,6 +36,7 @@ import type {
   CreatePlanResponse200,
   CreateRequirementResponse200,
   CreateUserCompanyResponse200,
+  CreateUserRequirementBody,
   CreateUserRequirementResponse200,
   CreateUserResponse200,
   DeleteCarPostingResponse200,
@@ -97,6 +98,7 @@ import type {
   User,
   UserCompany,
   UserRequirement,
+  UserRequirementResponse200,
   ValidationErrorResponse
 } from './models';
 
@@ -3544,6 +3546,95 @@ export const useUploadProfilePicture = <TError = UnauthorizedResponse | Validati
     }
     
 /**
+ * Retrieve user requirements by user ID
+ * @summary Get user requirements
+ */
+export const getUserRequirements = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<UserRequirementResponse200>(
+      {url: `/api/UserRequirement/User`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetUserRequirementsQueryKey = () => {
+    return [`/api/UserRequirement/User`] as const;
+    }
+
+    
+export const getGetUserRequirementsQueryOptions = <TData = Awaited<ReturnType<typeof getUserRequirements>>, TError = null | null | null>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserRequirementsQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserRequirements>>> = ({ signal }) => getUserRequirements(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserRequirementsQueryResult = NonNullable<Awaited<ReturnType<typeof getUserRequirements>>>
+export type GetUserRequirementsQueryError = null | null | null
+
+
+export function useGetUserRequirements<TData = Awaited<ReturnType<typeof getUserRequirements>>, TError = null | null | null>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserRequirements>>,
+          TError,
+          Awaited<ReturnType<typeof getUserRequirements>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserRequirements<TData = Awaited<ReturnType<typeof getUserRequirements>>, TError = null | null | null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserRequirements>>,
+          TError,
+          Awaited<ReturnType<typeof getUserRequirements>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserRequirements<TData = Awaited<ReturnType<typeof getUserRequirements>>, TError = null | null | null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get user requirements
+ */
+
+export function useGetUserRequirements<TData = Awaited<ReturnType<typeof getUserRequirements>>, TError = null | null | null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserRequirements>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserRequirementsQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
  * Retrieve a paginated list of UserRequirement with optional search
  * @summary Get paginated list of UserRequirement
  */
@@ -3638,15 +3729,19 @@ export function useGetUserRequirementPaginated<TData = Awaited<ReturnType<typeof
  * @summary Create a new UserRequirement
  */
 export const createUserRequirement = (
-    userRequirement: UserRequirement,
+    createUserRequirementBody: CreateUserRequirementBody,
  signal?: AbortSignal
 ) => {
       
-      
+      const formData = new FormData();
+formData.append(`user_id`, createUserRequirementBody.user_id.toString())
+formData.append(`requirement_id`, createUserRequirementBody.requirement_id.toString())
+formData.append(`file`, createUserRequirementBody.file)
+
       return fetchData<CreateUserRequirementResponse200>(
       {url: `/api/UserRequirement`, method: 'POST',
-      headers: {'Content-Type': 'application/json', },
-      data: userRequirement, signal
+      headers: {'Content-Type': 'multipart/form-data', },
+       data: formData, signal
     },
       );
     }
@@ -3654,8 +3749,8 @@ export const createUserRequirement = (
 
 
 export const getCreateUserRequirementMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: UserRequirement}, TContext>, }
-): UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: UserRequirement}, TContext> => {
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: CreateUserRequirementBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: CreateUserRequirementBody}, TContext> => {
 
 const mutationKey = ['createUserRequirement'];
 const {mutation: mutationOptions} = options ?
@@ -3667,7 +3762,7 @@ const {mutation: mutationOptions} = options ?
       
 
 
-      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUserRequirement>>, {data: UserRequirement}> = (props) => {
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUserRequirement>>, {data: CreateUserRequirementBody}> = (props) => {
           const {data} = props ?? {};
 
           return  createUserRequirement(data,)
@@ -3679,18 +3774,18 @@ const {mutation: mutationOptions} = options ?
   return  { mutationFn, ...mutationOptions }}
 
     export type CreateUserRequirementMutationResult = NonNullable<Awaited<ReturnType<typeof createUserRequirement>>>
-    export type CreateUserRequirementMutationBody = UserRequirement
+    export type CreateUserRequirementMutationBody = CreateUserRequirementBody
     export type CreateUserRequirementMutationError = ValidationErrorResponse | InternalServerErrorResponse
 
     /**
  * @summary Create a new UserRequirement
  */
 export const useCreateUserRequirement = <TError = ValidationErrorResponse | InternalServerErrorResponse,
-    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: UserRequirement}, TContext>, }
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserRequirement>>, TError,{data: CreateUserRequirementBody}, TContext>, }
  , queryClient?: QueryClient): UseMutationResult<
         Awaited<ReturnType<typeof createUserRequirement>>,
         TError,
-        {data: UserRequirement},
+        {data: CreateUserRequirementBody},
         TContext
       > => {
 

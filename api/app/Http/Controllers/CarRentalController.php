@@ -102,7 +102,7 @@ class CarRentalController extends Controller
     public function show($id)
     {
         try {
-            return $this->ok($this->service->get($id, ['*'], ['user', 'carPosting.car']));
+            return $this->ok($this->service->get($id, ['*'], ['user.requirements.uploads', 'user.requirements.requirement', 'carPosting.car']));
         } catch (ModelNotFoundException $e) {
             return $this->notFound('CarRental not found');
         }

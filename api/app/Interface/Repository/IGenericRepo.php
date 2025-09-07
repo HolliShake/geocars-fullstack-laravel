@@ -3,12 +3,20 @@
 namespace App\Interface\Repository;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Collection;
 
 
 interface IGenericRepo
 {
+    /**
+     * Get the query builder for the model
+     *
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function query(): Builder;
+
     /**
      * Retrieve all records with optional filtering and relations.
      *

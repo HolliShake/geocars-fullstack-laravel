@@ -86,6 +86,7 @@ Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserContro
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(UserRequirementController::class)->group(function () {
+    Route::get('/UserRequirement/User', 'getUserRequirements');
     Route::get('/UserRequirement','index');
     Route::get('/UserRequirement/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/UserRequirement','store');

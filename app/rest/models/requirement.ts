@@ -5,6 +5,7 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { RequirementRole } from './requirementRole';
 
 export interface Requirement {
   id?: number;
@@ -14,5 +15,5 @@ export interface Requirement {
   description: string;
   is_required: boolean;
   is_active: boolean;
-  role: string;
+  role: RequirementRole;
 }

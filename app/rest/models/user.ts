@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { UserRole } from './userRole';
+import type { UserRequirement } from './userRequirement';
 
 export interface User {
   id: number;
@@ -22,4 +23,5 @@ export interface User {
   is_active: boolean;
   name?: string;
   profile_picture?: string;
+  requirements?: UserRequirement[];
 }
