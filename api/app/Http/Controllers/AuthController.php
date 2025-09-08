@@ -101,6 +101,49 @@ class AuthController extends Controller
         }
     }
 
+    #[OA\Post(
+        path: "/api/Auth/signup",
+        summary: "Signup",
+        tags: ["Auth"],
+        description: "Signup with the provided details",
+        operationId: "signupWithCredentials",
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(ref: "#/components/schemas/SignupRequest")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Signup successful",
+        content: new OA\JsonContent(ref: "#/components/schemas/AuthResponse200")
+    )]
+    public function signup(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'firstname' => 'required|string|max:255',
+                'lastname' => 'required|string|max:255',
+                'username' => 'required|string|max:255|unique:users,username',
+                'phone' => 'nullable|string|max:255',
+                'country' => 'nullable|string|max:255',
+                'city' => 'nullable|string|max:255',
+                'address' => 'nullable|string|max:255',
+                'postal_code' => 'nullable|string|max:255',
+                'email' => 'required|email|max:255|unique:users,email',
+                'password' => 'required|string|min:8|confirmed'
+            ]);
+
+            if ($validator->fails()) {
+                return $this->validationError($validator->errors());
+            }
+
+            $validated = $validator->validated();
+            return $this->ok($this->service->signup($validated));
+        } catch (\Exception $e) {
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
     #[OA\Get(
         path: "/api/Auth/session",
         summary: "Session",

@@ -24,6 +24,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucideLayoutDashboard />,
     element: <UserDashboardPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.user],
   },
   {
@@ -33,6 +34,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucideMapPinPlus />,
     element: <UserCarRentalPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.user],
   },
   // Car Rental Application
@@ -53,6 +55,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucidePodcast />,
     element: <UserCarPostingPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.user],
   },
   {
@@ -62,6 +65,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucideCar />,
     element: <UserQuickCarPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.user],
   },
   {
@@ -71,6 +75,7 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucideBuilding2 />,
     element: <UserCompanyConfigPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.user],
   },
   {

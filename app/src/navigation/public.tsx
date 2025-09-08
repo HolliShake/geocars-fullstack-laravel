@@ -1,31 +1,29 @@
-import LoginPage from '@/pages/auth/login/page';
+import Page403 from '@/pages/status/page403';
 import Page404 from '@/pages/status/page404';
 import type { Route } from '../types/route';
 
 const PUBLIC: readonly Route[] = Object.freeze<Route[]>([
   {
-    key: 'Public.Root',
-    title: 'Root',
+    key: 'Public.403',
+    title: '404',
     icon: null,
-    path: '/',
-    index: true,
-    element: <LoginPage />,
-    layout: 'default',
+    path: '/403',
+    index: false,
     sidebar: false,
-  },
-  {
-    key: 'Public.Login',
-    title: 'Login',
-    icon: null,
-    path: '/auth/login',
-    index: true,
-    element: <LoginPage />,
-    layout: 'default',
-    sidebar: false,
+    element: <Page403 />,
   },
   // 404
   {
     key: 'Public.404',
+    title: '404',
+    icon: null,
+    path: '/404',
+    index: false,
+    sidebar: false,
+    element: <Page404 />,
+  },
+  {
+    key: 'Auto.404',
     title: '404',
     icon: null,
     path: '*',

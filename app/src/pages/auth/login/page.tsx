@@ -10,6 +10,7 @@ import { useLoginWithCredentials } from '@rest/api';
 import { Eye, EyeOff, Lock, LogIn, Mail } from 'lucide-react';
 import type React from 'react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 
 export default function LoginPage(): React.ReactNode {
@@ -18,6 +19,7 @@ export default function LoginPage(): React.ReactNode {
   const [showPassword, setShowPassword] = useState(false);
   const auth = useAuth();
   const { mutateAsync: loginAsync, isPending: isLoading } = useLoginWithCredentials();
+  const navigate = useNavigate();
 
   const [errorResponse, setErrorResponse] = useState<{
     email?: {
@@ -212,6 +214,9 @@ export default function LoginPage(): React.ReactNode {
                 variant="ghost"
                 size="sm"
                 className="text-cyan-400 hover:text-cyan-300 transition-colors duration-300 p-0 h-auto font-semibold underline-offset-4 hover:underline text-xs sm:text-sm"
+                onClick={() => {
+                  navigate('/auth/signup');
+                }}
               >
                 Sign up here
               </Button>

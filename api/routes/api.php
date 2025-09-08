@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::controller(AuthController::class)->group(function () {
     Route::middleware('auth:api')->get('/Auth/user', 'user');
     Route::post('/Auth/login', 'login');
+    Route::post('/Auth/signup', 'signup');
     Route::middleware('auth:api')->post('/Auth/logout', 'logout');
     Route::middleware('auth:api')->get('/Auth/session', 'session');
 });
@@ -85,11 +86,11 @@ Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserContro
     Route::post('/User/uploadProfilePicture/{id}', 'uploadProfilePicture')->where('id', '[0-9]+');
 });
 
-Route::middleware(['auth:api', 'role:admin,user'])->controller(UserRequirementController::class)->group(function () {
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserRequirementController::class)->group(function () {
     Route::get('/UserRequirement/User', 'getUserRequirements');
     Route::get('/UserRequirement','index');
     Route::get('/UserRequirement/{id}','show')->where('id', '[0-9]+');
-    Route::middleware('role:user')->post('/UserRequirement','store');
-    Route::middleware('role:user')->put('/UserRequirement/{id}','update')->where('id', '[0-9]+');
-    Route::middleware('role:user')->delete('/UserRequirement/{id}', 'destroy')->where('id', '[0-9]+');
+    Route::middleware('role:user,renter')->post('/UserRequirement','store');
+    Route::middleware('role:user,renter')->put('/UserRequirement/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user,renter')->delete('/UserRequirement/{id}', 'destroy')->where('id', '[0-9]+');
 });

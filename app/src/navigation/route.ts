@@ -6,9 +6,13 @@ type RouteConfig<T extends string> = {
 };
 
 type RouteStructure = {
+  Public: {
+    Forbidden: RouteConfig<'/403'>;
+    NotFound: RouteConfig<'/404'>;
+  };
   Auth: {
     Login: RouteConfig<'/auth/login'>;
-    Register: RouteConfig<'/auth/register'>;
+    Signup: RouteConfig<'/auth/signup'>;
     Profile: RouteConfig<'/profile'>;
   };
   Admin: {
@@ -28,6 +32,9 @@ type RouteStructure = {
     QuickCar: RouteConfig<'/user/quick-car'>;
     CompanyConfig: RouteConfig<'/user/company-config'>;
     CompanyCar: RouteConfig<'/user/company-config/cars/:company_id'>;
+  };
+  Renter: {
+    Browse: RouteConfig<'/renter/browse'>;
   };
 };
 
@@ -58,9 +65,13 @@ function createRoute<T extends string>(key: T): RouteConfig<T> {
 }
 
 export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
+  Public: {
+    Forbidden: createRoute('/403'),
+    NotFound: createRoute('/404'),
+  },
   Auth: {
     Login: createRoute('/auth/login'),
-    Register: createRoute('/auth/register'),
+    Signup: createRoute('/auth/signup'),
     Profile: createRoute('/profile'),
   },
   Admin: {
@@ -80,5 +91,8 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     QuickCar: createRoute('/user/quick-car'),
     CompanyConfig: createRoute('/user/company-config'),
     CompanyCar: createRoute('/user/company-config/cars/:company_id'),
+  },
+  Renter: {
+    Browse: createRoute('/renter/browse'),
   },
 });

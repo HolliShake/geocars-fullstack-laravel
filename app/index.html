@@ -37,12 +37,13 @@
     <meta name="author" content="GeoCars Team" />
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root" class="w-full"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
-      const theme = localStorage.getItem('vite-ui-theme') || 'light';
-      document.documentElement.classList.add(theme);
-      document.body.classList.add(theme);
+      (function () {
+        const theme = localStorage.getItem('vite-ui-theme') || 'dark';
+        document.documentElement.classList.add(theme);
+      })();
     </script>
   </body>
 </html>

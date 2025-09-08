@@ -38,6 +38,15 @@ class UserService extends GenericService implements IUserService
         ];
     }
 
+    public function signup(array $data): array
+    {
+        $user = $this->repo->create($data);
+        return [
+            'token' => $user->createToken('auth_token')->accessToken,
+            'role' => $user->role,
+        ];
+    }
+
     public function logout(): void
     {
         $user = Auth::user();

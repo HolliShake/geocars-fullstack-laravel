@@ -40,11 +40,13 @@ export default function SideBar({
 
   const computedRoutes = useMemo(() => {
     if (isLoading) return [];
-    return Routes.filter(
-      (route) =>
-        route.sidebar === true ||
-        (route.sidebar === undefined && route.roles?.includes(role as Role))
-    );
+    return Routes.filter((route) => {
+      if (!route.sidebar) return false;
+      // No roles means public route
+      if (!route.roles || route.roles.length === 0) return true;
+      // Check if user has one of the required roles
+      return (route.roles ?? []).some((r: Role) => r === role);
+    });
   }, [isLoading, role]);
 
   return (

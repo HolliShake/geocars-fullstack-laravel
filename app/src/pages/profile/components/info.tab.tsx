@@ -262,14 +262,6 @@ export default function InfoTab(): React.ReactElement {
                 Update your personal details and contact information.
               </CardDescription>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              className="border-border hover:bg-gradient-to-r hover:from-cyan-500/10 hover:via-blue-500/10 hover:to-purple-500/10 rounded-lg transition-all duration-300"
-            >
-              <Edit3 className="h-4 w-4 mr-2" />
-              Edit
-            </Button>
           </div>
         </CardHeader>
         <Separator className="bg-border" />

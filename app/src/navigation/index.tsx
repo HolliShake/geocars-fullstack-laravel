@@ -3,7 +3,8 @@ import type { Route } from '@/types/route';
 import AdminRoutes from './admin';
 import AuthRoutes from './auth';
 import PUBLIC from './public';
-import UseryRoute from './user';
+import RenterRoutes from './renter';
+import UserRoutes from './user';
 
 const checkIfDuplicateTitle = (routes: readonly Route[]): readonly Route[] => {
   const keys = routes.map((route) => route.key);
@@ -14,4 +15,10 @@ const checkIfDuplicateTitle = (routes: readonly Route[]): readonly Route[] => {
   return routes;
 };
 
-export default checkIfDuplicateTitle([...PUBLIC, ...AdminRoutes, ...UseryRoute, ...AuthRoutes]);
+export default checkIfDuplicateTitle([
+  ...PUBLIC,
+  ...AdminRoutes,
+  ...UserRoutes,
+  ...RenterRoutes,
+  ...AuthRoutes,
+]);

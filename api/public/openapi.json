@@ -106,6 +106,38 @@
                 }
             }
         },
+        "\/api\/Auth\/signup": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Signup",
+                "description": "Signup with the provided details",
+                "operationId": "signupWithCredentials",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/SignupRequest"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Signup successful",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/AuthResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Auth\/session": {
             "get": {
                 "tags": [

@@ -83,6 +83,7 @@ import type {
   Plan,
   PlanFeature,
   Requirement,
+  SignupRequest,
   UnauthorizedResponse,
   UpdateCarBody,
   UpdateCarPostingResponse200,
@@ -229,6 +230,72 @@ export const useLogout = <TError = UnauthorizedResponse | InternalServerErrorRes
       > => {
 
       const mutationOptions = getLogoutMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Signup with the provided details
+ * @summary Signup
+ */
+export const signupWithCredentials = (
+    signupRequest: SignupRequest,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<AuthResponse200>(
+      {url: `/api/Auth/signup`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: signupRequest, signal
+    },
+      );
+    }
+  
+
+
+export const getSignupWithCredentialsMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof signupWithCredentials>>, TError,{data: SignupRequest}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof signupWithCredentials>>, TError,{data: SignupRequest}, TContext> => {
+
+const mutationKey = ['signupWithCredentials'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof signupWithCredentials>>, {data: SignupRequest}> = (props) => {
+          const {data} = props ?? {};
+
+          return  signupWithCredentials(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SignupWithCredentialsMutationResult = NonNullable<Awaited<ReturnType<typeof signupWithCredentials>>>
+    export type SignupWithCredentialsMutationBody = SignupRequest
+    export type SignupWithCredentialsMutationError = unknown
+
+    /**
+ * @summary Signup
+ */
+export const useSignupWithCredentials = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof signupWithCredentials>>, TError,{data: SignupRequest}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof signupWithCredentials>>,
+        TError,
+        {data: SignupRequest},
+        TContext
+      > => {
+
+      const mutationOptions = getSignupWithCredentialsMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

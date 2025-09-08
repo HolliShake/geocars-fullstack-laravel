@@ -25,6 +25,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.Dashboard.key,
     element: <AdminDashboardPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.admin],
   },
   {
@@ -34,6 +35,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.UserConfig.key,
     element: <AdminUserConfigPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.admin],
   },
   {
@@ -43,6 +45,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.CompanyConfig.key,
     element: <AdminCompanyConfigPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.admin],
   },
   // subdir
@@ -63,6 +66,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.PlanConfig.key,
     element: <AdminPlanConfigPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.admin],
   },
   // subdir
@@ -83,6 +87,7 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.Admin.RequirementConfig.key,
     element: <AdminRequirementConfigPage />,
     layout: 'dashboard',
+    sidebar: true,
     roles: [RoleEnum.admin],
   },
 ]);

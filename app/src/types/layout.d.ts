@@ -1,1 +1,1 @@
-export type Layout = 'dashboard' | 'default';
+export type Layout = 'dashboard' | 'default' | 'topbar';

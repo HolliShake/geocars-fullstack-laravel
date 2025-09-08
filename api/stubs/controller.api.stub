@@ -9,6 +9,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
+#[OA\PathItem(
+    path: "/plans"
+)]
 class {{ class }} extends Controller
 {
     public function __construct(protected {{ class }}Service $service) {
