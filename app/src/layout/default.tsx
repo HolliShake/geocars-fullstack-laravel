@@ -8,13 +8,13 @@ type DefaultLayoutProps = {
 export default function DefaultLayout({ children }: DefaultLayoutProps): React.ReactNode {
   return (
     <Providers>
-      <section className="min-h-screen w-full overflow-y-auto overflow-x-hidden bg-gradient-to-br from-background via-background to-muted/20">
-        <div className="relative min-h-screen w-full">
+      <section className="h-screen w-screen overflow-hidden bg-gradient-to-br from-background via-background to-muted/20">
+        <div className="relative h-full w-full overflow-hidden">
           {/* Subtle gradient overlay for depth */}
           <div className="fixed inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 pointer-events-none" />
 
           {/* Main content container */}
-          <div className="relative z-10 w-full">{children}</div>
+          <div className="relative z-10 h-full w-full overflow-auto">{children}</div>
         </div>
       </section>
     </Providers>

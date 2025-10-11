@@ -41,6 +41,7 @@ use Spatie\MediaLibrary\InteractsWithMedia;
         new OA\Property(property: "updated_at", type: "string", format: "date-time"),
         // Computed properties
         new OA\Property(property: "image_url", type: "string", example: "https://placehold.co/600x400?text=Toyota+Camry"),
+        new OA\Property(property: "user_company", type: "object", ref: "#/components/schemas/UserCompany"),
         new OA\Property(property: "is_available", type: "boolean", example: true),
     ]
 )]
@@ -126,7 +127,7 @@ class Car extends Model implements HasMedia
         'engine_type',
     ];
 
-    protected $appends = ['is_available', 'image_url'];
+    protected $appends = ['user_company', 'is_available', 'image_url'];
 
     /**
      * Register the media collections for the car.
@@ -146,6 +147,16 @@ class Car extends Model implements HasMedia
     public function getImageUrlAttribute()
     {
         return $this->getFirstMediaUrl('cars') ?? 'https://placehold.co/600x400?text=Toyota+Camry';
+    }
+
+    /**
+     * Get the company owner
+     *
+     * @return UserCompany
+     */
+    public function getUserCompanyAttribute()
+    {
+        return $this->userCompany()->first();
     }
 
     /**
@@ -187,7 +198,7 @@ class Car extends Model implements HasMedia
      */
     public function userCompany()
     {
-        return $this->belongsTo(UserCompany::class, 'user_company_id', 'id');
+        return $this->belongsTo(UserCompany::class);
     }
 
     /**

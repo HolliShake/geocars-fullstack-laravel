@@ -26,6 +26,7 @@ import type {
 
 import type {
   AuthResponse200,
+  BrowseCarPostingParams,
   CarPosting,
   CarRental,
   CreateCarBody,
@@ -1299,6 +1300,96 @@ export const useDeleteCarPosting = <TError = null | InternalServerErrorResponse,
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Retrieve active CarPosting
+ * @summary Get a specific CarPosting
+ */
+export const browseCarPosting = (
+    params?: BrowseCarPostingParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedCarPostingResponse200>(
+      {url: `/api/CarPosting/Browse`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getBrowseCarPostingQueryKey = (params?: BrowseCarPostingParams,) => {
+    return [`/api/CarPosting/Browse`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getBrowseCarPostingQueryOptions = <TData = Awaited<ReturnType<typeof browseCarPosting>>, TError = unknown>(params?: BrowseCarPostingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getBrowseCarPostingQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof browseCarPosting>>> = ({ signal }) => browseCarPosting(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type BrowseCarPostingQueryResult = NonNullable<Awaited<ReturnType<typeof browseCarPosting>>>
+export type BrowseCarPostingQueryError = unknown
+
+
+export function useBrowseCarPosting<TData = Awaited<ReturnType<typeof browseCarPosting>>, TError = unknown>(
+ params: undefined |  BrowseCarPostingParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof browseCarPosting>>,
+          TError,
+          Awaited<ReturnType<typeof browseCarPosting>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBrowseCarPosting<TData = Awaited<ReturnType<typeof browseCarPosting>>, TError = unknown>(
+ params?: BrowseCarPostingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof browseCarPosting>>,
+          TError,
+          Awaited<ReturnType<typeof browseCarPosting>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useBrowseCarPosting<TData = Awaited<ReturnType<typeof browseCarPosting>>, TError = unknown>(
+ params?: BrowseCarPostingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific CarPosting
+ */
+
+export function useBrowseCarPosting<TData = Awaited<ReturnType<typeof browseCarPosting>>, TError = unknown>(
+ params?: BrowseCarPostingParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof browseCarPosting>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getBrowseCarPostingQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Retrieve a paginated list of CarRental with optional search
  * @summary Get paginated list of CarRental

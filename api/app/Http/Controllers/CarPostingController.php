@@ -170,28 +170,33 @@ class CarPostingController extends Controller
     )]
     public function browse(Request $request)
     {
-        $srch = $request->query("search", '');
-        $page = $request->query("page", 0);
-        $rows = $request->query("rows", 10);
-        $is_available = true;
-        $status = 'active';
-
         $conditions = [
-            "description" => ['like', "%{$srch}%"],
+            "description" => ['like', "%{$request->query('search', '')}%"],
+            "end_date" => ['>=', now()],
         ];
 
-        // Date-based status filtering
-        if ($status === 'active') {
-            $conditions["end_date"] = ['>=', now()];
-            if ($is_available !== null) {
-                $conditions["is_available"] = ['=', $is_available];
-            }
-        } else if ($status === 'expired') {
-            $conditions["end_date"] = ['<', now()];
-        }
-        // For 'all' status, no additional date filtering is applied
+        $result = $this->service->paginate(
+            $request->query('page', 0),
+            $request->query('rows', 10),
+            ['*'],
+            ['car', 'car.userCompany.owner.subscription.plan'],
+            $conditions
+        );
 
-        return $this->ok($this->service->paginate($page, $rows, ['*'], ['car'], $conditions));
+        // Filter by is_available attribute and sort by user plan priority
+        if (isset($result['data'])) {
+            $result['data'] = collect($result['data'])
+                ->filter(function ($posting) {
+                    return $posting->is_available === true;
+                })
+                ->sortByDesc(function ($posting) {
+                    return $posting->user_company->user->subscription->plan->price ?? 0;
+                })
+                ->values()
+                ->all();
+        }
+
+        return $this->ok($result);
     }
 
     /**
@@ -228,7 +233,6 @@ class CarPostingController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'car_id'         => 'required|integer|exists:cars,id',
-                'company_id'     => 'required|integer|exists:user_companies,id',
                 'start_date'     => 'required|date|after_or_equal:now',
                 'end_date'       => 'required|date|after:start_date',
                 'description'    => 'required|string|max:1000',

@@ -6,14 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { Car } from './car';
-import type { UserCompany } from './userCompany';
 
 export interface CarPosting {
   id?: number;
   car_id: number;
   car?: Car;
-  company_id: number;
-  company?: UserCompany;
   start_date: string;
   end_date: string;
   description: string;

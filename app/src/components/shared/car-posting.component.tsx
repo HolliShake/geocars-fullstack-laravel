@@ -1,7 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { dumbCurrency } from '@/lib/dumb-currency';
-import { cn } from '@/lib/utils';
 import type { CarPosting } from '@rest/models/carPosting';
 import {
   Building2,
@@ -99,7 +98,7 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
             </CardTitle>
             <CardDescription className="flex items-center gap-2 text-muted-foreground">
               <Building2 className="w-4 h-4" />
-              {carPosting.company?.name || 'Private Owner'}
+              {carPosting.car?.user_company?.name || 'Private Owner'}
             </CardDescription>
           </div>
         </div>
@@ -130,7 +129,8 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
               ></span>
               {carPosting.car.color}
             </span>
-            {carPosting.car.is_available !== undefined && (
+            {/* confusion, atuomatically car is unavailable if has active posting! */}
+            {/* {carPosting.car.is_available !== undefined && (
               <Badge
                 variant="outline"
                 className={cn(
@@ -140,7 +140,7 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
               >
                 {carPosting.car.is_available ? 'Car Available' : 'Car Unavailable'}
               </Badge>
-            )}
+            )} */}
           </div>
         )}
       </CardHeader>

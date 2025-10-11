@@ -8,6 +8,7 @@
 import type { CarType } from './carType';
 import type { CarFuelType } from './carFuelType';
 import type { CarTransmission } from './carTransmission';
+import type { UserCompany } from './userCompany';
 
 export interface Car {
   id?: number;
@@ -32,5 +33,6 @@ export interface Car {
   created_at?: string;
   updated_at?: string;
   image_url?: string;
+  user_company?: UserCompany;
   is_available?: boolean;
 }

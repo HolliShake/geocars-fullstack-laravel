@@ -48,7 +48,6 @@ const formatDateForInput = (dateString: string): string => {
 const schema = z.object({
   id: z.number().optional(),
   car_id: z.number().min(1, 'Car is required'),
-  company_id: z.number().min(1, 'Company is required'),
   start_date: z.string().min(1, 'Start date is required'),
   end_date: z.string().min(1, 'End date is required'),
   description: z.string().min(1, 'Description is required'),
@@ -86,7 +85,7 @@ export default function CarPostingModal({
     watch,
     formState: { errors },
   } = useForm<Schema>({
-    defaultValues: { ...field(), company_id: companyId },
+    defaultValues: { ...field() },
     resolver: zodResolver(schema),
     mode: 'all',
   });
@@ -169,12 +168,11 @@ export default function CarPostingModal({
 
   useEffect(() => {
     if (!controller?.data) {
-      reset({ ...field(), company_id: companyId });
+      reset({ ...field() });
       return;
     }
     reset({
       ...controller.data,
-      company_id: companyId,
       start_date: formatDateForInput(controller.data.start_date),
       end_date: formatDateForInput(controller.data.end_date),
     });

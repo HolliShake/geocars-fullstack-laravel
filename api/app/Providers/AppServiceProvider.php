@@ -11,6 +11,7 @@ use App\Interface\Repository\IPlanRepo;
 use App\Interface\Repository\IUserCompanyRepo;
 use App\Interface\Repository\IUserRepo;
 use App\Interface\Repository\IUserRequirementRepo; // Added
+use App\Interface\Repository\IUserSubscriptionRepo;
 use App\Interface\Service\ICarPostingService;
 use App\Interface\Service\ICarRentalService;
 use App\Interface\Service\ICarService;
@@ -20,6 +21,7 @@ use App\Interface\Service\IPlanService;
 use App\Interface\Service\IUserCompanyService;
 use App\Interface\Service\IUserRequirementService; // Added
 use App\Interface\Service\IUserService;
+use App\Interface\Service\IUserSubscriptionService;
 use App\Repository\CarPostingRepo;
 use App\Repository\CarRentalRepo;
 use App\Repository\CarRepo;
@@ -29,6 +31,7 @@ use App\Repository\UserCompanyRepo;
 use App\Repository\UserRepo;
 use App\Repository\UserRequirementRepo; // Added
 use App\Repository\RequirementRepo;
+use App\Repository\UserSubscriptionRepo;
 use App\Service\CarPostingService;
 use App\Service\CarRentalService;
 use App\Service\CarService;
@@ -41,6 +44,7 @@ use App\Service\UserService;
 use Carbon\CarbonInterval;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Passport\Passport;
+use UserSubscriptionService;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -59,6 +63,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICarRentalRepo::class, CarRentalRepo::class);
         $this->app->bind(IUserRequirementRepo::class, UserRequirementRepo::class);
         $this->app->bind(IRequirementRepo::class, RequirementRepo::class);
+        $this->app->bind(IUserSubscriptionRepo::class, UserSubscriptionRepo::class);
         // Services
         $this->app->bind(IUserService::class, UserService::class);
         $this->app->bind(IPlanService::class, PlanService::class);
@@ -69,6 +74,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(ICarRentalService::class, CarRentalService::class);
         $this->app->bind(IUserRequirementService::class, UserRequirementService::class);
         $this->app->bind(IRequirementService::class, RequirementService::class);
+        $this->app->bind(IUserSubscriptionService::class, UserSubscriptionService::class);
     }
 
     /**

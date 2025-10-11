@@ -964,6 +964,59 @@
                 }
             }
         },
+        "\/api\/CarPosting\/Browse": {
+            "get": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Get a specific CarPosting",
+                "description": "Retrieve active CarPosting",
+                "operationId": "browseCarPosting",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedCarPostingResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/CarRental": {
             "get": {
                 "tags": [
@@ -3047,6 +3100,66 @@
                 },
                 "type": "object"
             },
+            "SignupRequest": {
+                "required": [
+                    "name",
+                    "email",
+                    "password",
+                    "password_confirmation"
+                ],
+                "properties": {
+                    "firstname": {
+                        "description": "The first name of the user",
+                        "type": "string"
+                    },
+                    "lastname": {
+                        "description": "The last name of the user",
+                        "type": "string"
+                    },
+                    "username": {
+                        "description": "The username of the user",
+                        "type": "string"
+                    },
+                    "phone": {
+                        "description": "The phone number of the user",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "country": {
+                        "description": "The country of the user",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "city": {
+                        "description": "The city of the user",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "address": {
+                        "description": "The address of the user",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "postal_code": {
+                        "description": "The postal code of the user",
+                        "type": "string",
+                        "nullable": true
+                    },
+                    "email": {
+                        "description": "The email of the user",
+                        "type": "string"
+                    },
+                    "password": {
+                        "description": "The password of the user",
+                        "type": "string"
+                    },
+                    "password_confirmation": {
+                        "description": "The password confirmation of the user",
+                        "type": "string"
+                    }
+                },
+                "type": "object"
+            },
             "AuthResponse200": {
                 "properties": {
                     "success": {
@@ -3152,6 +3265,9 @@
                         "type": "string",
                         "example": "https:\/\/placehold.co\/600x400?text=Toyota+Camry"
                     },
+                    "user_company": {
+                        "$ref": "#\/components\/schemas\/UserCompany"
+                    },
                     "is_available": {
                         "type": "boolean",
                         "example": true
@@ -3252,7 +3368,6 @@
                 "title": "CarPosting",
                 "required": [
                     "car_id",
-                    "company_id",
                     "start_date",
                     "end_date",
                     "description",
@@ -3270,13 +3385,6 @@
                     },
                     "car": {
                         "$ref": "#\/components\/schemas\/Car"
-                    },
-                    "company_id": {
-                        "type": "integer",
-                        "example": 1
-                    },
-                    "company": {
-                        "$ref": "#\/components\/schemas\/UserCompany"
                     },
                     "start_date": {
                         "type": "string",
@@ -4540,6 +4648,128 @@
                 "type": "object"
             },
             "DeleteUserRequirementResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserSubscription": {
+                "title": "UserSubscription",
+                "required": [
+                    "id",
+                    "user_id",
+                    "plan_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "plan_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedUserSubscription": {
+                "title": "PaginatedUserSubscription",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/UserSubscription"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedUserSubscriptionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedUserSubscription"
+                    }
+                },
+                "type": "object"
+            },
+            "GetUserSubscriptionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserSubscription"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateUserSubscriptionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserSubscription"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateUserSubscriptionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserSubscription"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteUserSubscriptionResponse200": {
                 "properties": {
                     "success": {
                         "type": "boolean",

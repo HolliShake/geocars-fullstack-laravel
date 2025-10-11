@@ -94,4 +94,8 @@ class UserSubscription extends Model
         'plan_id',
         'status'
     ];
+
+    function plan() {
+        return $this->belongsTo(Plan::class);
+    }
 }

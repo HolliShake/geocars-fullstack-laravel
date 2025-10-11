@@ -12,7 +12,6 @@ use OpenApi\Attributes as OA;
     type: "object",
     required: [
         "car_id",
-        "company_id",
         "start_date",
         "end_date",
         "description",
@@ -23,8 +22,6 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "id", type: "integer", example: 1),
         new OA\Property(property: "car_id", type: "integer", example: 1),
         new OA\Property(property: "car", type: "object", ref: "#/components/schemas/Car"),
-        new OA\Property(property: "company_id", type: "integer", example: 1),
-        new OA\Property(property: "company", type: "object", ref: "#/components/schemas/UserCompany"),
         new OA\Property(property: "start_date", type: "string", format: "date-time", example: "2023-01-01T00:00:00Z"),
         new OA\Property(property: "end_date", type: "string", format: "date-time", example: "2023-01-31T23:59:59Z"),
         new OA\Property(property: "description", type: "string", example: "Luxury sedan available for rent"),
@@ -102,7 +99,6 @@ class CarPosting extends Model
 
     protected $fillable = [
         'car_id',
-        'company_id',
         'start_date',
         'end_date',
         'description',

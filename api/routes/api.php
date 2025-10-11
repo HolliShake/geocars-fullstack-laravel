@@ -38,7 +38,7 @@ Route::middleware(['auth:api', 'role:admin,user'])->controller(CarPostingControl
 });
 
 Route::middleware(['auth:api'])->controller(CarPostingController::class)->group(function () {
-    Route::get('/Public/Browse', 'browse');
+    Route::get('/CarPosting/Browse', 'browse');
 });
 
 Route::middleware(['auth:api', 'role:admin,user'])->controller(CarRentalController::class)->group(function () {
