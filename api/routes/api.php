@@ -29,7 +29,7 @@ Route::middleware(['auth:api', 'role:admin,user'])->controller(CarController::cl
     Route::middleware('role:user')->delete('/Car/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
-Route::middleware(['auth:api', 'role:admin,user'])->controller(CarPostingController::class)->group(function () {
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(CarPostingController::class)->group(function () {
     Route::get('/CarPosting','index');
     Route::get('/CarPosting/{id}','show')->where('id', '[0-9]+');
     Route::middleware('role:user')->post('/CarPosting','store');
@@ -41,10 +41,11 @@ Route::middleware(['auth:api'])->controller(CarPostingController::class)->group(
     Route::get('/CarPosting/Browse', 'browse');
 });
 
-Route::middleware(['auth:api', 'role:admin,user'])->controller(CarRentalController::class)->group(function () {
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(CarRentalController::class)->group(function () {
     Route::get('/CarRental','index');
     Route::get('/CarRental/{id}','show')->where('id', '[0-9]+');
-    Route::middleware('role:user')->post('/CarRental','store');
+    Route::get('/CarRental/CheckSubmission/{id}', 'checkSubmission')->where('id', '[0-9]+');
+    Route::middleware('role:user,renter')->post('/CarRental','store');
     Route::middleware('role:user')->put('/CarRental/{id}','update')->where('id', '[0-9]+');
     Route::middleware('role:user')->delete('/CarRental/{id}', 'destroy')->where('id', '[0-9]+');
 });

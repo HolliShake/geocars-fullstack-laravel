@@ -4,10 +4,13 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { CarTypeEnum } from '@/constants/car-type.constant';
 import { dumbCurrency } from '@/lib/dumb-currency';
+import { RouteKey } from '@/navigation/route';
 import { useBrowseCarPosting } from '@rest/api';
+import type { CarPosting } from '@rest/models';
 import { Car, Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 
 // Skeleton loader component for car posting cards
 function CarPostingCardSkeleton() {
@@ -38,6 +41,8 @@ export default function RenterBrowsePage(): React.ReactNode {
   const [hasMore, setHasMore] = useState(true);
   const observerTarget = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
+
+  const navigate = useNavigate();
 
   // Filter states
   const [selectedCarTypes, setSelectedCarTypes] = useState<string[]>([]);
@@ -100,6 +105,10 @@ export default function RenterBrowsePage(): React.ReactNode {
       }
     };
   }, [hasMore, isLoading]);
+
+  const handleClick = (posting: CarPosting) => {
+    navigate(RouteKey.Renter.Application.parse(posting.id));
+  };
 
   const handleLoadMore = useCallback(() => {
     if (hasMore && !isLoading) {
@@ -398,8 +407,7 @@ export default function RenterBrowsePage(): React.ReactNode {
                     imageUrl={posting.car?.image_url || '/placeholder-car.jpg'}
                     carPosting={posting}
                     onClick={() => {
-                      // Handle click - navigate to detail page
-                      console.log('Clicked posting:', posting.id);
+                      handleClick(posting);
                     }}
                   />
                 </div>

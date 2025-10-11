@@ -6,6 +6,7 @@ use App\Enum\RentalStatusEnum;
 use App\Service\CarRentalService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -109,6 +110,54 @@ class CarRentalController extends Controller
         }
     }
 
+    #[OA\Get(
+        path: "/api/CarRental/CheckSubmission/{id}",
+        summary: "Check if user has submitted to a CarPosting",
+        tags: ["CarPosting"],
+        description: "Check if the authenticated user has already submitted to a specific CarPosting",
+        operationId: "checkCarPostingSubmission",
+    )]
+    #[OA\Parameter(
+        name: "id",
+        in: "path",
+        required: true,
+        schema: new OA\Schema(type: "integer")
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful operation",
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: "status", type: "string", example: "success"),
+                new OA\Property(
+                    property: "data",
+                    type: "object",
+                    properties: [
+                        new OA\Property(property: "submitted", type: "boolean")
+                    ]
+                )
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: "User not authorized"
+    )]
+    #[OA\Response(
+        response: 404,
+        description: "CarPosting not found"
+    )]
+    public function checkSubmission($id)
+    {
+        try {
+            $user = Auth::user();
+            $submitted = $this->service->checkSubmission($user->id, $id);
+            return $this->ok(['submitted' => $submitted]);
+        } catch (ModelNotFoundException $e) {
+            return $this->notFound('CarPosting not found');
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
@@ -143,11 +192,11 @@ class CarRentalController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'car_posting_id'    => 'required|integer|exists:car_postings,id',
-                'user_id'           => 'required|integer|exists:users,id',
+                'user_id'           => 'exclude_if:user_id,0|integer|exists:users,id',
                 'days'              => 'required|integer|min:1',
                 'deposit'           => 'required|numeric|min:0',
                 'start_date'        => 'required|date|after_or_equal:today',
-                'return_date'       => 'required|date|after:start_date',
+                'return_date'       => 'sometimes|nullable|date|after:start_date',
                 'rental_status'     => 'sometimes|in:' . implode(',', array_column(RentalStatusEnum::cases(), 'value')),
                 'payment_method'    => 'sometimes|string',
                 'payment_reference' => 'nullable|string|max:255',
@@ -157,7 +206,14 @@ class CarRentalController extends Controller
                 return $this->validationError($validator->errors());
             }
 
-            $validated = $validator->validated();
+            $validated = (array)[
+                ...$validator->validated(),
+                'user_id' => ($request->input('user_id') != 0)
+                    ? $request->input('user_id')
+                    : Auth::id(),
+            ];
+
+            error_log(json_encode($validated));
 
             return $this->ok($this->service->create($validated));
         } catch (\Exception $e) {

@@ -139,7 +139,7 @@ class CarPosting extends Model
         // Check if there are any pending or confirmed rentals
         return !$this->carRentals()
             ->whereIn('rental_status', [
-                RentalStatusEnum::PENDING->value,
+                // RentalStatusEnum::PENDING->value,
                 RentalStatusEnum::CONFIRMED->value
             ])
             ->exists();

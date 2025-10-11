@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Service\CarPostingService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -129,7 +130,7 @@ class CarPostingController extends Controller
     public function show($id)
     {
         try {
-            return $this->ok($this->service->get($id));
+            return $this->ok($this->service->get($id, ['*'], ['car.userCompany.owner']));
         } catch (ModelNotFoundException $e) {
             return $this->notFound('CarPosting not found');
         }

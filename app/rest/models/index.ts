@@ -22,6 +22,8 @@ export * from './carRequestTransmission';
 export * from './carRequestType';
 export * from './carTransmission';
 export * from './carType';
+export * from './checkCarPostingSubmission200';
+export * from './checkCarPostingSubmission200Data';
 export * from './createCarBody';
 export * from './createCarBodyFuelType';
 export * from './createCarBodyTransmission';

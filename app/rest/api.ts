@@ -29,6 +29,7 @@ import type {
   BrowseCarPostingParams,
   CarPosting,
   CarRental,
+  CheckCarPostingSubmission200,
   CreateCarBody,
   CreateCarPostingResponse200,
   CreateCarRentalResponse200,
@@ -1764,6 +1765,95 @@ export const useDeleteCarRental = <TError = null | InternalServerErrorResponse,
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Check if the authenticated user has already submitted to a specific CarPosting
+ * @summary Check if user has submitted to a CarPosting
+ */
+export const checkCarPostingSubmission = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CheckCarPostingSubmission200>(
+      {url: `/api/CarRental/CheckSubmission/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getCheckCarPostingSubmissionQueryKey = (id?: number,) => {
+    return [`/api/CarRental/CheckSubmission/${id}`] as const;
+    }
+
+    
+export const getCheckCarPostingSubmissionQueryOptions = <TData = Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError = null | null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getCheckCarPostingSubmissionQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof checkCarPostingSubmission>>> = ({ signal }) => checkCarPostingSubmission(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type CheckCarPostingSubmissionQueryResult = NonNullable<Awaited<ReturnType<typeof checkCarPostingSubmission>>>
+export type CheckCarPostingSubmissionQueryError = null | null
+
+
+export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError = null | null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkCarPostingSubmission>>,
+          TError,
+          Awaited<ReturnType<typeof checkCarPostingSubmission>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError = null | null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof checkCarPostingSubmission>>,
+          TError,
+          Awaited<ReturnType<typeof checkCarPostingSubmission>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError = null | null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Check if user has submitted to a CarPosting
+ */
+
+export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError = null | null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof checkCarPostingSubmission>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getCheckCarPostingSubmissionQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Retrieve a paginated list of plans with optional search
  * @summary Get paginated list of plans

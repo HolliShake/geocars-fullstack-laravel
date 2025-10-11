@@ -49,7 +49,10 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
   return (
     <Card
       className="select-none overflow-hidden group hover:shadow-lg transition-all duration-300 cursor-pointer"
-      onClick={onClick}
+      onClick={(e) => {
+        e.stopPropagation();
+        onClick();
+      }}
     >
       {/* Header */}
       <CardHeader className="pb-2 pt-3 px-3">

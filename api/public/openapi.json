@@ -1270,6 +1270,58 @@
                 }
             }
         },
+        "\/api\/CarRental\/CheckSubmission\/{id}": {
+            "get": {
+                "tags": [
+                    "CarPosting"
+                ],
+                "summary": "Check if user has submitted to a CarPosting",
+                "description": "Check if the authenticated user has already submitted to a specific CarPosting",
+                "operationId": "checkCarPostingSubmission",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "status": {
+                                            "type": "string",
+                                            "example": "success"
+                                        },
+                                        "data": {
+                                            "properties": {
+                                                "submitted": {
+                                                    "type": "boolean"
+                                                }
+                                            },
+                                            "type": "object"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "User not authorized"
+                    },
+                    "404": {
+                        "description": "CarPosting not found"
+                    }
+                }
+            }
+        },
         "\/api\/Plan": {
             "get": {
                 "tags": [
@@ -3564,7 +3616,8 @@
                     "return_date": {
                         "type": "string",
                         "format": "date-time",
-                        "example": "2023-09-04T10:00:00Z"
+                        "example": "2023-09-04T10:00:00Z",
+                        "nullable": true
                     },
                     "rental_status": {
                         "type": "string",
@@ -3583,7 +3636,8 @@
                             "cash",
                             "online"
                         ],
-                        "example": "cash"
+                        "example": "cash",
+                        "nullable": true
                     },
                     "payment_reference": {
                         "type": "string",

@@ -11,4 +11,9 @@ class CarRentalService extends GenericService implements ICarRentalService
     {
         parent::__construct($repo);
     }
+
+    public function checkSubmission(int $user_id, int $posting_id): bool
+    {
+        return $this->repo->query()->where('user_id', $user_id)->where('car_posting_id', $posting_id)->exists();
+    }
 }

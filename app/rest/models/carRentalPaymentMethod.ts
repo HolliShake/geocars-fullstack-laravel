@@ -6,7 +6,10 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export type CarRentalPaymentMethod = typeof CarRentalPaymentMethod[keyof typeof CarRentalPaymentMethod];
+/**
+ * @nullable
+ */
+export type CarRentalPaymentMethod = typeof CarRentalPaymentMethod[keyof typeof CarRentalPaymentMethod] | null;
 
 
 // eslint-disable-next-line @typescript-eslint/no-redeclare

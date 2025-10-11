@@ -35,6 +35,7 @@ type RouteStructure = {
   };
   Renter: {
     Browse: RouteConfig<'/renter/browse'>;
+    Application: RouteConfig<'/renter/browse/:postingId'>;
   };
 };
 
@@ -94,5 +95,6 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
   },
   Renter: {
     Browse: createRoute('/renter/browse'),
+    Application: createRoute('/renter/browse/:postingId'),
   },
 });

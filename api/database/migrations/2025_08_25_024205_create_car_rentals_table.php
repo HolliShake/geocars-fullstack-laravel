@@ -29,7 +29,7 @@ return new class extends Migration
             $table->integer('days');
             $table->decimal('deposit', 10, 2);
             $table->dateTime('start_date');
-            $table->dateTime('return_date');
+            $table->dateTime('return_date')->nullable();
             $table->enum('rental_status', RentalStatusEnum::cases())->default(RentalStatusEnum::PENDING->value);
             $table->enum('payment_method', PaymentMethodEnum::cases())->default(PaymentMethodEnum::CASH->value);
             $table->string('payment_reference')->nullable();

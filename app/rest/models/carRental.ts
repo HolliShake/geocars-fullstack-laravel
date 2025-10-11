@@ -19,8 +19,10 @@ export interface CarRental {
   days: number;
   deposit: number;
   start_date: string;
-  return_date: string;
+  /** @nullable */
+  return_date: string | null;
   rental_status: CarRentalRentalStatus;
+  /** @nullable */
   payment_method: CarRentalPaymentMethod;
   /** @nullable */
   payment_reference: string | null;
