@@ -2,9 +2,9 @@
 import { CarPostingCard } from '@/components/shared/car-posting-client.component';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { CarTypeEnum } from '@/constants/car-type.constant';
 import { dumbCurrency } from '@/lib/dumb-currency';
 import { useBrowseCarPosting } from '@rest/api';
-import { CarType } from '@rest/models/carType';
 import { Car, Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -45,7 +45,7 @@ export default function RenterBrowsePage(): React.ReactNode {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
   const { data, isLoading } = useBrowseCarPosting({
-    page: 1,
+    page: page,
     rows: 10,
   });
 
@@ -65,7 +65,12 @@ export default function RenterBrowsePage(): React.ReactNode {
       if (page === 1) {
         setAllPostings(newPostings);
       } else {
-        setAllPostings((prev) => [...prev, ...newPostings]);
+        setAllPostings((prev) => {
+          // Prevent duplicates by checking if posting already exists
+          const existingIds = new Set(prev.map((p) => p.id));
+          const uniqueNewPostings = newPostings.filter((p) => !existingIds.has(p.id));
+          return [...prev, ...uniqueNewPostings];
+        });
       }
 
       // Check if there are more pages
@@ -167,8 +172,8 @@ export default function RenterBrowsePage(): React.ReactNode {
       </div>
 
       {/* Main Content with Sidebar */}
-      <div className="flex-1">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 flex gap-4 sm:gap-6">
+      <div className="flex-1 overflow-hidden">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 flex gap-4 sm:gap-6 h-full">
           {/* Mobile Filter Overlay */}
           {showFilters && (
             <div
@@ -185,164 +190,169 @@ export default function RenterBrowsePage(): React.ReactNode {
               ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
             `}
           >
-            <div className="h-full lg:sticky lg:top-4 overflow-y-auto bg-background lg:bg-transparent p-4 lg:p-0">
-              {/* Mobile Close Button */}
-              <div className="flex items-center justify-between mb-4 lg:hidden">
-                <h2 className="text-lg font-semibold">Filters</h2>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => setShowFilters(false)}
-                  className="rounded-full"
-                >
-                  <X className="w-5 h-5" />
-                </Button>
-              </div>
+            <div className="h-full overflow-y-auto bg-background lg:bg-transparent p-4 lg:p-0">
+              <div className="lg:sticky lg:top-4">
+                {/* Mobile Close Button */}
+                <div className="flex items-center justify-between mb-4 lg:hidden">
+                  <h2 className="text-lg font-semibold">Filters</h2>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => setShowFilters(false)}
+                    className="rounded-full"
+                  >
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
 
-              <div className="space-y-4 sm:space-y-6">
-                {/* Filter Card */}
-                <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4 sm:p-6">
-                  <div className="flex items-center justify-between mb-4">
-                    <h2 className="text-base sm:text-lg font-semibold">Filters</h2>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={clearFilters}
-                      className="text-xs text-muted-foreground hover:text-foreground"
-                    >
-                      Clear All
-                    </Button>
-                  </div>
-
-                  {/* Car Type Filter */}
-                  <div className="space-y-3 mb-6">
-                    <h3 className="text-sm font-medium text-muted-foreground">Car Type</h3>
-                    <div className="space-y-2">
-                      {Object.values(CarType).map((type) => (
-                        <label key={type} className="flex items-center gap-2 cursor-pointer group">
-                          <input
-                            type="checkbox"
-                            checked={selectedCarTypes.includes(type)}
-                            onChange={() => toggleCarType(type)}
-                            className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
-                          />
-                          <span className="text-sm capitalize group-hover:text-primary transition-colors">
-                            {type}
-                          </span>
-                        </label>
-                      ))}
+                <div className="space-y-4 sm:space-y-6">
+                  {/* Filter Card */}
+                  <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4 sm:p-6">
+                    <div className="flex items-center justify-between mb-4">
+                      <h2 className="text-base sm:text-lg font-semibold">Filters</h2>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={clearFilters}
+                        className="text-xs text-muted-foreground hover:text-foreground"
+                      >
+                        Clear All
+                      </Button>
                     </div>
-                  </div>
 
-                  {/* Brand Filter */}
-                  <div className="space-y-3 mb-6">
-                    <h3 className="text-sm font-medium text-muted-foreground">Brand</h3>
-                    <div className="space-y-2 max-h-48 overflow-y-auto">
-                      {availableBrands.length > 0 ? (
-                        availableBrands.map((brand) => (
+                    {/* Car Type Filter */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-medium text-muted-foreground">Car Type</h3>
+                      <div className="space-y-2">
+                        {Object.values(CarTypeEnum).map((type) => (
                           <label
-                            key={brand}
+                            key={type}
                             className="flex items-center gap-2 cursor-pointer group"
                           >
                             <input
                               type="checkbox"
-                              checked={selectedBrands.includes(brand)}
-                              onChange={() => toggleBrand(brand)}
+                              checked={selectedCarTypes.includes(type)}
+                              onChange={() => toggleCarType(type)}
                               className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
                             />
-                            <span className="text-sm group-hover:text-primary transition-colors">
-                              {brand}
+                            <span className="text-sm capitalize group-hover:text-primary transition-colors">
+                              {type}
                             </span>
                           </label>
-                        ))
-                      ) : (
-                        <p className="text-xs text-muted-foreground">No brands available</p>
-                      )}
+                        ))}
+                      </div>
                     </div>
-                  </div>
 
-                  {/* Price Range Filter */}
-                  <div className="space-y-3">
-                    <h3 className="text-sm font-medium text-muted-foreground">
-                      Price Range (per day)
-                    </h3>
-                    <div className="space-y-4">
-                      <div className="flex items-center gap-2">
+                    {/* Brand Filter */}
+                    <div className="space-y-3 mb-6">
+                      <h3 className="text-sm font-medium text-muted-foreground">Brand</h3>
+                      <div className="space-y-2 max-h-48 overflow-y-auto">
+                        {availableBrands.length > 0 ? (
+                          availableBrands.map((brand) => (
+                            <label
+                              key={brand}
+                              className="flex items-center gap-2 cursor-pointer group"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={selectedBrands.includes(brand)}
+                                onChange={() => toggleBrand(brand)}
+                                className="w-4 h-4 rounded border-gray-300 text-primary focus:ring-primary"
+                              />
+                              <span className="text-sm group-hover:text-primary transition-colors">
+                                {brand}
+                              </span>
+                            </label>
+                          ))
+                        ) : (
+                          <p className="text-xs text-muted-foreground">No brands available</p>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Price Range Filter */}
+                    <div className="space-y-3">
+                      <h3 className="text-sm font-medium text-muted-foreground">
+                        Price Range (per day)
+                      </h3>
+                      <div className="space-y-4">
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="number"
+                            value={priceRange[0]}
+                            onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
+                            className="w-full px-2 sm:px-3 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            placeholder="Min"
+                          />
+                          <span className="text-muted-foreground">-</span>
+                          <input
+                            type="number"
+                            value={priceRange[1]}
+                            onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
+                            className="w-full px-2 sm:px-3 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            placeholder="Max"
+                          />
+                        </div>
                         <input
-                          type="number"
-                          value={priceRange[0]}
-                          onChange={(e) => setPriceRange([Number(e.target.value), priceRange[1]])}
-                          className="w-full px-2 sm:px-3 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          placeholder="Min"
-                        />
-                        <span className="text-muted-foreground">-</span>
-                        <input
-                          type="number"
+                          type="range"
+                          min="0"
+                          max="10000"
                           value={priceRange[1]}
                           onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                          className="w-full px-2 sm:px-3 py-2 text-sm bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          placeholder="Max"
+                          className="w-full"
                         />
-                      </div>
-                      <input
-                        type="range"
-                        min="0"
-                        max="10000"
-                        value={priceRange[1]}
-                        onChange={(e) => setPriceRange([priceRange[0], Number(e.target.value)])}
-                        className="w-full"
-                      />
-                      <div className="flex justify-between text-xs text-muted-foreground">
-                        <span>{dumbCurrency(priceRange[0])}</span>
-                        <span>{dumbCurrency(priceRange[1])}</span>
+                        <div className="flex justify-between text-xs text-muted-foreground">
+                          <span>{dumbCurrency(priceRange[0])}</span>
+                          <span>{dumbCurrency(priceRange[1])}</span>
+                        </div>
                       </div>
                     </div>
                   </div>
+
+                  {/* Active Filters Summary */}
+                  {(selectedCarTypes.length > 0 ||
+                    selectedBrands.length > 0 ||
+                    priceRange[0] > 0 ||
+                    priceRange[1] < 10000) && (
+                    <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4">
+                      <h3 className="text-sm font-medium mb-2">Active Filters</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {selectedCarTypes.map((type) => (
+                          <span
+                            key={`filter-type-${type}`}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
+                          >
+                            {type}
+                          </span>
+                        ))}
+                        {selectedBrands.map((brand) => (
+                          <span
+                            key={`filter-brand-${brand}`}
+                            className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
+                          >
+                            {brand}
+                          </span>
+                        ))}
+                        {(priceRange[0] > 0 || priceRange[1] < 10000) && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                            {dumbCurrency(priceRange[0])} - {dumbCurrency(priceRange[1])}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Mobile Apply Button */}
+                  <Button className="w-full lg:hidden" onClick={() => setShowFilters(false)}>
+                    Apply Filters
+                  </Button>
                 </div>
-
-                {/* Active Filters Summary */}
-                {(selectedCarTypes.length > 0 ||
-                  selectedBrands.length > 0 ||
-                  priceRange[0] > 0 ||
-                  priceRange[1] < 10000) && (
-                  <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4">
-                    <h3 className="text-sm font-medium mb-2">Active Filters</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedCarTypes.map((type) => (
-                        <span
-                          key={type}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                        >
-                          {type}
-                        </span>
-                      ))}
-                      {selectedBrands.map((brand) => (
-                        <span
-                          key={brand}
-                          className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full"
-                        >
-                          {brand}
-                        </span>
-                      ))}
-                      {(priceRange[0] > 0 || priceRange[1] < 10000) && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
-                          {dumbCurrency(priceRange[0])} - {dumbCurrency(priceRange[1])}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                )}
-
-                {/* Mobile Apply Button */}
-                <Button className="w-full lg:hidden" onClick={() => setShowFilters(false)}>
-                  Apply Filters
-                </Button>
               </div>
             </div>
           </aside>
 
           {/* Main Feed Container */}
-          <div className="flex-1 min-w-0">
+          <div className="flex-1 min-w-0 overflow-y-auto">
             {/* Stats Bar */}
             {allPostings.length > 0 && (
               <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground bg-card/50 backdrop-blur-sm rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 border shadow-sm">
@@ -359,7 +369,7 @@ export default function RenterBrowsePage(): React.ReactNode {
             {isLoading && allPostings.length === 0 && (
               <div className="space-y-4 sm:space-y-6">
                 {[...Array(3)].map((_, index) => (
-                  <CarPostingCardSkeleton key={index} />
+                  <CarPostingCardSkeleton key={`skeleton-${index}`} />
                 ))}
               </div>
             )}
@@ -380,7 +390,7 @@ export default function RenterBrowsePage(): React.ReactNode {
             <div className="space-y-4 sm:space-y-6">
               {allPostings.map((posting, index) => (
                 <div
-                  key={posting.id}
+                  key={`posting-${posting.id}-${index}`}
                   className="animate-in fade-in slide-in-from-bottom-4"
                   style={{ animationDelay: `${index * 50}ms` }}
                 >

@@ -172,6 +172,7 @@ class CarPostingController extends Controller
     {
         $conditions = [
             "description" => ['like', "%{$request->query('search', '')}%"],
+            "start_date" => ['>=', now()],
             "end_date" => ['>=', now()],
         ];
 
@@ -179,7 +180,7 @@ class CarPostingController extends Controller
             $request->query('page', 0),
             $request->query('rows', 10),
             ['*'],
-            ['car', 'car.userCompany.owner.subscription.plan'],
+            ['car', 'car.userCompany', 'car.userCompany.owner', 'car.userCompany.owner.subscription', 'car.userCompany.owner.subscription.plan'],
             $conditions
         );
 
@@ -190,7 +191,7 @@ class CarPostingController extends Controller
                     return $posting->is_available === true;
                 })
                 ->sortByDesc(function ($posting) {
-                    return $posting->user_company->user->subscription->plan->price ?? 0;
+                    return $posting->car->user_company->owner->subscription->plan->price ?? 0;
                 })
                 ->values()
                 ->all();

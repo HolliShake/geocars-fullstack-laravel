@@ -17,6 +17,10 @@ class DatabaseSeeder extends Seeder
             PlanSeeder::class,
             PlanFeatureSeeder::class,
             UserSeeder::class,
+            UserCompanySeeder::class,
+            CarSeeder::class,
+            CarPostingSeeder::class,
+            UserSubscriptionSeeder::class,
             RequirementSeeder::class,
         ]);
     }
