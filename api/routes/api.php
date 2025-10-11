@@ -37,6 +37,10 @@ Route::middleware(['auth:api', 'role:admin,user'])->controller(CarPostingControl
     Route::middleware('role:user')->delete('/CarPosting/{id}', 'destroy')->where('id', '[0-9]+');
 });
 
+Route::middleware(['auth:api'])->controller(CarPostingController::class)->group(function () {
+    Route::get('/Public/Browse', 'browse');
+});
+
 Route::middleware(['auth:api', 'role:admin,user'])->controller(CarRentalController::class)->group(function () {
     Route::get('/CarRental','index');
     Route::get('/CarRental/{id}','show')->where('id', '[0-9]+');

@@ -66,6 +66,7 @@ services:
       --long-query-time=2
       --innodb-log-file-size=128M
       --innodb-flush-log-at-trx-commit=2
+      --log-bin-trust-function-creators=1
     volumes:
       - mysql_data:/var/lib/mysql
 

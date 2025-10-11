@@ -2,8 +2,8 @@
 
 namespace Database\Seeders;
 
-use DB;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class PlanSeeder extends Seeder
 {
@@ -14,18 +14,21 @@ class PlanSeeder extends Seeder
     {
         DB::table('plans')->insert([
             [
+                'id' => 1,
                 'name' => 'Free',
                 'description' => 'Basic plan with essential features',
                 'price' => 0,
                 'active' => true,
             ],
             [
+                'id' => 2,
                 'name' => 'Pro',
                 'description' => 'Professional plan with advanced features',
                 'price' => 10,
                 'active' => true,
             ],
             [
+                'id' => 3,
                 'name' => 'Enterprise',
                 'description' => 'Enterprise plan with full features',
                 'price' => 50,

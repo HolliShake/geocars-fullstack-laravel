@@ -135,6 +135,65 @@ class CarPostingController extends Controller
         }
     }
 
+    #[OA\Get(
+        path: "/api/CarPosting/Browse",
+        summary: "Get a specific CarPosting",
+        tags: ["CarPosting"],
+        description: "Retrieve active CarPosting",
+        operationId: "browseCarPosting",
+    )]
+    #[OA\Parameter(
+        name: "search",
+        in: "query",
+        description: "Search term",
+        required: false,
+        schema: new OA\Schema(type: "string")
+    )]
+    #[OA\Parameter(
+        name: "page",
+        in: "query",
+        description: "Page number",
+        required: false,
+        schema: new OA\Schema(type: "integer", default: 0)
+    )]
+    #[OA\Parameter(
+        name: "rows",
+        in: "query",
+        description: "Number of items per page",
+        required: false,
+        schema: new OA\Schema(type: "integer", default: 10)
+    )]
+    #[OA\Response(
+        response: 200,
+        description: "Successful operation",
+        content: new OA\JsonContent(ref: "#/components/schemas/PaginatedCarPostingResponse200")
+    )]
+    public function browse(Request $request)
+    {
+        $srch = $request->query("search", '');
+        $page = $request->query("page", 0);
+        $rows = $request->query("rows", 10);
+        $is_available = true;
+        $status = 'active';
+
+        $conditions = [
+            "description" => ['like', "%{$srch}%"],
+        ];
+
+        // Date-based status filtering
+        if ($status === 'active') {
+            $conditions["end_date"] = ['>=', now()];
+            if ($is_available !== null) {
+                $conditions["is_available"] = ['=', $is_available];
+            }
+        } else if ($status === 'expired') {
+            $conditions["end_date"] = ['<', now()];
+        }
+        // For 'all' status, no additional date filtering is applied
+
+        return $this->ok($this->service->paginate($page, $rows, ['*'], ['car'], $conditions));
+    }
+
     /**
      * Store a newly created resource in storage.
      */
