@@ -2,6 +2,7 @@
 import { useModal } from '@/components/custom/modal.component';
 import ViewList from '@/components/custom/view.component';
 import PageLayout from '@/components/layout/page.layout';
+import CarPostingCommentModal from '@/components/shared/car-posting-comments.component';
 import { CarPostingCard } from '@/components/shared/car-posting.component';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
@@ -75,6 +76,7 @@ export default function UserCarPostingPage(): React.ReactElement {
   //   const { mutateAsync: deleteCarPosting } = useDeleteCarPosting();
 
   const modal = useModal<CarPosting>();
+  const commentModal = useModal<CarPosting>();
 
   const tabs = useMemo<{ label: string; value: string }[]>(() => {
     return [
@@ -103,6 +105,7 @@ export default function UserCarPostingPage(): React.ReactElement {
         carPosting={carPosting}
         imageUrl={carPosting.car?.image_url ?? ''}
         onClick={() => modal.openFn(carPosting)}
+        onViewComments={() => commentModal.openFn(carPosting)}
       />
     ));
   }, [allData]);
@@ -115,6 +118,7 @@ export default function UserCarPostingPage(): React.ReactElement {
         carPosting={carPosting}
         imageUrl={carPosting.car?.image_url ?? ''}
         onClick={() => modal.openFn(carPosting)}
+        onViewComments={() => commentModal.openFn(carPosting)}
       />
     ));
   }, [activeData]);
@@ -127,6 +131,7 @@ export default function UserCarPostingPage(): React.ReactElement {
         carPosting={carPosting}
         imageUrl={carPosting.car?.image_url ?? ''}
         onClick={() => modal.openFn(carPosting)}
+        onViewComments={() => commentModal.openFn(carPosting)}
       />
     ));
   }, [expiredData]);
@@ -246,6 +251,7 @@ export default function UserCarPostingPage(): React.ReactElement {
 
       {/* Note: CarPostingModal component would need to be created */}
       <CarPostingModal controller={modal} />
+      <CarPostingCommentModal controller={commentModal} />
     </PageLayout>
   );
 }

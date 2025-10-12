@@ -1,4 +1,5 @@
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { dumbCurrency } from '@/lib/dumb-currency';
 import type { CarPosting } from '@rest/models/carPosting';
@@ -10,6 +11,7 @@ import {
   Fuel,
   Gauge,
   LucideCog,
+  MessageSquare,
   Palette,
   Settings,
   Zap,
@@ -20,12 +22,14 @@ interface CarPostingCardProps {
   imageUrl: string;
   carPosting: CarPosting;
   onClick: () => void;
+  onViewComments?: () => void;
 }
 
 export const CarPostingCard: React.FC<CarPostingCardProps> = ({
   imageUrl,
   carPosting,
   onClick,
+  onViewComments,
 }) => {
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -50,10 +54,20 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
     return parts.join(' • ');
   };
 
+  const handleViewComments = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onViewComments?.();
+  };
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    onClick?.();
+  };
+
   return (
     <Card
-      className="select-none relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-border/50 backdrop-blur-sm hover:scale-[1.01] p-0"
-      onClick={onClick}
+      className="select-none relative overflow-hidden group hover:shadow-2xl transition-all duration-300 border-border/50 backdrop-blur-sm hover:scale-[1.01] p-0 cursor-pointer flex flex-col h-full"
+      onClick={handleCardClick}
     >
       {/* Web3 Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -145,7 +159,7 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
         )}
       </CardHeader>
 
-      <CardContent className="space-y-4 p-4">
+      <CardContent className="space-y-4 p-4 flex-1 flex flex-col">
         {/* Car Technical Details */}
         <div className="grid grid-cols-2 gap-2 text-xs">
           {carPosting.car?.fuel_type && (
@@ -198,13 +212,18 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
           </div>
         </div>
 
-        {/* Description */}
-        {carPosting.description && (
-          <div
-            className="text-sm text-muted-foreground line-clamp-2 prose prose-sm max-w-none [&>*]:text-muted-foreground [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0 [&>h1]:text-sm [&>h2]:text-sm [&>h3]:text-sm [&>h4]:text-sm [&>h5]:text-sm [&>h6]:text-sm"
-            dangerouslySetInnerHTML={{ __html: carPosting.description }}
-          />
-        )}
+        {/* Description - Fixed height with line clamp */}
+        <div className="h-10 overflow-hidden">
+          {carPosting.description && (
+            <div
+              className="text-sm text-muted-foreground line-clamp-2 prose prose-sm max-w-none [&>*]:text-muted-foreground [&>p]:m-0 [&>ul]:m-0 [&>ol]:m-0 [&>h1]:text-sm [&>h2]:text-sm [&>h3]:text-sm [&>h4]:text-sm [&>h5]:text-sm [&>h6]:text-sm"
+              dangerouslySetInnerHTML={{ __html: carPosting.description }}
+            />
+          )}
+        </div>
+
+        {/* Spacer to push price and button to bottom */}
+        <div className="flex-1" />
 
         {/* Price */}
         <div className="flex items-center gap-2">
@@ -213,6 +232,19 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
           </span>
           <span className="text-sm text-muted-foreground">/ day</span>
         </div>
+
+        {/* View Comments Button */}
+        {onViewComments && (
+          <Button
+            variant="outline"
+            size="sm"
+            className="w-full bg-gradient-to-r from-cyan-500/5 via-blue-500/5 to-purple-500/5 hover:from-cyan-500/10 hover:via-blue-500/10 hover:to-purple-500/10 border-border/50 relative z-10"
+            onClick={handleViewComments}
+          >
+            <MessageSquare className="w-4 h-4 mr-2" />
+            View Comments
+          </Button>
+        )}
       </CardContent>
     </Card>
   );

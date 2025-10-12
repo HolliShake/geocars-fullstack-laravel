@@ -6,6 +6,7 @@
  * OpenAPI spec version: 1.0.0
  */
 import type { Car } from './car';
+import type { CarPostingUserReaction } from './carPostingUserReaction';
 
 export interface CarPosting {
   id?: number;
@@ -21,4 +22,10 @@ export interface CarPosting {
   /** @nullable */
   updated_at?: string | null;
   is_available?: boolean;
+  /** */
+  total_reactions?: number;
+  /** @nullable */
+  user_reaction?: CarPostingUserReaction;
+  /** */
+  total_comments?: number;
 }

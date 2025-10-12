@@ -4,15 +4,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Label } from '@/components/ui/label';
 import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
+import { PaymentMethod, type PaymentMethodType } from '@/constants/payment-method.constant';
 import { dumbCurrency } from '@/lib/dumb-currency';
 import { useCheckCarPostingSubmission, useCreateCarRental, useGetCarPostingById } from '@rest/api';
 import type { CarRental } from '@rest/models';
 import {
   ArrowLeft,
+  Banknote,
   Calendar,
   CalendarDays,
   Car,
   Clock,
+  CreditCard,
   Fuel,
   MapPin,
   Settings,
@@ -50,13 +53,20 @@ export default function RenterApplication(): React.ReactNode {
   const { data, isLoading } = useGetCarPostingById(Number(postingId));
   const [rentalDays, setRentalDays] = useState<number>(1);
   const [deposit, setDeposit] = useState<number>(0);
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethodType>(PaymentMethod.ONLINE);
   const { mutateAsync: submitApplication, isPending: isSubmitting } = useCreateCarRental();
   const { data: submission, isLoading: isChecking } = useCheckCarPostingSubmission(
     Number(postingId)
   );
 
   const handleSubmitApplication = async () => {
+    if (!data?.data) {
+      toast.error('Car posting data not available. Please refresh the page.');
+      return;
+    }
+
     try {
+      const carPosting = data.data;
       const startDate = new Date(carPosting.start_date);
 
       await submitApplication({
@@ -66,6 +76,7 @@ export default function RenterApplication(): React.ReactNode {
           days: rentalDays,
           deposit: deposit,
           start_date: startDate.toISOString().split('T')[0],
+          payment_method: paymentMethod,
         } as CarRental,
       });
 
@@ -387,6 +398,49 @@ export default function RenterApplication(): React.ReactNode {
                           Deposit must be less than rental amount ({dumbCurrency(calculateTotal())})
                         </p>
                       )}
+                    </div>
+                  </div>
+
+                  {/* Payment Method Selection */}
+                  <div className="space-y-3">
+                    <Label className="text-base font-semibold">Payment Method</Label>
+                    <div className="grid grid-cols-2 gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod(PaymentMethod.ONLINE)}
+                        className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                          paymentMethod === PaymentMethod.ONLINE
+                            ? 'border-primary bg-primary/5'
+                            : 'border-muted hover:border-primary/50'
+                        }`}
+                      >
+                        <CreditCard
+                          className={`w-6 h-6 ${paymentMethod === PaymentMethod.ONLINE ? 'text-primary' : 'text-muted-foreground'}`}
+                        />
+                        <span
+                          className={`text-sm font-medium ${paymentMethod === PaymentMethod.ONLINE ? 'text-primary' : 'text-muted-foreground'}`}
+                        >
+                          Online
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setPaymentMethod(PaymentMethod.CASH)}
+                        className={`flex flex-col items-center gap-2 p-4 rounded-lg border-2 transition-all ${
+                          paymentMethod === PaymentMethod.CASH
+                            ? 'border-primary bg-primary/5'
+                            : 'border-muted hover:border-primary/50'
+                        }`}
+                      >
+                        <Banknote
+                          className={`w-6 h-6 ${paymentMethod === PaymentMethod.CASH ? 'text-primary' : 'text-muted-foreground'}`}
+                        />
+                        <span
+                          className={`text-sm font-medium ${paymentMethod === PaymentMethod.CASH ? 'text-primary' : 'text-muted-foreground'}`}
+                        >
+                          Cash
+                        </span>
+                      </button>
                     </div>
                   </div>
 

@@ -85,91 +85,107 @@ class GenericRepo implements IGenericRepo
         foreach ($conditions as $column => $value) {
             // Check if column is an attribute reference
             if (str_starts_with($column, 'attr:')) {
-                $attributeName = substr($column, 5); // Remove 'attr:' prefix
-                if (is_array($value) && count($value) === 2) {
-                    [$operator, $val] = $value;
-                    $attributeConditions[] = [$attributeName, $operator, $val];
-                } else {
-                    $attributeConditions[] = [$attributeName, '=', $value];
-                }
-            } elseif (str_contains($column, '.')) {
-                // Handle nested relationship conditions (e.g., 'car.user_company_id', 'user.name')
-                $parts = explode('.', $column);
-                $relation = array_shift($parts);
-                $nestedColumn = implode('.', $parts);
-
-                if (is_array($value) && count($value) === 2) {
-                    [$operator, $val] = $value;
-                    if ($operator === 'like' && !empty($val)) {
-                        $query->whereHas($relation, function($q) use ($nestedColumn, $val) {
-                            if (str_contains($nestedColumn, '.')) {
-                                // Handle deeply nested relationships
-                                $deepParts = explode('.', $nestedColumn);
-                                $deepRelation = array_shift($deepParts);
-                                $deepColumn = implode('.', $deepParts);
-                                $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $val) {
-                                    $deepQ->where($deepColumn, 'like', $val);
-                                });
-                            } else {
-                                $q->where($nestedColumn, 'like', $val);
-                            }
-                        });
-                    } elseif ($operator === '&=' && !is_null($val)) {
-                        $query->whereHas($relation, function($q) use ($nestedColumn, $val) {
-                            if (str_contains($nestedColumn, '.')) {
-                                // Handle deeply nested relationships
-                                $deepParts = explode('.', $nestedColumn);
-                                $deepRelation = array_shift($deepParts);
-                                $deepColumn = implode('.', $deepParts);
-                                $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $val) {
-                                    $deepQ->where($deepColumn, '=', $val);
-                                });
-                            } else {
-                                $q->where($nestedColumn, '=', $val);
-                            }
-                        });
-                    } elseif (!is_null($val)) {
-                        $query->whereHas($relation, function($q) use ($nestedColumn, $operator, $val) {
-                            if (str_contains($nestedColumn, '.')) {
-                                // Handle deeply nested relationships
-                                $deepParts = explode('.', $nestedColumn);
-                                $deepRelation = array_shift($deepParts);
-                                $deepColumn = implode('.', $deepParts);
-                                $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $operator, $val) {
-                                    $deepQ->where($deepColumn, $operator, $val);
-                                });
-                            } else {
-                                $q->where($nestedColumn, $operator, $val);
-                            }
-                        });
-                    }
-                } elseif (!is_null($value) && $value !== '') {
-                    $query->whereHas($relation, function($q) use ($nestedColumn, $value) {
-                        if (str_contains($nestedColumn, '.')) {
-                            // Handle deeply nested relationships
-                            $deepParts = explode('.', $nestedColumn);
-                            $deepRelation = array_shift($deepParts);
-                            $deepColumn = implode('.', $deepParts);
-                            $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $value) {
-                                $deepQ->where($deepColumn, '=', $value);
-                            });
-                        } else {
-                            $q->where($nestedColumn, '=', $value);
-                        }
-                    });
-                }
-            } elseif (is_array($value) && count($value) === 2) {
+            $attributeName = substr($column, 5); // Remove 'attr:' prefix
+            if (is_array($value) && count($value) === 2) {
                 [$operator, $val] = $value;
+                $attributeConditions[] = [$attributeName, $operator, $val];
+            } else {
+                $attributeConditions[] = [$attributeName, '=', $value];
+            }
+            } elseif (str_contains($column, '.')) {
+            // Handle nested relationship conditions (e.g., 'car.user_company_id', 'user.name')
+            $parts = explode('.', $column);
+            $relation = array_shift($parts);
+            $nestedColumn = implode('.', $parts);
 
+            if (is_array($value) && count($value) === 2) {
+                [$operator, $val] = $value;
                 if ($operator === 'like' && !empty($val)) {
-                    $searchConditions[] = [$column, 'like', $val];
+                $query->whereHas($relation, function($q) use ($nestedColumn, $val) {
+                    if (str_contains($nestedColumn, '.')) {
+                    // Handle deeply nested relationships
+                    $deepParts = explode('.', $nestedColumn);
+                    $deepRelation = array_shift($deepParts);
+                    $deepColumn = implode('.', $deepParts);
+                    $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $val) {
+                        $deepQ->where($deepColumn, 'like', $val);
+                    });
+                    } else {
+                    $q->where($nestedColumn, 'like', $val);
+                    }
+                });
                 } elseif ($operator === '&=' && !is_null($val)) {
-                    $filterConditions[] = [$column, '=', $val];
+                $query->whereHas($relation, function($q) use ($nestedColumn, $val) {
+                    if (str_contains($nestedColumn, '.')) {
+                    // Handle deeply nested relationships
+                    $deepParts = explode('.', $nestedColumn);
+                    $deepRelation = array_shift($deepParts);
+                    $deepColumn = implode('.', $deepParts);
+                    $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $val) {
+                        $deepQ->where($deepColumn, '=', $val);
+                    });
+                    } else {
+                    $q->where($nestedColumn, '=', $val);
+                    }
+                });
+                } elseif ($operator === 'in' && is_array($val) && !empty($val)) {
+                $query->whereHas($relation, function($q) use ($nestedColumn, $val) {
+                    if (str_contains($nestedColumn, '.')) {
+                    // Handle deeply nested relationships
+                    $deepParts = explode('.', $nestedColumn);
+                    $deepRelation = array_shift($deepParts);
+                    $deepColumn = implode('.', $deepParts);
+                    $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $val) {
+                        $deepQ->whereIn($deepColumn, $val);
+                    });
+                    } else {
+                    $q->whereIn($nestedColumn, $val);
+                    }
+                });
                 } elseif (!is_null($val)) {
-                    $filterConditions[] = [$column, $operator, $val];
+                $query->whereHas($relation, function($q) use ($nestedColumn, $operator, $val) {
+                    if (str_contains($nestedColumn, '.')) {
+                    // Handle deeply nested relationships
+                    $deepParts = explode('.', $nestedColumn);
+                    $deepRelation = array_shift($deepParts);
+                    $deepColumn = implode('.', $deepParts);
+                    $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $operator, $val) {
+                        $deepQ->where($deepColumn, $operator, $val);
+                    });
+                    } else {
+                    $q->where($nestedColumn, $operator, $val);
+                    }
+                });
                 }
             } elseif (!is_null($value) && $value !== '') {
-                $filterConditions[] = [$column, '=', $value];
+                $query->whereHas($relation, function($q) use ($nestedColumn, $value) {
+                if (str_contains($nestedColumn, '.')) {
+                    // Handle deeply nested relationships
+                    $deepParts = explode('.', $nestedColumn);
+                    $deepRelation = array_shift($deepParts);
+                    $deepColumn = implode('.', $deepParts);
+                    $q->whereHas($deepRelation, function($deepQ) use ($deepColumn, $value) {
+                    $deepQ->where($deepColumn, '=', $value);
+                    });
+                } else {
+                    $q->where($nestedColumn, '=', $value);
+                }
+                });
+            }
+            } elseif (is_array($value) && count($value) === 2) {
+            [$operator, $val] = $value;
+
+            if ($operator === 'like' && !empty($val)) {
+                $searchConditions[] = [$column, 'like', $val];
+            } elseif ($operator === '&=' && !is_null($val)) {
+                $filterConditions[] = [$column, '=', $val];
+            } elseif ($operator === 'in' && is_array($val) && !empty($val)) {
+                $query->whereIn($column, $val);
+            } elseif (!is_null($val)) {
+                $filterConditions[] = [$column, $operator, $val];
+            }
+            } elseif (!is_null($value) && $value !== '') {
+            $filterConditions[] = [$column, '=', $value];
             }
         }
 
@@ -181,9 +197,9 @@ class GenericRepo implements IGenericRepo
         // Apply search conditions with OR logic, but only if there are search conditions
         if (!empty($searchConditions)) {
             $query->where(function ($q) use ($searchConditions) {
-                foreach ($searchConditions as $condition) {
-                    $q->orWhere($condition[0], $condition[1], $condition[2]);
-                }
+            foreach ($searchConditions as $condition) {
+                $q->orWhere($condition[0], $condition[1], $condition[2]);
+            }
             });
         }
 
@@ -201,19 +217,19 @@ class GenericRepo implements IGenericRepo
         $result = $result->appends($attributes);
         $result->setCollection(
             $result->getCollection()
-                ->filter(function($model) use ($attributeConditions) {
-                    foreach ($attributeConditions as $condition) {
-                        [$attributeName, $operator, $value] = $condition;
-                        $object = $model->toArray();
-                        $attributeValue = $this->normalizeValue($object[$attributeName]);
-                        $value = $this->normalizeValue($value);
-                        if (!$this->compareValues($attributeValue, $value, $operator)) {
-                            return false;
-                        }
-                    }
-                    return true;
-                }) // <-- uses accessor
-                ->values()
+            ->filter(function($model) use ($attributeConditions) {
+                foreach ($attributeConditions as $condition) {
+                [$attributeName, $operator, $value] = $condition;
+                $object = $model->toArray();
+                $attributeValue = $this->normalizeValue($object[$attributeName]);
+                $value = $this->normalizeValue($value);
+                if (!$this->compareValues($attributeValue, $value, $operator)) {
+                    return false;
+                }
+                }
+                return true;
+            }) // <-- uses accessor
+            ->values()
         );
 
         return $result;
@@ -264,6 +280,7 @@ class GenericRepo implements IGenericRepo
             '>='    => $value1 >= $value2,
             '<='    => $value1 <= $value2,
             'like'  => stripos((string)$value1, (string)$value2) !== false,
+            'in'    => is_array($value2) && in_array($value1, $value2),
             default => false,
         };
         error_log(json_encode([">>", $value1, $operator, $value2, '==', $result]));

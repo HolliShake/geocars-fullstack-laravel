@@ -11,6 +11,7 @@ import { Car, Loader2, Search, SlidersHorizontal, X } from 'lucide-react';
 import type React from 'react';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
+import { useDebounce } from 'use-debounce';
 
 // Skeleton loader component for car posting cards
 function CarPostingCardSkeleton() {
@@ -41,6 +42,8 @@ export default function RenterBrowsePage(): React.ReactNode {
   const [hasMore, setHasMore] = useState(true);
   const observerTarget = useRef<HTMLDivElement>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch] = useDebounce(search, 500);
 
   const navigate = useNavigate();
 
@@ -49,9 +52,14 @@ export default function RenterBrowsePage(): React.ReactNode {
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
-  const { data, isLoading } = useBrowseCarPosting({
+  const { data, refetch, isLoading } = useBrowseCarPosting({
+    brands: selectedBrands,
+    types: selectedCarTypes,
+    price_from: priceRange[0],
+    price_to: priceRange[1],
     page: page,
     rows: 10,
+    search: debouncedSearch,
   });
 
   // Extract unique brands from all postings
@@ -74,7 +82,7 @@ export default function RenterBrowsePage(): React.ReactNode {
           // Prevent duplicates by checking if posting already exists
           const existingIds = new Set(prev.map((p) => p.id));
           const uniqueNewPostings = newPostings.filter((p) => !existingIds.has(p.id));
-          return [...prev, ...uniqueNewPostings];
+          return uniqueNewPostings.length > 0 ? [...prev, ...uniqueNewPostings] : prev;
         });
       }
 
@@ -83,11 +91,18 @@ export default function RenterBrowsePage(): React.ReactNode {
     }
   }, [data, page]);
 
+  // Reset page and clear postings when filters or search change
+  useEffect(() => {
+    setPage(1);
+    setAllPostings([]);
+    refetch();
+  }, [selectedCarTypes, selectedBrands, priceRange, debouncedSearch, refetch]);
+
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && page > 1) {
           setPage((prev) => prev + 1);
         }
       },
@@ -95,7 +110,7 @@ export default function RenterBrowsePage(): React.ReactNode {
     );
 
     const currentTarget = observerTarget.current;
-    if (currentTarget) {
+    if (currentTarget && hasMore && !isLoading) {
       observer.observe(currentTarget);
     }
 
@@ -103,8 +118,9 @@ export default function RenterBrowsePage(): React.ReactNode {
       if (currentTarget) {
         observer.unobserve(currentTarget);
       }
+      observer.disconnect();
     };
-  }, [hasMore, isLoading]);
+  }, [hasMore, isLoading, page]);
 
   const handleClick = (posting: CarPosting) => {
     navigate(RouteKey.Renter.Application.parse(posting.id));
@@ -132,12 +148,14 @@ export default function RenterBrowsePage(): React.ReactNode {
     setSelectedCarTypes([]);
     setSelectedBrands([]);
     setPriceRange([0, 10000]);
+    setSearch('');
   };
 
   const activeFiltersCount =
     selectedCarTypes.length +
     selectedBrands.length +
-    (priceRange[0] > 0 || priceRange[1] < 10000 ? 1 : 0);
+    (priceRange[0] > 0 || priceRange[1] < 10000 ? 1 : 0) +
+    (search.length > 0 ? 1 : 0);
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-background via-background to-muted/20">
@@ -174,8 +192,18 @@ export default function RenterBrowsePage(): React.ReactNode {
             <input
               type="text"
               placeholder="Search by make, model..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-9 sm:pl-10 pr-4 py-2.5 sm:py-3 text-sm sm:text-base bg-background border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
             />
+            {search && (
+              <button
+                onClick={() => setSearch('')}
+                className="absolute right-3 top-1/2 transform -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            )}
           </div>
         </div>
       </div>
@@ -322,10 +350,16 @@ export default function RenterBrowsePage(): React.ReactNode {
                   {(selectedCarTypes.length > 0 ||
                     selectedBrands.length > 0 ||
                     priceRange[0] > 0 ||
-                    priceRange[1] < 10000) && (
+                    priceRange[1] < 10000 ||
+                    search.length > 0) && (
                     <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4">
                       <h3 className="text-sm font-medium mb-2">Active Filters</h3>
                       <div className="flex flex-wrap gap-2">
+                        {search.length > 0 && (
+                          <span className="inline-flex items-center gap-1 px-2 py-1 bg-primary/10 text-primary text-xs rounded-full">
+                            Search: {search}
+                          </span>
+                        )}
                         {selectedCarTypes.map((type) => (
                           <span
                             key={`filter-type-${type}`}
@@ -369,6 +403,11 @@ export default function RenterBrowsePage(): React.ReactNode {
                   Showing{' '}
                   <span className="text-foreground font-semibold">{allPostings.length}</span>{' '}
                   available cars
+                  {search && (
+                    <span className="ml-1">
+                      for "<span className="text-foreground">{search}</span>"
+                    </span>
+                  )}
                 </span>
                 {hasMore && <span className="text-xs">Scroll for more</span>}
               </div>
@@ -390,7 +429,9 @@ export default function RenterBrowsePage(): React.ReactNode {
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-2">No Cars Available</h3>
                 <p className="text-sm sm:text-base text-muted-foreground">
-                  No car postings available at the moment. Check back soon!
+                  {search
+                    ? `No cars found matching "${search}". Try adjusting your search or filters.`
+                    : 'No car postings available at the moment. Check back soon!'}
                 </p>
               </div>
             )}
@@ -408,6 +449,10 @@ export default function RenterBrowsePage(): React.ReactNode {
                     carPosting={posting}
                     onClick={() => {
                       handleClick(posting);
+                    }}
+                    onReact={() => {
+                      // Trigger a re-fetch to update reaction state
+                      refetch();
                     }}
                   />
                 </div>

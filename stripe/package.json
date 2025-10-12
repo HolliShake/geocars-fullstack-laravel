@@ -1,0 +1,32 @@
+{
+  "name": "stripe",
+  "version": "1.0.0",
+  "description": "Stripe server",
+  "main": "index.js",
+  "scripts": {
+    "dev": "tsc && node ./dist/index.js",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
+  },
+  "keywords": [
+    "stripe",
+    "server"
+  ],
+  "author": "Philipp Andrew Redondo",
+  "license": "MIT",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "stripe": "^19.1.0"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/express": "^5.0.3",
+    "eslint": "^9.33.0",
+    "prettier": "^3.6.2",
+    "prettier-plugin-organize-imports": "^4.2.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1"
+  }
+}

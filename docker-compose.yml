@@ -49,6 +49,20 @@ services:
     depends_on:
       - mysql
 
+  # Stripe Server
+  stripe:
+    build:
+      context: ./stripe
+      dockerfile: ../docker/stripe/Dockerfile
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./stripe:/stripe:cached
+      - /stripe/node_modules
+      - /stripe/dist
+    environment:
+      - NODE_ENV=development
+
   # MySQL Database
   mysql:
     container_name: geocars-mysql
