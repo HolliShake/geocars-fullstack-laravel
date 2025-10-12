@@ -6,6 +6,7 @@ use App\Http\Controllers\CarPostingController;
 use App\Http\Controllers\CarRentalController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PlanFeatureController;
+use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\UserCompanyController;
 use App\Http\Controllers\UserController;
@@ -98,4 +99,10 @@ Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(UserRequir
     Route::middleware('role:user,renter')->post('/UserRequirement','store');
     Route::middleware('role:user,renter')->put('/UserRequirement/{id}','update')->where('id', '[0-9]+');
     Route::middleware('role:user,renter')->delete('/UserRequirement/{id}', 'destroy')->where('id', '[0-9]+');
+});
+
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(ReactionController::class)->group(function () {
+    Route::post('/Reaction','store');
+    Route::put('/Reaction/{id}','update')->where('id', '[0-9]+');
+    Route::delete('/Reaction/{id}', 'destroy')->where('id', '[0-9]+');
 });

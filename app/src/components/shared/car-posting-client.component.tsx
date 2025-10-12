@@ -1,25 +1,62 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { ReactionEnum, type Reaction } from '@/constants/reaction.constant';
 import { dumbCurrency } from '@/lib/dumb-currency';
+import { useCreateReaction, useDeleteReaction, useUpdateReaction } from '@rest/api';
 import type { CarPosting } from '@rest/models/carPosting';
-import { Calendar, CalendarDays, Fuel, MessageCircle, Settings, ThumbsUp, Zap } from 'lucide-react';
-import React, { useState } from 'react';
+import {
+  Calendar,
+  CalendarDays,
+  Frown,
+  Fuel,
+  Heart,
+  Laugh,
+  MessageCircle,
+  Settings,
+  Smile,
+  ThumbsDown,
+  ThumbsUp,
+  Zap,
+} from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 
 interface CarPostingCardProps {
   imageUrl: string;
   carPosting: CarPosting;
   onClick: () => void;
+  onReact: () => void;
 }
 
 export const CarPostingCard: React.FC<CarPostingCardProps> = ({
   imageUrl,
   carPosting,
   onClick,
+  onReact,
 }) => {
-  const [liked, setLiked] = useState(false);
-  const [likeCount, setLikeCount] = useState(Math.floor(Math.random() * 50) + 10);
+  const [liked, setLiked] = useState(carPosting.user_reaction != null);
+  const [likeCount, setLikeCount] = useState(carPosting.total_reactions!);
+  const [currentReaction, setCurrentReaction] = useState(carPosting.user_reaction?.reaction);
   const [commentCount] = useState(Math.floor(Math.random() * 20) + 3);
+  const [popoverOpen, setPopoverOpen] = useState(false);
+
+  const { mutateAsync: createReaction, isPending: isCreatingReaction } = useCreateReaction();
+  const { mutateAsync: updateReaction, isPending: isUpdatingReaction } = useUpdateReaction();
+  const { mutateAsync: deleteReaction, isPending: isDeletingReaction } = useDeleteReaction();
+
+  const isReacting = useMemo(
+    () => isCreatingReaction || isUpdatingReaction || isDeletingReaction,
+    [isCreatingReaction, isUpdatingReaction, isDeletingReaction]
+  );
+
+  // Sync state with prop changes
+  useEffect(() => {
+    setLiked(carPosting.user_reaction != null);
+    setLikeCount(carPosting.total_reactions!);
+    setCurrentReaction(carPosting.user_reaction?.reaction);
+  }, [carPosting.user_reaction, carPosting.total_reactions]);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString('en-US', {
@@ -36,14 +73,82 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
     return diffDays;
   };
 
-  const handleLike = (e: React.MouseEvent) => {
+  const handleLike = async (e: React.MouseEvent, reaction: Reaction) => {
     e.stopPropagation();
-    setLiked(!liked);
-    setLikeCount((prev) => (liked ? prev - 1 : prev + 1));
+    setPopoverOpen(false);
+
+    const previousLiked = liked;
+    const previousLikeCount = likeCount;
+    const previousReaction = currentReaction;
+
+    try {
+      if (liked) {
+        if (!carPosting.user_reaction?.id) return;
+        if (reaction !== carPosting.user_reaction?.reaction) {
+          // Update reaction - optimistic update
+          setCurrentReaction(reaction);
+          await updateReaction({
+            id: carPosting.user_reaction!.id!,
+            data: {
+              ...carPosting.user_reaction!,
+              reaction: reaction,
+            },
+          });
+          onReact();
+          return;
+        }
+        // Delete reaction - optimistic update
+        setLiked(false);
+        setLikeCount((prev) => prev - 1);
+        setCurrentReaction(undefined);
+        await deleteReaction({
+          id: carPosting.user_reaction!.id!,
+        });
+        onReact();
+      } else {
+        // Create reaction - optimistic update
+        setLiked(true);
+        setLikeCount((prev) => prev + 1);
+        setCurrentReaction(reaction);
+        await createReaction({
+          data: {
+            reaction: reaction,
+            car_posting_id: carPosting.id!,
+            user_id: 0,
+          },
+        });
+        onReact();
+      }
+    } catch (error) {
+      // Revert optimistic updates on error
+      setLiked(previousLiked);
+      setLikeCount(previousLikeCount);
+      setCurrentReaction(previousReaction);
+      toast.error('Failed to update reaction');
+      console.error('Failed to update reaction', error);
+    }
   };
 
   const handleComment = (e: React.MouseEvent) => {
     e.stopPropagation();
+  };
+
+  const renderReaction = () => {
+    switch (currentReaction) {
+      case ReactionEnum.DISLIKE:
+        return <ThumbsDown className={`w-4 h-4 ${liked ? 'fill-red-500' : ''}`} />;
+      case ReactionEnum.LOVE:
+        return <Heart className={`w-4 h-4 ${liked ? 'fill-red-500' : ''}`} />;
+      case ReactionEnum.HAHA:
+        return <Laugh className={`w-4 h-4 ${liked ? 'fill-yellow-500' : ''}`} />;
+      case ReactionEnum.WOW:
+        return <Smile className={`w-4 h-4 ${liked ? 'fill-blue-500' : ''}`} />;
+      case ReactionEnum.SAD:
+        return <Frown className={`w-4 h-4 ${liked ? 'fill-gray-500' : ''}`} />;
+      case ReactionEnum.LIKE:
+      default:
+        return <ThumbsUp className={`w-4 h-4 ${liked ? 'fill-blue-500' : ''}`} />;
+    }
   };
 
   return (
@@ -166,14 +271,75 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
             {commentCount > 0 && <span className="ml-2">{commentCount} comments</span>}
           </div>
           <div className="flex gap-1">
-            <Button
-              variant="ghost"
-              size="sm"
-              className={`h-7 px-2 ${liked ? 'text-blue-500' : ''}`}
-              onClick={handleLike}
-            >
-              <ThumbsUp className={`w-3 h-3 ${liked ? 'fill-current' : ''}`} />
-            </Button>
+            <Popover open={popoverOpen} onOpenChange={setPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  disabled={isReacting}
+                  onClick={(e) => e.stopPropagation()}
+                  onMouseEnter={(e) => e.stopPropagation()}
+                >
+                  {renderReaction()}
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent
+                className="w-auto p-2"
+                onClick={(e) => e.stopPropagation()}
+                onMouseDown={(e) => e.stopPropagation()}
+              >
+                <div className="flex gap-1">
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.LIKE)}
+                  >
+                    👍
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.DISLIKE)}
+                  >
+                    👎
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.LOVE)}
+                  >
+                    ❤️
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.HAHA)}
+                  >
+                    😂
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.WOW)}
+                  >
+                    😮
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 w-8 p-0 text-lg hover:scale-125 transition-transform"
+                    onClick={(e) => handleLike(e, ReactionEnum.SAD)}
+                  >
+                    😢
+                  </Button>
+                </div>
+              </PopoverContent>
+            </Popover>
             <Button variant="ghost" size="sm" className="h-7 px-2" onClick={handleComment}>
               <MessageCircle className="w-3 h-3" />
             </Button>

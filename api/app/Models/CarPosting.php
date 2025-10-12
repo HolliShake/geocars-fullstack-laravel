@@ -3,7 +3,9 @@
 namespace App\Models;
 
 use App\Enum\RentalStatusEnum;
+use App\Models\Reaction;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -31,6 +33,9 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "updated_at", type: "string", format: "date-time", nullable: true),
         // Computed properties
         new OA\Property(property: "is_available", type: "boolean", example: true),
+        new OA\Property(property: "total_reactions", type: "integer", example: 0, nullable: false),
+        new OA\Property(property: "user_reaction", type: "object", ref: "#/components/schemas/Reaction", nullable: true),
+        new OA\Property(property: "total_comments", type: "integer", example: 0, nullable: false),
     ]
 )]
 
@@ -112,7 +117,38 @@ class CarPosting extends Model
         'end_date' => 'datetime',
     ];
 
-    protected $appends = ['is_available'];
+    protected $appends = ['is_available', 'total_reactions', 'user_reaction', 'total_comments'];
+
+    /**
+     * Get the if the current user has liked the car posting.
+     *
+     * @return bool
+     */
+    public function getUserReactionAttribute()
+    {
+        if (!Auth::check()) return null;
+        return $this->reactions()->where('user_id', Auth::id())->first();
+    }
+
+    /**
+     * Get the total reactions for the car posting.
+     *
+     * @return int
+     */
+    public function getTotalReactionsAttribute()
+    {
+        return $this->reactions()->count();
+    }
+
+    /**
+     * Get the total comments for the car posting.
+     *
+     * @return int
+     */
+    public function getTotalCommentsAttribute()
+    {
+        return $this->comments()->whereNull('parent_comment_id')->count();
+    }
 
     /**
      * Get the availability status of the car posting.
@@ -163,5 +199,25 @@ class CarPosting extends Model
     public function carRentals()
     {
         return $this->hasMany(CarRental::class, 'car_posting_id', 'id');
+    }
+
+    /**
+     * Get the reactions for the car posting.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function reactions()
+    {
+        return $this->hasMany(Reaction::class, 'car_posting_id', 'id');
+    }
+
+    /**
+     * Get the comments for the car posting.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function comments()
+    {
+        return $this->hasMany(Comment::class, 'car_posting_id', 'id');
     }
 }
