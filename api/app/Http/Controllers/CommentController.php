@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Service\CommentService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -25,6 +26,13 @@ class CommentController extends Controller
         tags: ["Comment"],
         description: "Retrieve a paginated list of Comment with optional search",
         operationId:"getCommentPaginated",
+    )]
+    #[OA\Parameter(
+        name: "car_posting_id",
+        in: "query",
+        description: "Car Posting ID",
+        required: true,
+        schema: new OA\Schema(type: "integer")
     )]
     #[OA\Parameter(
         name: "search",
@@ -57,7 +65,16 @@ class CommentController extends Controller
         $srch = $request->query("search", '');
         $page = $request->query("page", 0);
         $rows = $request->query("rows", 10);
-        return $this->ok($this->service->paginate($page, $rows));
+        $carPostingId = $request->query("car_posting_id", null);
+
+        $conditions = [
+            'comment' => ['like', "%{$srch}%"],
+        ];
+
+        if ($carPostingId) {
+            $conditions['car_posting_id'] = ['=', $carPostingId];
+        }
+        return $this->ok($this->service->paginate($page, $rows, ['*'], ['user', 'replies', 'replies.user'], $conditions));
     }
 
     /**
@@ -129,7 +146,7 @@ class CommentController extends Controller
             $validator = Validator::make($request->all(), [
                 'comment'           => 'required|string',
                 'car_posting_id'    => 'required|integer|exists:car_postings,id',
-                'user_id'           => 'required|integer|exists:users,id',
+                'user_id'           => 'exclude_if:user_id,0|integer|exists:users,id',
                 'parent_comment_id' => 'nullable|integer|exists:comments,id',
             ]);
 
@@ -137,7 +154,12 @@ class CommentController extends Controller
                 return $this->validationError($validator->errors());
             }
 
-            $validated = $validator->validated();
+            $validated = (array)[
+                ...$validator->validated(),
+                'user_id' => ($request->input('user_id') != 0)
+                    ? $request->input('user_id')
+                    : Auth::id(),
+            ];
 
             return $this->ok($this->service->create($validated));
         } catch (\Exception $e) {
@@ -190,7 +212,7 @@ class CommentController extends Controller
             $validator = Validator::make($request->all(), [
                 'comment'           => 'required|string',
                 'car_posting_id'    => 'required|integer|exists:car_postings,id',
-                'user_id'           => 'required|integer|exists:users,id',
+                'user_id'           => 'exclude_if:user_id,0|integer|exists:users,id',
                 'parent_comment_id' => 'nullable|integer|exists:comments,id',
             ]);
 
@@ -198,7 +220,12 @@ class CommentController extends Controller
                 return $this->validationError($validator->errors());
             }
 
-            $validated = $validator->validated();
+            $validated = (array)[
+                ...$validator->validated(),
+                'user_id' => ($request->input('user_id') != 0)
+                    ? $request->input('user_id')
+                    : Auth::id(),
+            ];
 
             return $this->ok($this->service->update($id, $validated));
         } catch (ModelNotFoundException $e) {

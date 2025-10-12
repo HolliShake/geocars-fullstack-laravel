@@ -24,6 +24,7 @@ return new class extends Migration
                 ->onDelete('cascade');
             //
             $table->foreignId('parent_comment_id')
+                ->nullable()
                 ->constrained('comments')
                 ->onDelete('cascade');
             //

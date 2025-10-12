@@ -1,3 +1,4 @@
+import { useModal } from '@/components/custom/modal.component';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +23,7 @@ import {
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
+import CarPostingCommentModal from './car-posting-comments.component';
 
 interface CarPostingCardProps {
   imageUrl: string;
@@ -39,7 +41,7 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
   const [liked, setLiked] = useState(carPosting.user_reaction != null);
   const [likeCount, setLikeCount] = useState(carPosting.total_reactions!);
   const [currentReaction, setCurrentReaction] = useState(carPosting.user_reaction?.reaction);
-  const [commentCount] = useState(Math.floor(Math.random() * 20) + 3);
+  const [commentCount] = useState(carPosting.total_comments ?? 0);
   const [popoverOpen, setPopoverOpen] = useState(false);
 
   const { mutateAsync: createReaction, isPending: isCreatingReaction } = useCreateReaction();
@@ -50,6 +52,8 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
     () => isCreatingReaction || isUpdatingReaction || isDeletingReaction,
     [isCreatingReaction, isUpdatingReaction, isDeletingReaction]
   );
+
+  const modal = useModal<CarPosting>();
 
   // Sync state with prop changes
   useEffect(() => {
@@ -131,6 +135,7 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
 
   const handleComment = (e: React.MouseEvent) => {
     e.stopPropagation();
+    modal.openFn(carPosting);
   };
 
   const renderReaction = () => {
@@ -346,6 +351,8 @@ export const CarPostingCard: React.FC<CarPostingCardProps> = ({
           </div>
         </div>
       </CardContent>
+
+      <CarPostingCommentModal controller={modal} />
     </Card>
   );
 };

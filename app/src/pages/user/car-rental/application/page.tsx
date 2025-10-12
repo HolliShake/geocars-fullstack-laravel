@@ -935,54 +935,52 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                         </span>
                       </div>
                     </div>
-
-                    {rental.rental_status === CarRentalRentalStatus.pending && (
-                      <>
-                        <Separator className="bg-gradient-to-r from-transparent via-border to-transparent" />
-
-                        <div className="space-y-3 sm:space-y-4">
-                          <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
-                            <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
-                            Action Required
-                          </div>
-
-                          <div className="flex flex-col gap-2 sm:gap-3">
-                            <Button
-                              className="w-full h-10 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
-                              onClick={() =>
-                                confirm.confirm(
-                                  async () => await handleApproveRental(rental.id as number)
-                                )
-                              }
-                            >
-                              <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 group-hover:animate-pulse" />
-                              Accept Booking
-                            </Button>
-
-                            <Button
-                              variant="outline"
-                              className="w-full h-10 sm:h-12 border-2 border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/30 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
-                              onClick={() =>
-                                confirm.confirm(
-                                  async () => await handleRejectRental(rental.id as number)
-                                )
-                              }
-                            >
-                              <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 group-hover:animate-pulse" />
-                              Reject Booking
-                            </Button>
-                          </div>
-
-                          <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
-                            <p className="text-xs text-muted-foreground text-center">
-                              Please review all details carefully before making a decision
-                            </p>
-                          </div>
-                        </div>
-                      </>
-                    )}
                   </CardContent>
                 </Card>
+
+                {rental.rental_status === CarRentalRentalStatus.pending && (
+                  <Card className="border-border/50 bg-card/90 backdrop-blur-md hover:shadow-xl transition-all duration-300 shadow-lg">
+                    <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+                        <FileText className="h-3 w-3 sm:h-4 sm:w-4" />
+                        Action Required
+                      </div>
+
+                      <div className="flex flex-col gap-2 sm:gap-3">
+                        <Button
+                          className="w-full h-10 sm:h-12 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
+                          onClick={() =>
+                            confirm.confirm(
+                              async () => await handleApproveRental(rental.id as number)
+                            )
+                          }
+                        >
+                          <CheckCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 group-hover:animate-pulse" />
+                          Accept Booking
+                        </Button>
+
+                        <Button
+                          variant="outline"
+                          className="w-full h-10 sm:h-12 border-2 border-destructive/20 text-destructive hover:bg-destructive/10 hover:border-destructive/30 font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
+                          onClick={() =>
+                            confirm.confirm(
+                              async () => await handleRejectRental(rental.id as number)
+                            )
+                          }
+                        >
+                          <XCircle className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 group-hover:animate-pulse" />
+                          Reject Booking
+                        </Button>
+                      </div>
+
+                      <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+                        <p className="text-xs text-muted-foreground text-center">
+                          Please review all details carefully before making a decision
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
               </div>
             </div>
           </div>

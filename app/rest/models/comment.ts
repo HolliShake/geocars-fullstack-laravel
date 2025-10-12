@@ -5,14 +5,20 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { CommentUser } from './commentUser';
 
 export interface Comment {
   id: number;
-  content: string;
+  comment?: string;
   user_id: number;
-  post_id: number;
+  car_posting_id: number;
   /** @nullable */
-  parent_id?: number | null;
+  parent_comment_id?: number | null;
   created_at: string;
   updated_at: string;
+  /** @nullable */
+  user?: CommentUser;
+  is_current_user?: boolean;
+  /** @nullable */
+  replies?: Comment[] | null;
 }

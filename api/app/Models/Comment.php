@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -13,18 +14,24 @@ use OpenApi\Attributes as OA;
         "id",
         "content",
         "user_id",
-        "post_id",
+        "car_posting_id",
         "created_at",
         "updated_at"
     ],
     properties: [
         new OA\Property(property: "id", type: "integer", example: 1),
-        new OA\Property(property: "content", type: "string", example: "This is a comment"),
+        new OA\Property(property: "comment", type: "string", example: "This is a comment"),
         new OA\Property(property: "user_id", type: "integer", example: 1),
-        new OA\Property(property: "post_id", type: "integer", example: 1),
-        new OA\Property(property: "parent_id", type: "integer", nullable: true, example: null),
+        new OA\Property(property: "car_posting_id", type: "integer", example: 1),
+        new OA\Property(property: "parent_comment_id", type: "integer", nullable: true, example: null),
         new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00.000000Z"),
         new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00.000000Z"),
+        // User
+        new OA\Property(property: "user", ref: "#/components/schemas/User", nullable: true, example: null),
+        // Is current user
+        new OA\Property(property: "is_current_user", type: "boolean", example: true),
+        // Comment replies
+        new OA\Property(property: "replies", type: "array", items: new OA\Items(ref: "#/components/schemas/Comment"), nullable: true, example: null),
     ]
 )]
 
@@ -100,6 +107,21 @@ class Comment extends Model
         'comment',
     ];
 
+    protected $appends = [
+        'is_current_user',
+    ];
+
+    /**
+     * Get the if the current user is the owner of the comment.
+     *
+     * @return bool
+     */
+    public function getIsCurrentUserAttribute()
+    {
+        if (!Auth::check()) return false;
+        return $this->user_id === Auth::id();
+    }
+
     /**
      * Get the user that owns the comment.
      *
@@ -108,5 +130,15 @@ class Comment extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    /**
+     * Get the replies for the comment.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function replies()
+    {
+        return $this->hasMany(Comment::class, 'parent_comment_id', 'id');
     }
 }

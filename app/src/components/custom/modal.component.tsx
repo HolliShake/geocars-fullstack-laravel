@@ -96,6 +96,9 @@ export default function Modal({
   return (
     <Dialog open={controller.isOpen} onOpenChange={controller.closeFn} modal>
       <DialogContent
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
         className={cn(
           'p-0 overflow-hidden flex flex-col rounded-xl bg-background w-full',
           'transition-all duration-300 ease-out',

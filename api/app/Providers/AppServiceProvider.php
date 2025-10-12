@@ -5,6 +5,7 @@ namespace App\Providers;
 use App\Interface\Repository\ICarPostingRepo;
 use App\Interface\Repository\ICarRentalRepo;
 use App\Interface\Repository\ICarRepo;
+use App\Interface\Repository\ICommentRepo;
 use App\Interface\Repository\IRequirementRepo;
 use App\Interface\Repository\IPlanFeatureRepo;
 use App\Interface\Repository\IPlanRepo;
@@ -16,6 +17,7 @@ use App\Interface\Repository\IUserSubscriptionRepo;
 use App\Interface\Service\ICarPostingService;
 use App\Interface\Service\ICarRentalService;
 use App\Interface\Service\ICarService;
+use App\Interface\Service\ICommentService;
 use App\Interface\Service\IRequirementService;
 use App\Interface\Service\IPlanFeatureService;
 use App\Interface\Service\IPlanService;
@@ -27,6 +29,7 @@ use App\Interface\Service\IUserSubscriptionService;
 use App\Repository\CarPostingRepo;
 use App\Repository\CarRentalRepo;
 use App\Repository\CarRepo;
+use App\Repository\CommentRepo;
 use App\Repository\PlanFeatureRepo;
 use App\Repository\PlanRepo;
 use App\Repository\ReactionRepo;
@@ -38,6 +41,7 @@ use App\Repository\UserSubscriptionRepo;
 use App\Service\CarPostingService;
 use App\Service\CarRentalService;
 use App\Service\CarService;
+use App\Service\CommentService;
 use App\Service\RequirementService;
 use App\Service\PlanFeatureService;
 use App\Service\PlanService;
@@ -69,6 +73,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IRequirementRepo::class, RequirementRepo::class);
         $this->app->bind(IUserSubscriptionRepo::class, UserSubscriptionRepo::class);
         $this->app->bind(IReactionRepo::class, ReactionRepo::class);
+        $this->app->bind(ICommentRepo::class, CommentRepo::class);
         // Services
         $this->app->bind(IUserService::class, UserService::class);
         $this->app->bind(IPlanService::class, PlanService::class);
@@ -81,6 +86,7 @@ class AppServiceProvider extends ServiceProvider
         $this->app->bind(IRequirementService::class, RequirementService::class);
         $this->app->bind(IUserSubscriptionService::class, UserSubscriptionService::class);
         $this->app->bind(IReactionService::class, ReactionService::class);
+        $this->app->bind(ICommentService::class, CommentService::class);
     }
 
     /**

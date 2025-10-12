@@ -4,6 +4,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarPostingController;
 use App\Http\Controllers\CarRentalController;
+use App\Http\Controllers\CommentController;
 use App\Http\Controllers\PlanController;
 use App\Http\Controllers\PlanFeatureController;
 use App\Http\Controllers\ReactionController;
@@ -105,4 +106,12 @@ Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(ReactionCo
     Route::post('/Reaction','store');
     Route::put('/Reaction/{id}','update')->where('id', '[0-9]+');
     Route::delete('/Reaction/{id}', 'destroy')->where('id', '[0-9]+');
+});
+
+Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(CommentController::class)->group(function () {
+    Route::get('/Comment','index');
+    Route::get('/Comment/{id}','show')->where('id', '[0-9]+');
+    Route::middleware('role:user,renter')->post('/Comment','store');
+    Route::middleware('role:user,renter')->put('/Comment/{id}','update')->where('id', '[0-9]+');
+    Route::middleware('role:user,renter')->delete('/Comment/{id}', 'destroy')->where('id', '[0-9]+');
 });

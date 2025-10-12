@@ -8,6 +8,10 @@
 
 export type GetCommentPaginatedParams = {
 /**
+ * Car Posting ID
+ */
+car_posting_id: number;
+/**
  * Search term
  */
 search?: string;

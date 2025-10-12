@@ -1374,6 +1374,15 @@
                 "operationId": "getCommentPaginated",
                 "parameters": [
                     {
+                        "name": "car_posting_id",
+                        "in": "query",
+                        "description": "Car Posting ID",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
                         "name": "search",
                         "in": "query",
                         "description": "Search term",
@@ -4217,7 +4226,7 @@
                     "id",
                     "content",
                     "user_id",
-                    "post_id",
+                    "car_posting_id",
                     "created_at",
                     "updated_at"
                 ],
@@ -4226,7 +4235,7 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "content": {
+                    "comment": {
                         "type": "string",
                         "example": "This is a comment"
                     },
@@ -4234,11 +4243,11 @@
                         "type": "integer",
                         "example": 1
                     },
-                    "post_id": {
+                    "car_posting_id": {
                         "type": "integer",
                         "example": 1
                     },
-                    "parent_id": {
+                    "parent_comment_id": {
                         "type": "integer",
                         "example": null,
                         "nullable": true
@@ -4252,6 +4261,27 @@
                         "type": "string",
                         "format": "date-time",
                         "example": "2024-01-01T00:00:00.000000Z"
+                    },
+                    "user": {
+                        "oneOf": [
+                            {
+                                "$ref": "#\/components\/schemas\/User"
+                            }
+                        ],
+                        "nullable": true,
+                        "example": null
+                    },
+                    "is_current_user": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "replies": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/Comment"
+                        },
+                        "example": null,
+                        "nullable": true
                     }
                 },
                 "type": "object"

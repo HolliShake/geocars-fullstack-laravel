@@ -1870,7 +1870,7 @@ export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof c
  * @summary Get paginated list of Comment
  */
 export const getCommentPaginated = (
-    params?: GetCommentPaginatedParams,
+    params: GetCommentPaginatedParams,
  signal?: AbortSignal
 ) => {
       
@@ -1888,7 +1888,7 @@ export const getGetCommentPaginatedQueryKey = (params?: GetCommentPaginatedParam
     }
 
     
-export const getGetCommentPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(params?: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
+export const getGetCommentPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(params: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
 ) => {
 
 const {query: queryOptions} = options ?? {};
@@ -1911,7 +1911,7 @@ export type GetCommentPaginatedQueryError = unknown
 
 
 export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(
- params: undefined |  GetCommentPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>> & Pick<
+ params: GetCommentPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>> & Pick<
         DefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentPaginated>>,
           TError,
@@ -1921,7 +1921,7 @@ export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getComm
  , queryClient?: QueryClient
   ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(
- params?: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>> & Pick<
+ params: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>> & Pick<
         UndefinedInitialDataOptions<
           Awaited<ReturnType<typeof getCommentPaginated>>,
           TError,
@@ -1931,7 +1931,7 @@ export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getComm
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(
- params?: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
+ params: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
  , queryClient?: QueryClient
   ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
 /**
@@ -1939,7 +1939,7 @@ export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getComm
  */
 
 export function useGetCommentPaginated<TData = Awaited<ReturnType<typeof getCommentPaginated>>, TError = unknown>(
- params?: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
+ params: GetCommentPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getCommentPaginated>>, TError, TData>>, }
  , queryClient?: QueryClient 
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
