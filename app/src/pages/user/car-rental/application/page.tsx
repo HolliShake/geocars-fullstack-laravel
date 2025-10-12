@@ -273,9 +273,9 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
             </Card>
           </div>
 
-          <div className="grid grid-cols-1 xl:grid-cols-[1fr,400px] gap-4 sm:gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8">
             {/* Main Content */}
-            <div className="space-y-4 sm:space-y-4 lg:space-y-6">
+            <div className="space-y-4 sm:space-y-4 lg:space-y-6 lg:min-w-0">
               {/* Enhanced Booking Information */}
               <Card className="border-border/50 bg-card/80 backdrop-blur-sm hover:shadow-xl transition-all duration-300 group">
                 <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
@@ -862,8 +862,8 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
             </div>
 
             {/* Enhanced Sidebar - Rental Details with Sticky */}
-            <div className="xl:block">
-              <div className="sticky top-6 space-y-4 lg:space-y-6">
+            <div className="lg:block">
+              <div className="sticky top-4 lg:top-6 space-y-4 lg:space-y-6 h-fit max-h-[calc(100vh-2rem)] overflow-auto">
                 <Card className="border-border/50 bg-card/90 backdrop-blur-md hover:shadow-xl transition-all duration-300 shadow-lg">
                   <CardHeader className="pb-3 sm:pb-4 px-4 sm:px-6">
                     <CardTitle className="flex items-center gap-2 sm:gap-3 text-base sm:text-lg md:text-xl">

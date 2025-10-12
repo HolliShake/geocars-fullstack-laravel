@@ -24,7 +24,7 @@ const RENTERROUTES: readonly Route[] = Object.freeze<Route[]>([
     element: <RenterApplication />,
     layout: 'topbar',
     roles: [RoleEnum.renter],
-    sidebar: true,
+    sidebar: false,
   },
 ]);
 
