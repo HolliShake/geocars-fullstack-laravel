@@ -50,6 +50,10 @@ export default function RenterBrowsePage(): React.ReactNode {
   const [priceRange, setPriceRange] = useState<[number, number]>([0, 10000]);
 
   const { data, isLoading } = useBrowseCarPosting({
+    brands: selectedBrands,
+    types: selectedCarTypes,
+    price_from: priceRange[0],
+    price_to: priceRange[1],
     page: page,
     rows: 10,
   });
@@ -74,20 +78,26 @@ export default function RenterBrowsePage(): React.ReactNode {
           // Prevent duplicates by checking if posting already exists
           const existingIds = new Set(prev.map((p) => p.id));
           const uniqueNewPostings = newPostings.filter((p) => !existingIds.has(p.id));
-          return [...prev, ...uniqueNewPostings];
+          return uniqueNewPostings.length > 0 ? [...prev, ...uniqueNewPostings] : prev;
         });
       }
 
       // Check if there are more pages
       setHasMore((data.data.current_page ?? 0) < (data.data.last_page ?? 0));
     }
-  }, [data, page]);
+  }, [data]);
+
+  // Reset page and clear postings when filters change
+  useEffect(() => {
+    setPage(1);
+    setAllPostings([]);
+  }, [selectedCarTypes, selectedBrands, priceRange]);
 
   // Intersection Observer for infinite scroll
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isLoading) {
+        if (entries[0].isIntersecting && hasMore && !isLoading && page > 1) {
           setPage((prev) => prev + 1);
         }
       },
@@ -95,7 +105,7 @@ export default function RenterBrowsePage(): React.ReactNode {
     );
 
     const currentTarget = observerTarget.current;
-    if (currentTarget) {
+    if (currentTarget && hasMore && !isLoading) {
       observer.observe(currentTarget);
     }
 
@@ -103,8 +113,9 @@ export default function RenterBrowsePage(): React.ReactNode {
       if (currentTarget) {
         observer.unobserve(currentTarget);
       }
+      observer.disconnect();
     };
-  }, [hasMore, isLoading]);
+  }, [hasMore, isLoading, page]);
 
   const handleClick = (posting: CarPosting) => {
     navigate(RouteKey.Renter.Application.parse(posting.id));

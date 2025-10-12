@@ -19,4 +19,20 @@ page?: number;
  * Number of items per page
  */
 rows?: number;
+/**
+ * Filter by car brands
+ */
+brands?: string[];
+/**
+ * Filter by car types
+ */
+types?: string[];
+/**
+ * Minimum price filter
+ */
+price_from?: number;
+/**
+ * Maximum price filter
+ */
+price_to?: number;
 };

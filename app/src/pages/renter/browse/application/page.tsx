@@ -56,7 +56,13 @@ export default function RenterApplication(): React.ReactNode {
   );
 
   const handleSubmitApplication = async () => {
+    if (!data?.data) {
+      toast.error('Car posting data not available. Please refresh the page.');
+      return;
+    }
+
     try {
+      const carPosting = data.data;
       const startDate = new Date(carPosting.start_date);
 
       await submitApplication({

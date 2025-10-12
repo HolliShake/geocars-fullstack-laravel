@@ -164,6 +164,34 @@ class CarPostingController extends Controller
         required: false,
         schema: new OA\Schema(type: "integer", default: 10)
     )]
+    #[OA\Parameter(
+        name: "brands",
+        in: "query",
+        description: "Filter by car brands",
+        required: false,
+        schema: new OA\Schema(type: "array", items: new OA\Items(type: "string"))
+    )]
+    #[OA\Parameter(
+        name: "types",
+        in: "query",
+        description: "Filter by car types",
+        required: false,
+        schema: new OA\Schema(type: "array", items: new OA\Items(type: "string"))
+    )]
+    #[OA\Parameter(
+        name: "price_from",
+        in: "query",
+        description: "Minimum price filter",
+        required: false,
+        schema: new OA\Schema(type: "number")
+    )]
+    #[OA\Parameter(
+        name: "price_to",
+        in: "query",
+        description: "Maximum price filter",
+        required: false,
+        schema: new OA\Schema(type: "number")
+    )]
     #[OA\Response(
         response: 200,
         description: "Successful operation",
@@ -171,11 +199,32 @@ class CarPostingController extends Controller
     )]
     public function browse(Request $request)
     {
+        $brands = $request->query('brands', null);
+        $types = $request->query('types', null);
+        $price_from = $request->query('price_from', null);
+        $price_to = $request->query('price_to', null);
+
         $conditions = [
             "description" => ['like', "%{$request->query('search', '')}%"],
             "start_date" => ['>=', now()],
             "end_date" => ['>=', now()],
         ];
+
+        if ($brands) {
+            $conditions['car.brand'] = ['in', $brands];
+        }
+
+        if ($types) {
+            $conditions['car.type'] = ['in', $types];
+        }
+
+        if ($price_from) {
+            $conditions['price'] = ['>=', $price_from];
+        }
+
+        if ($price_to) {
+            $conditions['price'] = ['<=', $price_to];
+        }
 
         $result = $this->service->paginate(
             $request->query('page', 0),
