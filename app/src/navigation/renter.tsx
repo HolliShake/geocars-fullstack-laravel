@@ -26,6 +26,16 @@ const RENTERROUTES: readonly Route[] = Object.freeze<Route[]>([
     roles: [RoleEnum.renter],
     sidebar: false,
   },
+  {
+    key: 'Renter.Rental',
+    title: 'Rental',
+    icon: <Home />,
+    path: RouteKey.Renter.Application.key,
+    element: <RenterApplication />,
+    layout: 'topbar',
+    roles: [RoleEnum.renter],
+    sidebar: true,
+  },
 ]);
 
 export default RENTERROUTES;
