@@ -7,7 +7,7 @@ services:
       context: ./app
       dockerfile: ../docker/app/Dockerfile
     ports:
-      - '3000:3000'
+      - '3001:3001'
     volumes:
       - ./app:/app:cached # cached improves macOS/Windows perf
       - /app/node_modules # exclude node_modules from host mount
