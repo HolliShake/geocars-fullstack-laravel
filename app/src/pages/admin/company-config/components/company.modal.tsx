@@ -11,7 +11,7 @@ import { useCreateUserCompany, useGetUserPaginated, useUpdateUserCompany } from 
 import type { User, UserCompany } from '@rest/models';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { toast } from 'sonner';
 import { z } from 'zod';
 
@@ -77,8 +77,8 @@ export default function AdminCompanyModal({
   }, [controller.data]);
   
 
-  const users = useMemo(() => usersData?.data?.data.map((user:User) => ({
-    label: user.name,
+  const users = useMemo<{ label: string; value: number }[]>(() => usersData?.data?.data?.map((user:User) => ({
+    label: user.name ?? '',
     value: user.id,
   })) || [], [usersData]);
 
@@ -164,7 +164,7 @@ export default function AdminCompanyModal({
                     <SelectValue placeholder="Select a user" />
                   </SelectTrigger>
                   <SelectContent>
-                    {users.map((user: { value: string | number; label: string }) => (
+                    {users.map((user) => (
                       <SelectItem key={user.value} value={String(user.value)}>
                         {user.label}
                       </SelectItem>
