@@ -22,8 +22,11 @@ services:
       - /app/.pnpm-store # exclude PNPM store
     environment:
       - REACT_APP_API_URL=http://backend:8000 # use service name, not localhost
+      # Vite dev proxy: browser → frontend → stripe service (see app/vite.config.ts)
+      - VITE_STRIPE_PROXY_TARGET=http://stripe:5000
     depends_on:
       - backend
+      - stripe
 
   # Laravel API
   backend:
@@ -46,6 +49,8 @@ services:
       - DB_DATABASE=geocars
       - DB_USERNAME=geocars
       - DB_PASSWORD=password
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - STRIPE_GATEWAY_INGEST_SECRET=${STRIPE_GATEWAY_INGEST_SECRET:-}
     depends_on:
       - mysql
 
@@ -60,8 +65,13 @@ services:
       - ./stripe:/stripe:cached
       - /stripe/node_modules
       - /stripe/dist
+    depends_on:
+      - backend
     environment:
       - NODE_ENV=development
+      - PORT=5000
+      - LARAVEL_STRIPE_INGEST_URL=http://backend:8000
+      - STRIPE_GATEWAY_INGEST_SECRET=${STRIPE_GATEWAY_INGEST_SECRET:-}
 
   # MySQL Database
   mysql:

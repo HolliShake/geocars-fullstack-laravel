@@ -6,4 +6,11 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface Transaction { [key: string]: unknown }
+export interface Transaction {
+  id: number;
+  user_id: number;
+  amount: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}

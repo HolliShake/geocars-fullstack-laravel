@@ -5,6 +5,7 @@
  * API documentation for the Geocars application
  * OpenAPI spec version: 1.0.0
  */
+import type { UserRequirementResponse200DataItemRole } from './userRequirementResponse200DataItemRole';
 import type { UserRequirementResponse200DataItemMediaItem } from './userRequirementResponse200DataItemMediaItem';
 
 export type UserRequirementResponse200DataItem = {
@@ -18,7 +19,7 @@ export type UserRequirementResponse200DataItem = {
   description?: string;
   is_required?: number;
   is_active?: number;
-  role?: unknown;
+  role?: UserRequirementResponse200DataItemRole;
   /** @nullable */
   user_id?: number | null;
   /** @nullable */

@@ -70,7 +70,7 @@ use Spatie\MediaLibrary\MediaCollections\Models\Media;
                 new OA\Property(property: "description", type: "string", example: "Provide the Official Receipt (OR) and Certificate of Registration (CR) for all rental vehicles."),
                 new OA\Property(property: "is_required", type: "integer", example: 1),
                 new OA\Property(property: "is_active", type: "integer", example: 1),
-                new OA\Property(property: "role", type: "enum", example: ["admin", "user", "renter"]),
+                new OA\Property(property: "role", type: "string", enum: ["admin", "user", "renter"], example: "admin"),
                 new OA\Property(property: "user_id", type: "integer", nullable: true, example: null),
                 new OA\Property(property: "requirement_id", type: "integer", nullable: true, example: null),
                 new OA\Property(property: "media", type: "array", items: new OA\Items(

@@ -9,11 +9,15 @@ use OpenApi\Attributes as OA;
     schema: "SubscriptionTransaction",
     title: "SubscriptionTransaction",
     type: "object",
-    required: [
-        // Override required
-    ],
+    required: ["id", "user_id", "plan_id", "amount", "status", "created_at", "updated_at"],
     properties: [
-        // Override fillables
+        new OA\Property(property: "id", type: "integer", example: 1),
+        new OA\Property(property: "user_id", type: "integer", example: 1),
+        new OA\Property(property: "plan_id", type: "integer", example: 1),
+        new OA\Property(property: "amount", type: "number", format: "float", example: 50.0),
+        new OA\Property(property: "status", type: "string", example: "active"),
+        new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00Z"),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00Z"),
     ]
 )]
 

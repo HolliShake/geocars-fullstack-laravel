@@ -6,4 +6,12 @@
  * OpenAPI spec version: 1.0.0
  */
 
-export interface SubscriptionTransaction { [key: string]: unknown }
+export interface SubscriptionTransaction {
+  id: number;
+  user_id: number;
+  plan_id: number;
+  amount: number;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}

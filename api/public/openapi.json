@@ -4914,8 +4914,48 @@
             },
             "SubscriptionTransaction": {
                 "title": "SubscriptionTransaction",
-                "required": [],
-                "properties": [],
+                "required": [
+                    "id",
+                    "user_id",
+                    "plan_id",
+                    "amount",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "plan_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "active"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
                 "type": "object"
             },
             "PaginatedSubscriptionTransaction": {
@@ -5009,8 +5049,43 @@
             },
             "Transaction": {
                 "title": "Transaction",
-                "required": [],
-                "properties": [],
+                "required": [
+                    "id",
+                    "user_id",
+                    "amount",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "completed"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
                 "type": "object"
             },
             "PaginatedTransaction": {
@@ -5558,12 +5633,13 @@
                                     "example": 1
                                 },
                                 "role": {
-                                    "type": "enum",
-                                    "example": [
+                                    "type": "string",
+                                    "enum": [
                                         "admin",
                                         "user",
                                         "renter"
-                                    ]
+                                    ],
+                                    "example": "admin"
                                 },
                                 "user_id": {
                                     "type": "integer",

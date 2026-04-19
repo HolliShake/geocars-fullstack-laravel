@@ -170,6 +170,7 @@ export * from './userRequirementResponse200';
 export * from './userRequirementResponse200Data';
 export * from './userRequirementResponse200DataItem';
 export * from './userRequirementResponse200DataItemMediaItem';
+export * from './userRequirementResponse200DataItemRole';
 export * from './userRequirementUploads';
 export * from './userRole';
 export * from './userSubscription';

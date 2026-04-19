@@ -12,6 +12,7 @@ use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\UserCompanyController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserRequirementController;
+use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
 
@@ -115,3 +116,12 @@ Route::middleware(['auth:api', 'role:admin,user,renter'])->controller(CommentCon
     Route::middleware('role:user,renter')->put('/Comment/{id}','update')->where('id', '[0-9]+');
     Route::middleware('role:user,renter')->delete('/Comment/{id}', 'destroy')->where('id', '[0-9]+');
 });
+
+Route::middleware(['auth:api', 'role:renter'])->post(
+    '/Stripe/checkout/confirm',
+    [StripeWebhookController::class, 'confirmCheckoutSession']
+);
+
+/** Stripe: signature-verified webhook and optional Node /stripe forwarder ingest (no OAuth). */
+Route::post('/Stripe/webhook', [StripeWebhookController::class, 'webhook']);
+Route::post('/Stripe/webhook/ingest', [StripeWebhookController::class, 'gatewayIngest']);

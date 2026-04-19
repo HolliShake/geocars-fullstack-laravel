@@ -37,6 +37,8 @@ type RouteStructure = {
     Browse: RouteConfig<'/renter/browse'>;
     Application: RouteConfig<'/renter/browse/:postingId'>;
     Renter: RouteConfig<'/renter/rental'>;
+    CheckoutSuccess: RouteConfig<'/renter/checkout/success'>;
+    CheckoutCancel: RouteConfig<'/renter/checkout/cancel'>;
   };
 };
 
@@ -98,5 +100,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     Browse: createRoute('/renter/browse'),
     Application: createRoute('/renter/browse/:postingId'),
     Renter: createRoute('/renter/rental'),
+    CheckoutSuccess: createRoute('/renter/checkout/success'),
+    CheckoutCancel: createRoute('/renter/checkout/cancel'),
   },
 });
