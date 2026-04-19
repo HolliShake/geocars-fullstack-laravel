@@ -10,6 +10,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use OpenApi\Attributes as OA;
 use Stripe\Event;
 use Stripe\Webhook;
 use Throwable;
@@ -20,6 +21,74 @@ class StripeWebhookController extends Controller
      * After Stripe redirects back with ?session_id=, the client calls this so we can
      * retrieve the session with the secret key and insert Transaction (works without webhooks in dev).
      */
+    #[OA\Post(
+        path: '/api/Stripe/checkout/confirm',
+        summary: 'Confirm Stripe Checkout and record a payment transaction',
+        description: 'Authenticated renter only. Retrieves the Checkout Session from Stripe, verifies payment_status is paid and metadata.car_rental_id belongs to the current user, then inserts a Transaction row.',
+        operationId: 'confirmStripeCheckoutSession',
+        tags: ['Stripe'],
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['session_id'],
+            properties: [
+                new OA\Property(
+                    property: 'session_id',
+                    description: 'Stripe Checkout Session id (cs_…)',
+                    type: 'string',
+                    example: 'cs_test_a1b2c3'
+                ),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction recorded or already present for this session',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'success', type: 'boolean', example: true),
+                new OA\Property(property: 'message', type: 'string', example: 'Transaction recorded'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Unauthenticated (Bearer token required)',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Unauthenticated'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 403,
+        description: 'Session rental does not belong to the authenticated user',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'This payment does not belong to your account'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation error, Stripe API error, unpaid session, or missing metadata',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse'),
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Could not persist transaction',
+        content: new OA\JsonContent(ref: '#/components/schemas/InternalServerErrorResponse')
+    )]
+    #[OA\Response(
+        response: 503,
+        description: 'STRIPE_SECRET_KEY not configured on server',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Stripe not configured on server'),
+            ]
+        )
+    )]
     public function confirmCheckoutSession(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -109,6 +178,63 @@ class StripeWebhookController extends Controller
     /**
      * Stripe → Laravel (verify signature). Register this URL in the Stripe Dashboard.
      */
+    #[OA\Post(
+        path: '/api/Stripe/webhook',
+        summary: 'Stripe webhook (signed)',
+        description: 'Receives Stripe webhook events. Verifies `Stripe-Signature` using STRIPE_WEBHOOK_SECRET. On `checkout.session.completed`, inserts a Transaction when metadata contains car_rental_id.',
+        operationId: 'stripeWebhook',
+        tags: ['Stripe'],
+    )]
+    #[OA\Parameter(
+        name: 'Stripe-Signature',
+        in: 'header',
+        required: true,
+        description: 'Stripe webhook signing header',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\RequestBody(
+        required: true,
+        description: 'Raw JSON body of the Stripe Event (must not be re-encoded; used for signature verification).',
+        content: new OA\JsonContent(
+            schema: new OA\Schema(
+                type: 'object',
+                additionalProperties: true
+            )
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Event accepted',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'received', type: 'boolean', example: true),
+                new OA\Property(property: 'skipped', type: 'string', nullable: true, example: 'no_car_rental_id'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 400,
+        description: 'Invalid signature',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Invalid signature'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 500,
+        description: 'Handler error while processing checkout.session.completed',
+        content: new OA\JsonContent(ref: '#/components/schemas/InternalServerErrorResponse')
+    )]
+    #[OA\Response(
+        response: 503,
+        description: 'stripe/stripe-php missing or STRIPE_WEBHOOK_SECRET not set',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Webhook not configured'),
+            ]
+        )
+    )]
     public function webhook(Request $request): JsonResponse
     {
         if (! class_exists(Webhook::class)) {
@@ -145,6 +271,55 @@ class StripeWebhookController extends Controller
     /**
      * Node /stripe service → Laravel after Stripe signature was verified upstream.
      */
+    #[OA\Post(
+        path: '/api/Stripe/webhook/ingest',
+        summary: 'Ingest checkout completion from Stripe gateway (Node)',
+        description: 'Internal use: the Node `/stripe` service verifies the Stripe webhook, then forwards a minimal payload here. Requires header `X-Stripe-Gateway-Secret` matching STRIPE_GATEWAY_INGEST_SECRET.',
+        operationId: 'stripeGatewayIngest',
+        tags: ['Stripe'],
+    )]
+    #[OA\Parameter(
+        name: 'X-Stripe-Gateway-Secret',
+        in: 'header',
+        required: true,
+        description: 'Must equal api/.env STRIPE_GATEWAY_INGEST_SECRET',
+        schema: new OA\Schema(type: 'string')
+    )]
+    #[OA\RequestBody(
+        required: true,
+        content: new OA\JsonContent(
+            required: ['session_id', 'car_rental_id', 'amount_total'],
+            properties: [
+                new OA\Property(property: 'session_id', description: 'Stripe Checkout Session id', type: 'string', example: 'cs_test_a1b2c3'),
+                new OA\Property(property: 'car_rental_id', type: 'integer', example: 1),
+                new OA\Property(property: 'amount_total', description: 'Amount in minor units (e.g. centavos)', type: 'integer', example: 150000),
+                new OA\Property(property: 'currency', type: 'string', example: 'php', nullable: true),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 200,
+        description: 'Transaction recorded',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'received', type: 'boolean', example: true),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 401,
+        description: 'Missing or invalid gateway secret',
+        content: new OA\JsonContent(
+            properties: [
+                new OA\Property(property: 'message', type: 'string', example: 'Unauthorized'),
+            ]
+        )
+    )]
+    #[OA\Response(
+        response: 422,
+        description: 'Validation failed or business rule error',
+        content: new OA\JsonContent(ref: '#/components/schemas/ValidationErrorResponse'),
+    )]
     public function gatewayIngest(Request $request): JsonResponse
     {
         $expected = config('stripe.gateway_ingest_secret');

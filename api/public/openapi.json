@@ -2497,6 +2497,325 @@
                 }
             }
         },
+        "\/api\/Stripe\/checkout\/confirm": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Confirm Stripe Checkout and record a payment transaction",
+                "description": "Authenticated renter only. Retrieves the Checkout Session from Stripe, verifies payment_status is paid and metadata.car_rental_id belongs to the current user, then inserts a Transaction row.",
+                "operationId": "confirmStripeCheckoutSession",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "description": "Stripe Checkout Session id (cs_\u2026)",
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction recorded or already present for this session",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transaction recorded"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated (Bearer token required)",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Session rental does not belong to the authenticated user",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This payment does not belong to your account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error, Stripe API error, unpaid session, or missing metadata",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not persist transaction",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "STRIPE_SECRET_KEY not configured on server",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Stripe not configured on server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Stripe\/webhook": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Stripe webhook (signed)",
+                "description": "Receives Stripe webhook events. Verifies `Stripe-Signature` using STRIPE_WEBHOOK_SECRET. On `checkout.session.completed`, inserts a Transaction when metadata contains car_rental_id.",
+                "operationId": "stripeWebhook",
+                "parameters": [
+                    {
+                        "name": "Stripe-Signature",
+                        "in": "header",
+                        "description": "Stripe webhook signing header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Raw JSON body of the Stripe Event (must not be re-encoded; used for signature verification).",
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Event accepted",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "received": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "skipped": {
+                                            "type": "string",
+                                            "example": "no_car_rental_id",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid signature",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid signature"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Handler error while processing checkout.session.completed",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "stripe\/stripe-php missing or STRIPE_WEBHOOK_SECRET not set",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Webhook not configured"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Stripe\/webhook\/ingest": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Ingest checkout completion from Stripe gateway (Node)",
+                "description": "Internal use: the Node `\/stripe` service verifies the Stripe webhook, then forwards a minimal payload here. Requires header `X-Stripe-Gateway-Secret` matching STRIPE_GATEWAY_INGEST_SECRET.",
+                "operationId": "stripeGatewayIngest",
+                "parameters": [
+                    {
+                        "name": "X-Stripe-Gateway-Secret",
+                        "in": "header",
+                        "description": "Must equal api\/.env STRIPE_GATEWAY_INGEST_SECRET",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id",
+                                    "car_rental_id",
+                                    "amount_total"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "description": "Stripe Checkout Session id",
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    },
+                                    "car_rental_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount_total": {
+                                        "description": "Amount in minor units (e.g. centavos)",
+                                        "type": "integer",
+                                        "example": 150000
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "example": "php",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction recorded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "received": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid gateway secret",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed or business rule error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/UserCompany": {
             "get": {
                 "tags": [
@@ -5990,6 +6309,10 @@
         {
             "name": "Requirement",
             "description": "Requirement"
+        },
+        {
+            "name": "Stripe",
+            "description": "Stripe"
         },
         {
             "name": "UserCompany",

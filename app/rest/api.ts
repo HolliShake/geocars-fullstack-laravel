@@ -31,6 +31,11 @@ import type {
   CarRental,
   CheckCarPostingSubmission200,
   Comment,
+  ConfirmStripeCheckoutSession200,
+  ConfirmStripeCheckoutSession401,
+  ConfirmStripeCheckoutSession403,
+  ConfirmStripeCheckoutSession503,
+  ConfirmStripeCheckoutSessionBody,
   CreateCarBody,
   CreateCarPostingResponse200,
   CreateCarRentalResponse200,
@@ -95,6 +100,13 @@ import type {
   Reaction,
   Requirement,
   SignupRequest,
+  StripeGatewayIngest200,
+  StripeGatewayIngest401,
+  StripeGatewayIngestBody,
+  StripeWebhook200,
+  StripeWebhook400,
+  StripeWebhook503,
+  StripeWebhookBody,
   UnauthorizedResponse,
   UpdateCarBody,
   UpdateCarPostingResponse200,
@@ -3552,6 +3564,204 @@ export const useDeleteRequirement = <TError = null | InternalServerErrorResponse
       > => {
 
       const mutationOptions = getDeleteRequirementMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Authenticated renter only. Retrieves the Checkout Session from Stripe, verifies payment_status is paid and metadata.car_rental_id belongs to the current user, then inserts a Transaction row.
+ * @summary Confirm Stripe Checkout and record a payment transaction
+ */
+export const confirmStripeCheckoutSession = (
+    confirmStripeCheckoutSessionBody: ConfirmStripeCheckoutSessionBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<ConfirmStripeCheckoutSession200>(
+      {url: `/api/Stripe/checkout/confirm`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmStripeCheckoutSessionBody, signal
+    },
+      );
+    }
+  
+
+
+export const getConfirmStripeCheckoutSessionMutationOptions = <TError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext> => {
+
+const mutationKey = ['confirmStripeCheckoutSession'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, {data: ConfirmStripeCheckoutSessionBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmStripeCheckoutSession(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmStripeCheckoutSessionMutationResult = NonNullable<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>>
+    export type ConfirmStripeCheckoutSessionMutationBody = ConfirmStripeCheckoutSessionBody
+    export type ConfirmStripeCheckoutSessionMutationError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503
+
+    /**
+ * @summary Confirm Stripe Checkout and record a payment transaction
+ */
+export const useConfirmStripeCheckoutSession = <TError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof confirmStripeCheckoutSession>>,
+        TError,
+        {data: ConfirmStripeCheckoutSessionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getConfirmStripeCheckoutSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Receives Stripe webhook events. Verifies `Stripe-Signature` using STRIPE_WEBHOOK_SECRET. On `checkout.session.completed`, inserts a Transaction when metadata contains car_rental_id.
+ * @summary Stripe webhook (signed)
+ */
+export const stripeWebhook = (
+    stripeWebhookBody: StripeWebhookBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<StripeWebhook200>(
+      {url: `/api/Stripe/webhook`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: stripeWebhookBody, signal
+    },
+      );
+    }
+  
+
+
+export const getStripeWebhookMutationOptions = <TError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext> => {
+
+const mutationKey = ['stripeWebhook'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stripeWebhook>>, {data: StripeWebhookBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stripeWebhook(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StripeWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof stripeWebhook>>>
+    export type StripeWebhookMutationBody = StripeWebhookBody
+    export type StripeWebhookMutationError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503
+
+    /**
+ * @summary Stripe webhook (signed)
+ */
+export const useStripeWebhook = <TError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stripeWebhook>>,
+        TError,
+        {data: StripeWebhookBody},
+        TContext
+      > => {
+
+      const mutationOptions = getStripeWebhookMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Internal use: the Node `/stripe` service verifies the Stripe webhook, then forwards a minimal payload here. Requires header `X-Stripe-Gateway-Secret` matching STRIPE_GATEWAY_INGEST_SECRET.
+ * @summary Ingest checkout completion from Stripe gateway (Node)
+ */
+export const stripeGatewayIngest = (
+    stripeGatewayIngestBody: StripeGatewayIngestBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<StripeGatewayIngest200>(
+      {url: `/api/Stripe/webhook/ingest`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: stripeGatewayIngestBody, signal
+    },
+      );
+    }
+  
+
+
+export const getStripeGatewayIngestMutationOptions = <TError = StripeGatewayIngest401 | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext> => {
+
+const mutationKey = ['stripeGatewayIngest'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stripeGatewayIngest>>, {data: StripeGatewayIngestBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stripeGatewayIngest(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StripeGatewayIngestMutationResult = NonNullable<Awaited<ReturnType<typeof stripeGatewayIngest>>>
+    export type StripeGatewayIngestMutationBody = StripeGatewayIngestBody
+    export type StripeGatewayIngestMutationError = StripeGatewayIngest401 | ValidationErrorResponse
+
+    /**
+ * @summary Ingest checkout completion from Stripe gateway (Node)
+ */
+export const useStripeGatewayIngest = <TError = StripeGatewayIngest401 | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stripeGatewayIngest>>,
+        TError,
+        {data: StripeGatewayIngestBody},
+        TContext
+      > => {
+
+      const mutationOptions = getStripeGatewayIngestMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

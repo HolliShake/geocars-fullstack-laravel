@@ -183,9 +183,26 @@ class User extends Authenticatable implements HasMedia, OAuthenticatable
             ->singleFile();
     }
 
+    /**
+     * Thumbnail conversion — required for getFirstMediaUrl(..., 'thumb').
+     * Older uploads may only have the original; accessor falls back below.
+     */
+    public function registerMediaConversions(?Media $media = null): void
+    {
+        $this->addMediaConversion('thumb')
+            ->width(200)
+            ->height(200)
+            ->nonQueued();
+    }
+
     public function getProfilePictureAttribute(): string
     {
-        return $this->getFirstMediaUrl('profile', 'thumb');
+        $thumbUrl = $this->getFirstMediaUrl('profile', 'thumb');
+        if ($thumbUrl !== '') {
+            return $thumbUrl;
+        }
+
+        return $this->getFirstMediaUrl('profile');
     }
 
     public function requirements() {
