@@ -22,6 +22,14 @@ class DatabaseSeeder extends Seeder
             CarPostingSeeder::class,
             UserSubscriptionSeeder::class,
             RequirementSeeder::class,
+            UserRequirementSeeder::class,
+            CarRentalSeeder::class,
+            TransactionSeeder::class,
+            SubscriptionTransactionSeeder::class,
+            ReactionSeeder::class,
+            CommentSeeder::class,
+            DeviceSeeder::class,
+            DeviceLocationSeeder::class,
         ]);
     }
 }

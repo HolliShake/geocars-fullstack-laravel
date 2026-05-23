@@ -10,77 +10,92 @@ class UserCompanySeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * All companies are located in Cagayan de Oro City, Misamis Oriental,
+     * Philippines (postal code 9000). Each company is assigned to the
+     * matching renter user from UserSeeder (same array order).
+     *
+     * Companies reference real CDO barangays and landmarks:
+     *   Divisoria  — the main commercial district (city center)
+     *   Cogon      — the Cogon Market / Recto Avenue commercial strip
+     *   Lapasan    — the Limketkai Drive industrial-commercial corridor
+     *   Nazareth   — near Xavier University / Ateneo de Cagayan corridor
+     *   Macasandig — eastern residential-commercial district
      */
     public function run(): void
     {
-        // Get all renter users
         $renters = User::where('role', 'renter')->get();
 
         $companies = [
             [
-                'name' => 'Miami Luxury Rentals',
-                'address' => '987 Ocean Drive, Suite 200',
-                'city' => 'Miami',
-                'country' => 'United States',
-                'postal_code' => '33139',
-                'opening_time' => '08:00:00',
-                'closing_time' => '20:00:00',
-                'days_open' => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            ],
-            [
-                'name' => 'AutoRent España',
-                'address' => '147 Gran Via, Planta 3',
-                'city' => 'Madrid',
-                'country' => 'Spain',
-                'postal_code' => '28013',
-                'opening_time' => '09:00:00',
-                'closing_time' => '19:00:00',
-                'days_open' => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
-            ],
-            [
-                'name' => 'Dubai Luxury Cars',
-                'address' => '258 Sheikh Zayed Road, Tower 1',
-                'city' => 'Dubai',
-                'country' => 'United Arab Emirates',
-                'postal_code' => '00000',
+                // Renter: Ricardo Villanueva
+                'name'         => 'Kagay-an Car Rental',
+                'address'      => 'Blk 5 Lot 3, Velez Street, Barangay Divisoria',
+                'city'         => 'Cagayan de Oro',
+                'country'      => 'Philippines',
+                'postal_code'  => '9000',
                 'opening_time' => '07:00:00',
-                'closing_time' => '22:00:00',
-                'days_open' => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+                'closing_time' => '19:00:00',
+                'days_open'    => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
             ],
             [
-                'name' => 'Tokyo Auto Rentals',
-                'address' => '369 Shibuya Crossing, Building A',
-                'city' => 'Tokyo',
-                'country' => 'Japan',
-                'postal_code' => '150-0002',
-                'opening_time' => '08:30:00',
-                'closing_time' => '21:00:00',
-                'days_open' => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
-            ],
-            [
-                'name' => 'Nordic Car Services',
-                'address' => '741 Gamla Stan, Level 2',
-                'city' => 'Stockholm',
-                'country' => 'Sweden',
-                'postal_code' => '111 30',
+                // Renter: Luz Flores
+                'name'         => 'Golden Friendship Auto Hire',
+                'address'      => '18 Recto Avenue, Barangay Cogon',
+                'city'         => 'Cagayan de Oro',
+                'country'      => 'Philippines',
+                'postal_code'  => '9000',
                 'opening_time' => '08:00:00',
                 'closing_time' => '18:00:00',
-                'days_open' => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+                'days_open'    => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            ],
+            [
+                // Renter: Eduardo Mendoza
+                'name'         => 'Misamis Car Rentals',
+                'address'      => 'Limketkai Drive, Barangay Lapasan',
+                'city'         => 'Cagayan de Oro',
+                'country'      => 'Philippines',
+                'postal_code'  => '9000',
+                'opening_time' => '07:00:00',
+                'closing_time' => '20:00:00',
+                'days_open'    => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
+            ],
+            [
+                // Renter: Glenda Cruz
+                'name'         => 'XU Carpark Rentals',
+                'address'      => 'Corrales Avenue, Barangay Nazareth',
+                'city'         => 'Cagayan de Oro',
+                'country'      => 'Philippines',
+                'postal_code'  => '9000',
+                'opening_time' => '08:00:00',
+                'closing_time' => '18:00:00',
+                'days_open'    => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday',
+            ],
+            [
+                // Renter: Arturo Bautista
+                'name'         => 'Limketkai Auto Lease',
+                'address'      => 'Macasandig Road, Barangay Macasandig',
+                'city'         => 'Cagayan de Oro',
+                'country'      => 'Philippines',
+                'postal_code'  => '9000',
+                'opening_time' => '08:00:00',
+                'closing_time' => '20:00:00',
+                'days_open'    => 'Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday',
             ],
         ];
 
         foreach ($renters as $index => $renter) {
             if (isset($companies[$index])) {
                 UserCompany::create([
-                    'user_id' => $renter->id,
-                    'name' => $companies[$index]['name'],
-                    'address' => $companies[$index]['address'],
-                    'city' => $companies[$index]['city'],
-                    'country' => $companies[$index]['country'],
-                    'postal_code' => $companies[$index]['postal_code'],
+                    'user_id'      => $renter->id,
+                    'name'         => $companies[$index]['name'],
+                    'address'      => $companies[$index]['address'],
+                    'city'         => $companies[$index]['city'],
+                    'country'      => $companies[$index]['country'],
+                    'postal_code'  => $companies[$index]['postal_code'],
                     'opening_time' => $companies[$index]['opening_time'],
                     'closing_time' => $companies[$index]['closing_time'],
-                    'days_open' => $companies[$index]['days_open'],
+                    'days_open'    => $companies[$index]['days_open'],
                 ]);
             }
         }

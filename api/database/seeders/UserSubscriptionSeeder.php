@@ -78,7 +78,7 @@ class UserSubscriptionSeeder extends Seeder
         } elseif ($rand <= 95) {
             return 'inactive';
         } else {
-            return 'cancelled';
+            return 'inactive'; // 'cancelled' is not a valid enum value
         }
     }
 }
