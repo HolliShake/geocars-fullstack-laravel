@@ -17,17 +17,24 @@ class CommentSeeder extends Seeder
      * Creates 20 top-level comments and 15 reply comments (35 total).
      * Comments are staggered over the last ~14 days using Carbon offsets.
      *
-     * User index map (ordered by DB insertion in UserSeeder):
-     *   0 → John Doe         (role=user)
-     *   1 → Jane Smith       (role=user)
-     *   2 → Michael Johnson  (role=user)
-     *   3 → Sarah Wilson     (role=user)
-     *   4 → David Brown      (role=user)
-     *   5 → Robert Garcia    (role=renter)
-     *   6 → Maria Rodriguez  (role=renter)
-     *   7 → Ahmed Hassan     (role=renter)
-     *   8 → Yuki Tanaka      (role=renter)
-     *   9 → Emma Anderson    (role=renter)
+     * ROLE NOTE:
+     *   role='user'   = subscriber (car owner) — answers questions about their listings.
+     *   role='renter' = customer               — asks questions and posts reviews.
+     *
+     * User index map (ordered by id — subscribers inserted first, renters second):
+     *   0 → Ricardo Villanueva  (role=user   / subscriber — Kagay-an Car Rental)
+     *   1 → Luz Flores          (role=user   / subscriber — Golden Friendship)
+     *   2 → Eduardo Mendoza     (role=user   / subscriber — Misamis Car Rentals)
+     *   3 → Glenda Cruz         (role=user   / subscriber — XU Carpark Rentals)
+     *   4 → Arturo Bautista     (role=user   / subscriber — Limketkai Auto Lease)
+     *   5 → Juan dela Cruz      (role=renter / customer)
+     *   6 → Maria Santos        (role=renter / customer)
+     *   7 → Jose Reyes          (role=renter / customer)
+     *   8 → Ana Garcia          (role=renter / customer)
+     *   9 → Pedro Ramos         (role=renter / customer)
+     *
+     * Semantic flow: indices 5-9 (renters) ask questions / write reviews;
+     * indices 0-4 (subscribers) answer on behalf of their rental business.
      */
     public function run(): void
     {

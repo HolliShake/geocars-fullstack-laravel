@@ -21,10 +21,15 @@ class UserCompanySeeder extends Seeder
      *   Lapasan    — the Limketkai Drive industrial-commercial corridor
      *   Nazareth   — near Xavier University / Ateneo de Cagayan corridor
      *   Macasandig — eastern residential-commercial district
+     *
+     * ROLE NOTE:
+     *   role='user'   = subscriber who owns a company and lists cars for rent.
+     *   role='renter' = customer who rents cars; they never own a company.
      */
     public function run(): void
     {
-        $renters = User::where('role', 'renter')->get();
+        // Subscribers (role='user') own companies — NOT renters.
+        $renters = User::where('role', 'user')->get();
 
         $companies = [
             [

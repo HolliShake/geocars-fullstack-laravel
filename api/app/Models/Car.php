@@ -142,11 +142,18 @@ class Car extends Model implements HasMedia
     /**
      * Get the image url for the car.
      *
+     * NOTE: Spatie's getFirstMediaUrl() returns an empty string '' when no
+     * media exists — NOT null. The null-coalescing operator (??) only triggers
+     * on null, so "'' ?? 'fallback'" always returns ''. We must use a strict
+     * empty-string check instead.
+     *
      * @return string
      */
-    public function getImageUrlAttribute()
+    public function getImageUrlAttribute(): string
     {
-        return $this->getFirstMediaUrl('cars') ?? 'https://placehold.co/600x400?text=Toyota+Camry';
+        $url = $this->getFirstMediaUrl('cars');
+
+        return $url !== '' ? $url : 'https://placehold.co/600x400?text=No+Image';
     }
 
     /**

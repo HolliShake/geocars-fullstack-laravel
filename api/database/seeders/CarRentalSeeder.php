@@ -26,12 +26,16 @@ class CarRentalSeeder extends Seeder
      *   2  × cancelled — past dates, no return_date
      *   2  × rejected  — past dates, no return_date
      *
-     * User cycling: user[index % 5]
-     *   user[0] → rentals 0, 5, 10
-     *   user[1] → rentals 1, 6, 11
-     *   user[2] → rentals 2, 7, 12
-     *   user[3] → rentals 3, 8, 13
-     *   user[4] → rentals 4, 9, 14
+     * ROLE NOTE:
+     *   role='renter' = customer who books a car  ← these are the $users below
+     *   role='user'   = subscriber who OWNS the car (they never rent from themselves)
+     *
+     * Renter cycling: renter[index % 5]
+     *   renter[0] → rentals 0, 5, 10
+     *   renter[1] → rentals 1, 6, 11
+     *   renter[2] → rentals 2, 7, 12
+     *   renter[3] → rentals 3, 8, 13
+     *   renter[4] → rentals 4, 9, 14
      *
      * Deposit formula: price × days × 0.30 (30 % deposit)
      *
@@ -42,12 +46,13 @@ class CarRentalSeeder extends Seeder
     public function run(): void
     {
         $postings = CarPosting::take(15)->get();
-        $users    = User::where('role', 'user')->take(5)->get();
+        // Customers (role='renter') are the ones who book/rent cars.
+        $users    = User::where('role', 'renter')->take(5)->get();
 
         if ($postings->count() < 15 || $users->count() < 5) {
             $this->command->warn(
                 'CarRentalSeeder requires at least 15 car postings and 5 users ' .
-                'with role="user". Skipping.'
+                'with role="renter". Skipping.'
             );
             return;
         }
