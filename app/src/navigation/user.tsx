@@ -3,6 +3,7 @@ import UserQuickCarPage from '@/pages/user/car-management/page';
 import UserCarPostingPage from '@/pages/user/car-posting/page';
 import UserCarRentalApplicationPage from '@/pages/user/car-rental/application/page';
 import UserCarRentalPage from '@/pages/user/car-rental/page';
+import CarRentalViewLocationPage from '@/pages/user/car-rental/view-location/page';
 import UserCompanyCarPage from '@/pages/user/company-config/cars/page';
 import UserCompanyConfigPage from '@/pages/user/company-config/page';
 import UserDashboardPage from '@/pages/user/dashboard/page';
@@ -44,6 +45,17 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.CarRentalApplication.key,
     icon: <LucideMapPinPlus />,
     element: <UserCarRentalApplicationPage />,
+    layout: 'dashboard',
+    roles: [RoleEnum.user],
+    sidebar: false,
+  },
+  // Car Rental View Location
+  {
+    key: 'User.CarRentalViewLocation',
+    title: 'View Device Location',
+    path: RouteKey.User.CarRentalViewLocation.key,
+    icon: <LucideMapPinPlus />,
+    element: <CarRentalViewLocationPage />,
     layout: 'dashboard',
     roles: [RoleEnum.user],
     sidebar: false,

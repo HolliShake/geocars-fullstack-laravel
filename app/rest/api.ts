@@ -79,6 +79,7 @@ import type {
   GetDeviceLocationResponse200,
   GetDevicePaginatedParams,
   GetDeviceResponse200,
+  GetDeviceWithLocationsResponse200,
   GetMachineInfo200,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
@@ -2667,6 +2668,95 @@ export const useDeleteDevice = <TError = null | InternalServerErrorResponse,
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Retrieve the Device assigned to a Car Rental, along with its full location history and latest location
+ * @summary Get Device by Car Rental ID with all location history
+ */
+export const getDeviceByCarRental = (
+    carRentalId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceWithLocationsResponse200>(
+      {url: `/api/Device/ByCarRental/${carRentalId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceByCarRentalQueryKey = (carRentalId?: number,) => {
+    return [`/api/Device/ByCarRental/${carRentalId}`] as const;
+    }
+
+    
+export const getGetDeviceByCarRentalQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceByCarRentalQueryKey(carRentalId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceByCarRental>>> = ({ signal }) => getDeviceByCarRental(carRentalId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(carRentalId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceByCarRentalQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceByCarRental>>>
+export type GetDeviceByCarRentalQueryError = null
+
+
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceByCarRental>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceByCarRental>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceByCarRental>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceByCarRental>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Device by Car Rental ID with all location history
+ */
+
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceByCarRentalQueryOptions(carRentalId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Retrieve a paginated list of DeviceLocation with optional search
  * @summary Get paginated list of DeviceLocation

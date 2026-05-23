@@ -1861,6 +1861,41 @@
                 }
             }
         },
+        "\/api\/Device\/ByCarRental\/{car_rental_id}": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get Device by Car Rental ID with all location history",
+                "description": "Retrieve the Device assigned to a Car Rental, along with its full location history and latest location",
+                "operationId": "getDeviceByCarRental",
+                "parameters": [
+                    {
+                        "name": "car_rental_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetDeviceWithLocationsResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found for this car rental"
+                    }
+                }
+            }
+        },
         "\/api\/DeviceLocation": {
             "get": {
                 "tags": [
@@ -5366,6 +5401,58 @@
                     "success": {
                         "type": "boolean",
                         "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "DeviceWithLocations": {
+                "title": "DeviceWithLocations",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "device_identifier": {
+                        "type": "string"
+                    },
+                    "car_rental_id": {
+                        "type": "integer"
+                    },
+                    "latest_location": {
+                        "oneOf": [
+                            {
+                                "$ref": "#\/components\/schemas\/DeviceLocation"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "locations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/DeviceLocation"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "type": "object"
+            },
+            "GetDeviceWithLocationsResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/DeviceWithLocations"
                     }
                 },
                 "type": "object"
