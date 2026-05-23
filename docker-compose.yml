@@ -107,6 +107,30 @@ services:
     depends_on:
       - mysql
 
+  # Mobile App (React Native / Expo)
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: ../docker/mobile/Dockerfile
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./mobile:/app:cached
+      - /app/node_modules
+      - /app/.expo
+    environment:
+      - NODE_ENV=development
+      # Use backend service name for network resolution within Docker container
+      - REACT_APP_API_URL=http://backend:8000
+      # CRITICAL: Replace 192.168.X.X with your machine's actual local IP address
+      # so your physical mobile phone can find the Metro Bundler over Wi-Fi.
+      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.X.X
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    depends_on:
+      - backend
+    tty: true
+    stdin_open: true
+
 volumes:
   mysql_data:
   laravel_storage:
