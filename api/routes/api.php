@@ -125,6 +125,21 @@ Route::middleware(['auth:api', 'role:renter'])->post(
     [StripeWebhookController::class, 'confirmCheckoutSession']
 );
 
-/** Stripe: signature-verified webhook and optional Node /stripe forwarder ingest (no OAuth). */
+Route::middleware(['auth:api'])->controller(DeviceController::class)->group(function () {
+    Route::get('/Device','index');
+    Route::get('/Device/{id}','show')->where('id', '[0-9]+');
+    Route::post('/Device','store');
+    Route::put('/Device/{id}','update')->where('id', '[0-9]+');
+    Route::delete('/Device/{id}', 'destroy')->where('id', '[0-9]+');
+});
+
+Route::middleware(['auth:api'])->controller(DeviceLocationController::class)->group(function () {
+    Route::get('/DeviceLocation','index');
+    Route::get('/DeviceLocation/{id}','show')->where('id', '[0-9]+');
+    Route::post('/DeviceLocation','store');
+    Route::put('/DeviceLocation/{id}','update')->where('id', '[0-9]+');
+    Route::delete('/DeviceLocation/{id}', 'destroy')->where('id', '[0-9]+');
+});
+
 Route::post('/Stripe/webhook', [StripeWebhookController::class, 'webhook']);
 Route::post('/Stripe/webhook/ingest', [StripeWebhookController::class, 'gatewayIngest']);

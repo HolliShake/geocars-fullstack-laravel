@@ -41,6 +41,8 @@ import type {
   CreateCarRentalResponse200,
   CreateCarResponse200,
   CreateCommentResponse200,
+  CreateDeviceLocationResponse200,
+  CreateDeviceResponse200,
   CreatePlanFeatureResponse200,
   CreatePlanResponse200,
   CreateReactionResponse200,
@@ -53,6 +55,8 @@ import type {
   DeleteCarRentalResponse200,
   DeleteCarResponse200,
   DeleteCommentResponse200,
+  DeleteDeviceLocationResponse200,
+  DeleteDeviceResponse200,
   DeletePlanFeatureResponse200,
   DeletePlanResponse200,
   DeleteReactionResponse200,
@@ -60,6 +64,8 @@ import type {
   DeleteUserCompanyResponse200,
   DeleteUserRequirementResponse200,
   DeleteUserResponse200,
+  Device,
+  DeviceLocation,
   ForbiddenResponse,
   GetCarPaginatedParams,
   GetCarPostingPaginatedParams,
@@ -69,6 +75,10 @@ import type {
   GetCarResponse200,
   GetCommentPaginatedParams,
   GetCommentResponse200,
+  GetDeviceLocationPaginatedParams,
+  GetDeviceLocationResponse200,
+  GetDevicePaginatedParams,
+  GetDeviceResponse200,
   GetMachineInfo200,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
@@ -90,6 +100,8 @@ import type {
   PaginatedCarRentalResponse200,
   PaginatedCarResponse200,
   PaginatedCommentResponse200,
+  PaginatedDeviceLocationResponse200,
+  PaginatedDeviceResponse200,
   PaginatedPlanFeatureResponse200,
   PaginatedPlanResponse200,
   PaginatedRequirementResponse200,
@@ -114,6 +126,8 @@ import type {
   UpdateCarRentalResponse200,
   UpdateCarResponse200,
   UpdateCommentResponse200,
+  UpdateDeviceLocationResponse200,
+  UpdateDeviceResponse200,
   UpdatePlanFeatureResponse200,
   UpdatePlanResponse200,
   UpdateReactionResponse200,
@@ -130,6 +144,33 @@ import type {
 } from './models';
 
 import { fetchData } from './axios';
+
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
 /**
  *  Login with the provided details
  * @summary Login
@@ -2248,6 +2289,754 @@ export const useDeleteComment = <TError = null | InternalServerErrorResponse,
       > => {
 
       const mutationOptions = getDeleteCommentMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a paginated list of Device with optional search
+ * @summary Get paginated list of Device
+ */
+export const getDevicePaginated = (
+    params?: GetDevicePaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedDeviceResponse200>(
+      {url: `/api/Device`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetDevicePaginatedQueryKey = (params?: GetDevicePaginatedParams,) => {
+    return [`/api/Device`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetDevicePaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDevicePaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDevicePaginated>>> = ({ signal }) => getDevicePaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDevicePaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getDevicePaginated>>>
+export type GetDevicePaginatedQueryError = unknown
+
+
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params: undefined |  GetDevicePaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDevicePaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDevicePaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDevicePaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDevicePaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of Device
+ */
+
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDevicePaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ *  Create a new Device with the provided details
+ * @summary Create a new Device
+ */
+export const createDevice = (
+    device: NonReadonly<Device>,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateDeviceResponse200>(
+      {url: `/api/Device`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: device, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateDeviceMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext> => {
+
+const mutationKey = ['createDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDevice>>, {data: NonReadonly<Device>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDevice(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof createDevice>>>
+    export type CreateDeviceMutationBody = NonReadonly<Device>
+    export type CreateDeviceMutationError = ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Create a new Device
+ */
+export const useCreateDevice = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createDevice>>,
+        TError,
+        {data: NonReadonly<Device>},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a Device by its ID
+ * @summary Get a specific Device
+ */
+export const getDeviceById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceByIdQueryKey = (id?: number,) => {
+    return [`/api/Device/${id}`] as const;
+    }
+
+    
+export const getGetDeviceByIdQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceById>>> = ({ signal }) => getDeviceById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceById>>>
+export type GetDeviceByIdQueryError = null
+
+
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific Device
+ */
+
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing Device with the provided details
+ * @summary Update a Device
+ */
+export const updateDevice = (
+    id: number,
+    device: NonReadonly<Device>,
+ ) => {
+      
+      
+      return fetchData<UpdateDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: device
+    },
+      );
+    }
+  
+
+
+export const getUpdateDeviceMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext> => {
+
+const mutationKey = ['updateDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDevice>>, {id: number;data: NonReadonly<Device>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDevice(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof updateDevice>>>
+    export type UpdateDeviceMutationBody = NonReadonly<Device>
+    export type UpdateDeviceMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Update a Device
+ */
+export const useUpdateDevice = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDevice>>,
+        TError,
+        {id: number;data: NonReadonly<Device>},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a Device by its ID
+ * @summary Delete a Device
+ */
+export const deleteDevice = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteDeviceMutationOptions = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDevice>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDevice(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDevice>>>
+    
+    export type DeleteDeviceMutationError = null | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a Device
+ */
+export const useDeleteDevice = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDevice>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a paginated list of DeviceLocation with optional search
+ * @summary Get paginated list of DeviceLocation
+ */
+export const getDeviceLocationPaginated = (
+    params?: GetDeviceLocationPaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceLocationPaginatedQueryKey = (params?: GetDeviceLocationPaginatedParams,) => {
+    return [`/api/DeviceLocation`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetDeviceLocationPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceLocationPaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceLocationPaginated>>> = ({ signal }) => getDeviceLocationPaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceLocationPaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceLocationPaginated>>>
+export type GetDeviceLocationPaginatedQueryError = unknown
+
+
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params: undefined |  GetDeviceLocationPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of DeviceLocation
+ */
+
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceLocationPaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ *  Create a new DeviceLocation with the provided details
+ * @summary Create a new DeviceLocation
+ */
+export const createDeviceLocation = (
+    deviceLocation: NonReadonly<DeviceLocation>,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: deviceLocation, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateDeviceLocationMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext> => {
+
+const mutationKey = ['createDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDeviceLocation>>, {data: NonReadonly<DeviceLocation>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDeviceLocation(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof createDeviceLocation>>>
+    export type CreateDeviceLocationMutationBody = NonReadonly<DeviceLocation>
+    export type CreateDeviceLocationMutationError = ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Create a new DeviceLocation
+ */
+export const useCreateDeviceLocation = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createDeviceLocation>>,
+        TError,
+        {data: NonReadonly<DeviceLocation>},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateDeviceLocationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a DeviceLocation by its ID
+ * @summary Get a specific DeviceLocation
+ */
+export const getDeviceLocationById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceLocationByIdQueryKey = (id?: number,) => {
+    return [`/api/DeviceLocation/${id}`] as const;
+    }
+
+    
+export const getGetDeviceLocationByIdQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceLocationByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceLocationById>>> = ({ signal }) => getDeviceLocationById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceLocationByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceLocationById>>>
+export type GetDeviceLocationByIdQueryError = null
+
+
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific DeviceLocation
+ */
+
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceLocationByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing DeviceLocation with the provided details
+ * @summary Update a DeviceLocation
+ */
+export const updateDeviceLocation = (
+    id: number,
+    deviceLocation: NonReadonly<DeviceLocation>,
+ ) => {
+      
+      
+      return fetchData<UpdateDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: deviceLocation
+    },
+      );
+    }
+  
+
+
+export const getUpdateDeviceLocationMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext> => {
+
+const mutationKey = ['updateDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDeviceLocation>>, {id: number;data: NonReadonly<DeviceLocation>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDeviceLocation(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof updateDeviceLocation>>>
+    export type UpdateDeviceLocationMutationBody = NonReadonly<DeviceLocation>
+    export type UpdateDeviceLocationMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Update a DeviceLocation
+ */
+export const useUpdateDeviceLocation = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDeviceLocation>>,
+        TError,
+        {id: number;data: NonReadonly<DeviceLocation>},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDeviceLocationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a DeviceLocation by its ID
+ * @summary Delete a DeviceLocation
+ */
+export const deleteDeviceLocation = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteDeviceLocationMutationOptions = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDeviceLocation>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDeviceLocation(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDeviceLocation>>>
+    
+    export type DeleteDeviceLocationMutationError = null | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a DeviceLocation
+ */
+export const useDeleteDeviceLocation = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDeviceLocation>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteDeviceLocationMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }
