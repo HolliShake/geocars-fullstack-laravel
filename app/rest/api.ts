@@ -69,6 +69,7 @@ import type {
   GetCarResponse200,
   GetCommentPaginatedParams,
   GetCommentResponse200,
+  GetMachineInfo200,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
   GetPlanResponse200,
@@ -2251,6 +2252,95 @@ export const useDeleteComment = <TError = null | InternalServerErrorResponse,
       return useMutation(mutationOptions , queryClient);
     }
     
+/**
+ * Retrieve detailed statistics regarding the host operating system, memory metrics, and CPU metrics.
+ * @summary Get machine hardware and system information
+ */
+export const getMachineInfo = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetMachineInfo200>(
+      {url: `/api/Machine/info`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetMachineInfoQueryKey = () => {
+    return [`/api/Machine/info`] as const;
+    }
+
+    
+export const getGetMachineInfoQueryOptions = <TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMachineInfoQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMachineInfo>>> = ({ signal }) => getMachineInfo(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMachineInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getMachineInfo>>>
+export type GetMachineInfoQueryError = unknown
+
+
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMachineInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getMachineInfo>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMachineInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getMachineInfo>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get machine hardware and system information
+ */
+
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMachineInfoQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
 /**
  * Retrieve a paginated list of plans with optional search
  * @summary Get paginated list of plans

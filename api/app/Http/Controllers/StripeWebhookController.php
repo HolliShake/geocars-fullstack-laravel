@@ -196,10 +196,8 @@ class StripeWebhookController extends Controller
         required: true,
         description: 'Raw JSON body of the Stripe Event (must not be re-encoded; used for signature verification).',
         content: new OA\JsonContent(
-            schema: new OA\Schema(
-                type: 'object',
-                additionalProperties: true
-            )
+            type: 'object',
+            additionalProperties: true
         )
     )]
     #[OA\Response(

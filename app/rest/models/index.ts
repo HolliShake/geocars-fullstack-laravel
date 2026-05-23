@@ -75,6 +75,7 @@ export * from './getCarRentalResponse200';
 export * from './getCarResponse200';
 export * from './getCommentPaginatedParams';
 export * from './getCommentResponse200';
+export * from './getMachineInfo200';
 export * from './getPlanFeaturePaginatedParams';
 export * from './getPlanFeatureResponse200';
 export * from './getPlanPlanResponse200';

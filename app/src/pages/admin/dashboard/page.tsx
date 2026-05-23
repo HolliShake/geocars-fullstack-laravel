@@ -1,7 +1,9 @@
 import { useAuth } from '@/components/auth.provider';
+import MachineInfo from '@/components/MachineInfo';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { useGetMachineInfo } from '@rest/api';
 import {
   Calendar,
   Car,
@@ -18,6 +20,11 @@ import type React from 'react';
 
 export default function AdminDashboardPage(): React.ReactNode {
   const { role } = useAuth();
+  const { data: machineInfo, isLoading } = useGetMachineInfo({
+    query: {
+      refetchInterval: 3000,
+    },
+  });
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 p-6">
@@ -92,6 +99,11 @@ export default function AdminDashboardPage(): React.ReactNode {
               <p className="text-xs text-muted-foreground">+0.2 from last month</p>
             </CardContent>
           </Card>
+        </div>
+
+        {/* Machine Info */}
+        <div className="my-6">
+          <MachineInfo data={machineInfo} loading={isLoading} />
         </div>
 
         {/* Main Content Grid */}

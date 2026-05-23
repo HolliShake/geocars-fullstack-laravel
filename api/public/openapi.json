@@ -1617,6 +1617,75 @@
                 }
             }
         },
+        "\/api\/Machine\/info": {
+            "get": {
+                "tags": [
+                    "Machine"
+                ],
+                "summary": "Get machine hardware and system information",
+                "description": "Retrieve detailed statistics regarding the host operating system, memory metrics, and CPU metrics.",
+                "operationId": "getMachineInfo",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "required": [
+                                        "HOSTOS",
+                                        "TotalRam",
+                                        "AvailableRam",
+                                        "CpuVendor",
+                                        "CpuModel",
+                                        "CpuSpeed",
+                                        "CpuUtilization"
+                                    ],
+                                    "properties": {
+                                        "HOSTOS": {
+                                            "description": "Detailed Operating System version string",
+                                            "type": "string",
+                                            "example": "Ubuntu 24.04 LTS"
+                                        },
+                                        "TotalRam": {
+                                            "description": "Total available system RAM in MB",
+                                            "type": "integer",
+                                            "example": 16384
+                                        },
+                                        "AvailableRam": {
+                                            "description": "Currently free\/available RAM in MB",
+                                            "type": "integer",
+                                            "example": 8192
+                                        },
+                                        "CpuVendor": {
+                                            "description": "Processor manufacturer or brand string",
+                                            "type": "string",
+                                            "example": "GenuineIntel"
+                                        },
+                                        "CpuModel": {
+                                            "description": "Specific marketing model of the processor",
+                                            "type": "string",
+                                            "example": "Intel(R) Core(TM) i7-10700K CPU @ 3.80GHz"
+                                        },
+                                        "CpuSpeed": {
+                                            "description": "Processor maximum or current clock speed",
+                                            "type": "string",
+                                            "example": "3.50 GHz"
+                                        },
+                                        "CpuUtilization": {
+                                            "description": "Current CPU utilization percentage",
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 12.5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Plan": {
             "get": {
                 "tags": [
@@ -6293,6 +6362,10 @@
         {
             "name": "Comment",
             "description": "Comment"
+        },
+        {
+            "name": "Machine",
+            "description": "Machine"
         },
         {
             "name": "Plans",

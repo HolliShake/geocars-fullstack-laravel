@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\MachineController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarPostingController;
@@ -15,6 +16,8 @@ use App\Http\Controllers\UserRequirementController;
 use App\Http\Controllers\StripeWebhookController;
 use Illuminate\Support\Facades\Route;
 
+
+Route::get('/Machine/info', [MachineController::class, 'info']);
 
 Route::controller(AuthController::class)->group(function () {
     Route::middleware('auth:api')->get('/Auth/user', 'user');
