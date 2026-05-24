@@ -16,6 +16,7 @@ use App\Http\Controllers\UserRequirementController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceLocationController;
+use App\Http\Controllers\UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/Machine/info", [MachineController::class, "info"]);
@@ -218,3 +219,5 @@ Route::post("/Stripe/webhook/ingest", [
     StripeWebhookController::class,
     "gatewayIngest",
 ]);
+
+Route::middleware(["auth:api"])->get('/user/dashboard', UserDashboardController::class);

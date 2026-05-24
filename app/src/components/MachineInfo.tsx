@@ -1,5 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import type { GetMachineInfo200 } from '@rest/models';
 import {
   Activity,
   Circle,
@@ -11,19 +12,6 @@ import {
   Zap,
 } from 'lucide-react';
 import React from 'react';
-
-interface MachineInfoProps {
-  data?: {
-    HOSTOS: string;
-    TotalRam: number;
-    AvailableRam: number;
-    CpuVendor: string;
-    CpuModel: string;
-    CpuSpeed: string;
-    CpuUtilization: number;
-  };
-  loading?: boolean;
-}
 
 /* ── Skeleton ────────────────────────────────────────── */
 const SkeletonRow = () => (
@@ -127,7 +115,10 @@ function InfoRow({
 }
 
 /* ── Main Component ───────────────────────────────────── */
-export const MachineInfo: React.FC<MachineInfoProps> = ({ data, loading }) => {
+export const MachineInfo: React.FC<{ data: GetMachineInfo200; loading?: boolean }> = ({
+  data,
+  loading,
+}) => {
   /* loading */
   if (loading) {
     return (
