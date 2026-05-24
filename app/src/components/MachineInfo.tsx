@@ -115,7 +115,7 @@ function InfoRow({
 }
 
 /* ── Main Component ───────────────────────────────────── */
-export const MachineInfo: React.FC<{ data: GetMachineInfo200; loading?: boolean }> = ({
+export const MachineInfo: React.FC<{ data: GetMachineInfo200 | undefined; loading?: boolean }> = ({
   data,
   loading,
 }) => {

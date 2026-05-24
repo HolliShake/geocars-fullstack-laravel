@@ -3,7 +3,7 @@ import PageLayout from '@/components/layout/page.layout';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useGetDeviceByCarRental } from '@rest/device.custom';
+import { useGetDeviceByCarRental } from '@rest/api';
 import type { LatLngBoundsExpression } from 'leaflet';
 import {
   Activity,
@@ -43,7 +43,7 @@ function FitBounds({ positions }: { positions: [number, number][] }) {
 // ── RoutingMachine ────────────────────────────────────────────────────────────
 function RoutingMachine({ positions }: { positions: [number, number][] }) {
   const map = useMap();
-  const routeLayerRef = useRef<any>(null);
+  const routeLayerRef = useRef(null);
 
   useEffect(() => {
     if (!map || positions.length < 2) return;
@@ -79,7 +79,7 @@ function RoutingMachine({ positions }: { positions: [number, number][] }) {
         wps = sampled.slice(0, MAX_WP);
       }
 
-      const router = (L as any).Routing.osrmv1({
+      const router = L.Routing.osrmv1({
         serviceUrl: 'https://router.project-osrm.org/route/v1',
         profile: 'driving',
         useHints: false,
@@ -99,8 +99,8 @@ function RoutingMachine({ positions }: { positions: [number, number][] }) {
             color: '#2563eb',
             weight: 5,
             opacity: 0.85,
-            lineJoin: 'round' as any,
-            lineCap: 'round' as any,
+            lineJoin: 'round',
+            lineCap: 'round',
           });
 
           line.addTo(map);
