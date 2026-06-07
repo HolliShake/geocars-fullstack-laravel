@@ -37,6 +37,8 @@ import type {
   ConfirmStripeCheckoutSession403,
   ConfirmStripeCheckoutSession503,
   ConfirmStripeCheckoutSessionBody,
+  ConfirmSubscriptionBody,
+  ConfirmSubscriptionRenewalBody,
   CreateCarBody,
   CreateCarPostingResponse200,
   CreateCarRentalResponse200,
@@ -48,6 +50,7 @@ import type {
   CreatePlanResponse200,
   CreateReactionResponse200,
   CreateRequirementResponse200,
+  CreateUserAccountResponse200,
   CreateUserCompanyResponse200,
   CreateUserRequirementBody,
   CreateUserRequirementResponse200,
@@ -62,11 +65,13 @@ import type {
   DeletePlanResponse200,
   DeleteReactionResponse200,
   DeleteRequirementResponse200,
+  DeleteUserAccountResponse200,
   DeleteUserCompanyResponse200,
   DeleteUserRequirementResponse200,
   DeleteUserResponse200,
   Device,
   DeviceLocation,
+  FinishCarRentalResponse200,
   ForbiddenResponse,
   GetCarPaginatedParams,
   GetCarPostingPaginatedParams,
@@ -88,6 +93,8 @@ import type {
   GetPlansPaginatedParams,
   GetRequirementPaginatedParams,
   GetRequirementResponse200,
+  GetUserAccountPaginatedParams,
+  GetUserAccountResponse200,
   GetUserCompanyPaginatedParams,
   GetUserCompanyResponse200,
   GetUserDashboard200,
@@ -95,6 +102,7 @@ import type {
   GetUserRequirementPaginatedParams,
   GetUserRequirementResponse200,
   GetUserResponse200,
+  GetUserSubscriptionResponse200,
   InternalServerErrorResponse,
   LoginRequest,
   NoContentResponse,
@@ -108,12 +116,16 @@ import type {
   PaginatedPlanFeatureResponse200,
   PaginatedPlanResponse200,
   PaginatedRequirementResponse200,
+  PaginatedSubscriptionTransactionResponse200,
+  PaginatedUserAccountResponse200,
   PaginatedUserCompanyResponse200,
   PaginatedUserRequirementResponse200,
   PaginatedUserResponse200,
   Plan,
   PlanFeature,
   Reaction,
+  RenewSubscription200,
+  RenewSubscriptionBody,
   Requirement,
   SignupRequest,
   StripeGatewayIngest200,
@@ -123,6 +135,8 @@ import type {
   StripeWebhook400,
   StripeWebhook503,
   StripeWebhookBody,
+  SubscribeToplan200,
+  SubscribeToplanBody,
   UnauthorizedResponse,
   UpdateCarBody,
   UpdateCarPostingResponse200,
@@ -135,11 +149,13 @@ import type {
   UpdatePlanResponse200,
   UpdateReactionResponse200,
   UpdateRequirementResponse200,
+  UpdateUserAccountResponse200,
   UpdateUserCompanyResponse200,
   UpdateUserRequirementResponse200,
   UpdateUserResponse200,
   UploadProfilePictureBody,
   User,
+  UserAccount,
   UserCompany,
   UserRequirement,
   UserRequirementResponse200,
@@ -1922,6 +1938,70 @@ export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof c
 
 
 
+/**
+ * Marks a confirmed rental as completed, records the return date as now, computes refundable amount / additional charges, and — when the payment method is online — issues a Stripe refund for the refundable amount back to the original payment source, then records it as a REFUND transaction. The renter's default UserAccount (bank / e-wallet) is returned in the response so the caller knows where any manual payout should be sent.
+ * @summary Finish a confirmed CarRental
+ */
+export const finishCarRental = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<FinishCarRentalResponse200>(
+      {url: `/api/CarRental/${id}/finish`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getFinishCarRentalMutationOptions = <TError = null | null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finishCarRental>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof finishCarRental>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['finishCarRental'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof finishCarRental>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  finishCarRental(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type FinishCarRentalMutationResult = NonNullable<Awaited<ReturnType<typeof finishCarRental>>>
+    
+    export type FinishCarRentalMutationError = null | null | InternalServerErrorResponse
+
+    /**
+ * @summary Finish a confirmed CarRental
+ */
+export const useFinishCarRental = <TError = null | null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof finishCarRental>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof finishCarRental>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getFinishCarRentalMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
 /**
  * Retrieve a paginated list of Comment with optional search
  * @summary Get paginated list of Comment
@@ -4916,6 +4996,380 @@ export const useStripeGatewayIngest = <TError = StripeGatewayIngest401 | Validat
     }
     
 /**
+ * Retrieve a paginated list of UserAccount with optional search
+ * @summary Get paginated list of UserAccount
+ */
+export const getUserAccountPaginated = (
+    params?: GetUserAccountPaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedUserAccountResponse200>(
+      {url: `/api/UserAccount`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetUserAccountPaginatedQueryKey = (params?: GetUserAccountPaginatedParams,) => {
+    return [`/api/UserAccount`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetUserAccountPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getUserAccountPaginated>>, TError = unknown>(params?: GetUserAccountPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserAccountPaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserAccountPaginated>>> = ({ signal }) => getUserAccountPaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserAccountPaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getUserAccountPaginated>>>
+export type GetUserAccountPaginatedQueryError = unknown
+
+
+export function useGetUserAccountPaginated<TData = Awaited<ReturnType<typeof getUserAccountPaginated>>, TError = unknown>(
+ params: undefined |  GetUserAccountPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserAccountPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getUserAccountPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserAccountPaginated<TData = Awaited<ReturnType<typeof getUserAccountPaginated>>, TError = unknown>(
+ params?: GetUserAccountPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserAccountPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getUserAccountPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserAccountPaginated<TData = Awaited<ReturnType<typeof getUserAccountPaginated>>, TError = unknown>(
+ params?: GetUserAccountPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of UserAccount
+ */
+
+export function useGetUserAccountPaginated<TData = Awaited<ReturnType<typeof getUserAccountPaginated>>, TError = unknown>(
+ params?: GetUserAccountPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserAccountPaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Create a new bank or e-wallet account
+ * @summary Create a new UserAccount
+ */
+export const createUserAccount = (
+    userAccount: UserAccount,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateUserAccountResponse200>(
+      {url: `/api/UserAccount`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: userAccount, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateUserAccountMutationOptions = <TError = ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserAccount>>, TError,{data: UserAccount}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createUserAccount>>, TError,{data: UserAccount}, TContext> => {
+
+const mutationKey = ['createUserAccount'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createUserAccount>>, {data: UserAccount}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createUserAccount(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateUserAccountMutationResult = NonNullable<Awaited<ReturnType<typeof createUserAccount>>>
+    export type CreateUserAccountMutationBody = UserAccount
+    export type CreateUserAccountMutationError = ValidationErrorResponse
+
+    /**
+ * @summary Create a new UserAccount
+ */
+export const useCreateUserAccount = <TError = ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createUserAccount>>, TError,{data: UserAccount}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createUserAccount>>,
+        TError,
+        {data: UserAccount},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateUserAccountMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a UserAccount by its ID
+ * @summary Get a specific UserAccount
+ */
+export const getUserAccountById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserAccountResponse200>(
+      {url: `/api/UserAccount/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetUserAccountByIdQueryKey = (id?: number,) => {
+    return [`/api/UserAccount/${id}`] as const;
+    }
+
+    
+export const getGetUserAccountByIdQueryOptions = <TData = Awaited<ReturnType<typeof getUserAccountById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserAccountByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserAccountById>>> = ({ signal }) => getUserAccountById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserAccountByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getUserAccountById>>>
+export type GetUserAccountByIdQueryError = null
+
+
+export function useGetUserAccountById<TData = Awaited<ReturnType<typeof getUserAccountById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserAccountById>>,
+          TError,
+          Awaited<ReturnType<typeof getUserAccountById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserAccountById<TData = Awaited<ReturnType<typeof getUserAccountById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserAccountById>>,
+          TError,
+          Awaited<ReturnType<typeof getUserAccountById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserAccountById<TData = Awaited<ReturnType<typeof getUserAccountById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific UserAccount
+ */
+
+export function useGetUserAccountById<TData = Awaited<ReturnType<typeof getUserAccountById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserAccountById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserAccountByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing bank or e-wallet account
+ * @summary Update a UserAccount
+ */
+export const updateUserAccount = (
+    id: number,
+    userAccount: UserAccount,
+ ) => {
+      
+      
+      return fetchData<UpdateUserAccountResponse200>(
+      {url: `/api/UserAccount/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: userAccount
+    },
+      );
+    }
+  
+
+
+export const getUpdateUserAccountMutationOptions = <TError = null | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserAccount>>, TError,{id: number;data: UserAccount}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateUserAccount>>, TError,{id: number;data: UserAccount}, TContext> => {
+
+const mutationKey = ['updateUserAccount'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateUserAccount>>, {id: number;data: UserAccount}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateUserAccount(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateUserAccountMutationResult = NonNullable<Awaited<ReturnType<typeof updateUserAccount>>>
+    export type UpdateUserAccountMutationBody = UserAccount
+    export type UpdateUserAccountMutationError = null | ValidationErrorResponse
+
+    /**
+ * @summary Update a UserAccount
+ */
+export const useUpdateUserAccount = <TError = null | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateUserAccount>>, TError,{id: number;data: UserAccount}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateUserAccount>>,
+        TError,
+        {id: number;data: UserAccount},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateUserAccountMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a UserAccount by ID
+ * @summary Delete a UserAccount
+ */
+export const deleteUserAccount = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteUserAccountResponse200>(
+      {url: `/api/UserAccount/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteUserAccountMutationOptions = <TError = null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUserAccount>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteUserAccount>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteUserAccount'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteUserAccount>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteUserAccount(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteUserAccountMutationResult = NonNullable<Awaited<ReturnType<typeof deleteUserAccount>>>
+    
+    export type DeleteUserAccountMutationError = null
+
+    /**
+ * @summary Delete a UserAccount
+ */
+export const useDeleteUserAccount = <TError = null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteUserAccount>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteUserAccount>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteUserAccountMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
  * Retrieve a paginated list of UserCompany with optional search
  * @summary Get paginated list of UserCompany
  */
@@ -6198,3 +6652,597 @@ export const useDeleteUserRequirement = <TError = null | InternalServerErrorResp
 
       return useMutation(mutationOptions , queryClient);
     }
+    
+/**
+ * Returns the authenticated user's active or most recent subscription with plan and transactions.
+ * @summary Get current user active subscription
+ */
+export const getMySubscription = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserSubscriptionResponse200>(
+      {url: `/api/UserSubscription/me`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetMySubscriptionQueryKey = () => {
+    return [`/api/UserSubscription/me`] as const;
+    }
+
+    
+export const getGetMySubscriptionQueryOptions = <TData = Awaited<ReturnType<typeof getMySubscription>>, TError = null>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMySubscriptionQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMySubscription>>> = ({ signal }) => getMySubscription(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMySubscriptionQueryResult = NonNullable<Awaited<ReturnType<typeof getMySubscription>>>
+export type GetMySubscriptionQueryError = null
+
+
+export function useGetMySubscription<TData = Awaited<ReturnType<typeof getMySubscription>>, TError = null>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMySubscription>>,
+          TError,
+          Awaited<ReturnType<typeof getMySubscription>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMySubscription<TData = Awaited<ReturnType<typeof getMySubscription>>, TError = null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMySubscription>>,
+          TError,
+          Awaited<ReturnType<typeof getMySubscription>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMySubscription<TData = Awaited<ReturnType<typeof getMySubscription>>, TError = null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get current user active subscription
+ */
+
+export function useGetMySubscription<TData = Awaited<ReturnType<typeof getMySubscription>>, TError = null>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMySubscription>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMySubscriptionQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Returns all active plans that users can subscribe to.
+ * @summary List available subscription plans
+ */
+export const getSubscriptionPlans = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedPlanResponse200>(
+      {url: `/api/UserSubscription/plans`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetSubscriptionPlansQueryKey = () => {
+    return [`/api/UserSubscription/plans`] as const;
+    }
+
+    
+export const getGetSubscriptionPlansQueryOptions = <TData = Awaited<ReturnType<typeof getSubscriptionPlans>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSubscriptionPlansQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSubscriptionPlans>>> = ({ signal }) => getSubscriptionPlans(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSubscriptionPlansQueryResult = NonNullable<Awaited<ReturnType<typeof getSubscriptionPlans>>>
+export type GetSubscriptionPlansQueryError = unknown
+
+
+export function useGetSubscriptionPlans<TData = Awaited<ReturnType<typeof getSubscriptionPlans>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubscriptionPlans>>,
+          TError,
+          Awaited<ReturnType<typeof getSubscriptionPlans>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubscriptionPlans<TData = Awaited<ReturnType<typeof getSubscriptionPlans>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubscriptionPlans>>,
+          TError,
+          Awaited<ReturnType<typeof getSubscriptionPlans>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubscriptionPlans<TData = Awaited<ReturnType<typeof getSubscriptionPlans>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List available subscription plans
+ */
+
+export function useGetSubscriptionPlans<TData = Awaited<ReturnType<typeof getSubscriptionPlans>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionPlans>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSubscriptionPlansQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Creates a pending UserSubscription and a Stripe Checkout session. Redirect the user to checkout_url to complete payment.
+ * @summary Create Stripe Checkout session for a subscription plan
+ */
+export const subscribeToplan = (
+    subscribeToplanBody: SubscribeToplanBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<SubscribeToplan200>(
+      {url: `/api/UserSubscription/subscribe`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: subscribeToplanBody, signal
+    },
+      );
+    }
+  
+
+
+export const getSubscribeToplanMutationOptions = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscribeToplan>>, TError,{data: SubscribeToplanBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof subscribeToplan>>, TError,{data: SubscribeToplanBody}, TContext> => {
+
+const mutationKey = ['subscribeToplan'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof subscribeToplan>>, {data: SubscribeToplanBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  subscribeToplan(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type SubscribeToplanMutationResult = NonNullable<Awaited<ReturnType<typeof subscribeToplan>>>
+    export type SubscribeToplanMutationBody = SubscribeToplanBody
+    export type SubscribeToplanMutationError = null | null
+
+    /**
+ * @summary Create Stripe Checkout session for a subscription plan
+ */
+export const useSubscribeToplan = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof subscribeToplan>>, TError,{data: SubscribeToplanBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof subscribeToplan>>,
+        TError,
+        {data: SubscribeToplanBody},
+        TContext
+      > => {
+
+      const mutationOptions = getSubscribeToplanMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Verifies the Stripe Checkout session, activates the subscription, records a payment transaction, and sets expires_at to 30 days from now.
+ * @summary Confirm Stripe payment and activate subscription
+ */
+export const confirmSubscription = (
+    confirmSubscriptionBody: ConfirmSubscriptionBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserSubscriptionResponse200>(
+      {url: `/api/UserSubscription/confirm`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmSubscriptionBody, signal
+    },
+      );
+    }
+  
+
+
+export const getConfirmSubscriptionMutationOptions = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmSubscription>>, TError,{data: ConfirmSubscriptionBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof confirmSubscription>>, TError,{data: ConfirmSubscriptionBody}, TContext> => {
+
+const mutationKey = ['confirmSubscription'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmSubscription>>, {data: ConfirmSubscriptionBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmSubscription(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof confirmSubscription>>>
+    export type ConfirmSubscriptionMutationBody = ConfirmSubscriptionBody
+    export type ConfirmSubscriptionMutationError = null | null
+
+    /**
+ * @summary Confirm Stripe payment and activate subscription
+ */
+export const useConfirmSubscription = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmSubscription>>, TError,{data: ConfirmSubscriptionBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof confirmSubscription>>,
+        TError,
+        {data: ConfirmSubscriptionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getConfirmSubscriptionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Creates a new Stripe Checkout session to renew the subscription. After payment, call /confirm with the new session_id and the same subscription_id.
+ * @summary Renew a subscription via Stripe Checkout
+ */
+export const renewSubscription = (
+    id: number,
+    renewSubscriptionBody: RenewSubscriptionBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<RenewSubscription200>(
+      {url: `/api/UserSubscription/${id}/renew`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: renewSubscriptionBody, signal
+    },
+      );
+    }
+  
+
+
+export const getRenewSubscriptionMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renewSubscription>>, TError,{id: number;data: RenewSubscriptionBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof renewSubscription>>, TError,{id: number;data: RenewSubscriptionBody}, TContext> => {
+
+const mutationKey = ['renewSubscription'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof renewSubscription>>, {id: number;data: RenewSubscriptionBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  renewSubscription(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type RenewSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof renewSubscription>>>
+    export type RenewSubscriptionMutationBody = RenewSubscriptionBody
+    export type RenewSubscriptionMutationError = unknown
+
+    /**
+ * @summary Renew a subscription via Stripe Checkout
+ */
+export const useRenewSubscription = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof renewSubscription>>, TError,{id: number;data: RenewSubscriptionBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof renewSubscription>>,
+        TError,
+        {id: number;data: RenewSubscriptionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getRenewSubscriptionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Verifies the renewal Stripe Checkout session, extends expires_at by 30 days, and records a RENEWAL transaction.
+ * @summary Confirm Stripe renewal payment
+ */
+export const confirmSubscriptionRenewal = (
+    id: number,
+    confirmSubscriptionRenewalBody: ConfirmSubscriptionRenewalBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserSubscriptionResponse200>(
+      {url: `/api/UserSubscription/${id}/confirm-renewal`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmSubscriptionRenewalBody, signal
+    },
+      );
+    }
+  
+
+
+export const getConfirmSubscriptionRenewalMutationOptions = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmSubscriptionRenewal>>, TError,{id: number;data: ConfirmSubscriptionRenewalBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof confirmSubscriptionRenewal>>, TError,{id: number;data: ConfirmSubscriptionRenewalBody}, TContext> => {
+
+const mutationKey = ['confirmSubscriptionRenewal'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmSubscriptionRenewal>>, {id: number;data: ConfirmSubscriptionRenewalBody}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  confirmSubscriptionRenewal(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmSubscriptionRenewalMutationResult = NonNullable<Awaited<ReturnType<typeof confirmSubscriptionRenewal>>>
+    export type ConfirmSubscriptionRenewalMutationBody = ConfirmSubscriptionRenewalBody
+    export type ConfirmSubscriptionRenewalMutationError = unknown
+
+    /**
+ * @summary Confirm Stripe renewal payment
+ */
+export const useConfirmSubscriptionRenewal = <TError = unknown,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmSubscriptionRenewal>>, TError,{id: number;data: ConfirmSubscriptionRenewalBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof confirmSubscriptionRenewal>>,
+        TError,
+        {id: number;data: ConfirmSubscriptionRenewalBody},
+        TContext
+      > => {
+
+      const mutationOptions = getConfirmSubscriptionRenewalMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Marks the subscription as cancelled. It remains accessible until expires_at.
+ * @summary Cancel a subscription
+ */
+export const cancelSubscription = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserSubscriptionResponse200>(
+      {url: `/api/UserSubscription/${id}/cancel`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getCancelSubscriptionMutationOptions = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSubscription>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof cancelSubscription>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['cancelSubscription'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof cancelSubscription>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  cancelSubscription(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CancelSubscriptionMutationResult = NonNullable<Awaited<ReturnType<typeof cancelSubscription>>>
+    
+    export type CancelSubscriptionMutationError = null | null
+
+    /**
+ * @summary Cancel a subscription
+ */
+export const useCancelSubscription = <TError = null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof cancelSubscription>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof cancelSubscription>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getCancelSubscriptionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Returns all payment/renewal/refund transactions for the given subscription.
+ * @summary List transactions for a subscription
+ */
+export const getSubscriptionTransactions = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedSubscriptionTransactionResponse200>(
+      {url: `/api/UserSubscription/${id}/transactions`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetSubscriptionTransactionsQueryKey = (id?: number,) => {
+    return [`/api/UserSubscription/${id}/transactions`] as const;
+    }
+
+    
+export const getGetSubscriptionTransactionsQueryOptions = <TData = Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError = unknown>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetSubscriptionTransactionsQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getSubscriptionTransactions>>> = ({ signal }) => getSubscriptionTransactions(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetSubscriptionTransactionsQueryResult = NonNullable<Awaited<ReturnType<typeof getSubscriptionTransactions>>>
+export type GetSubscriptionTransactionsQueryError = unknown
+
+
+export function useGetSubscriptionTransactions<TData = Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError = unknown>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubscriptionTransactions>>,
+          TError,
+          Awaited<ReturnType<typeof getSubscriptionTransactions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubscriptionTransactions<TData = Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getSubscriptionTransactions>>,
+          TError,
+          Awaited<ReturnType<typeof getSubscriptionTransactions>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetSubscriptionTransactions<TData = Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary List transactions for a subscription
+ */
+
+export function useGetSubscriptionTransactions<TData = Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError = unknown>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getSubscriptionTransactions>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetSubscriptionTransactionsQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}

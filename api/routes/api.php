@@ -19,6 +19,7 @@ use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\DeviceController;
 use App\Http\Controllers\DeviceLocationController;
 use App\Http\Controllers\UserDashboardController;
+use App\Http\Controllers\UserSubscriptionController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/Machine/info", [MachineController::class, "info"]);
@@ -240,4 +241,18 @@ Route::post("/Stripe/webhook/ingest", [
     StripeWebhookController::class,
     "gatewayIngest",
 ]);
+
+// ─── User Subscription ───────────────────────────────────────────────────────
+Route::middleware(["auth:api", "role:user"])
+    ->controller(UserSubscriptionController::class)
+    ->group(function () {
+        Route::get("/UserSubscription/me", "mySubscription");
+        Route::get("/UserSubscription/plans", "plans");
+        Route::post("/UserSubscription/subscribe", "subscribe");
+        Route::post("/UserSubscription/confirm", "confirm");
+        Route::post("/UserSubscription/{id}/renew", "renew")->where("id", "[0-9]+");
+        Route::post("/UserSubscription/{id}/confirm-renewal", "confirmRenewal")->where("id", "[0-9]+");
+        Route::post("/UserSubscription/{id}/cancel", "cancel")->where("id", "[0-9]+");
+        Route::get("/UserSubscription/{id}/transactions", "transactions")->where("id", "[0-9]+");
+    });
 

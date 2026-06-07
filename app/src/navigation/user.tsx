@@ -8,6 +8,7 @@ import CarRentalViewLocationPage from '@/pages/user/car-rental/view-location/pag
 import UserCompanyCarPage from '@/pages/user/company-config/cars/page';
 import UserCompanyConfigPage from '@/pages/user/company-config/page';
 import UserDashboardPage from '@/pages/user/dashboard/page';
+import UserSubscriptionPage from '@/pages/user/subscription/page';
 import type { Route } from '@/types/route';
 import {
   LucideBuilding2,
@@ -16,6 +17,7 @@ import {
   LucideLayoutDashboard,
   LucideMapPinPlus,
   LucidePodcast,
+  LucideRepeat2,
 } from 'lucide-react';
 import { RouteKey } from './route';
 
@@ -98,6 +100,16 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.Account.key,
     icon: <LucideCreditCard />,
     element: <UserAccountPage />,
+    layout: 'dashboard',
+    sidebar: true,
+    roles: [RoleEnum.user],
+  },
+  {
+    key: 'User.Subscription',
+    title: 'Subscription',
+    path: RouteKey.User.Subscription.key,
+    icon: <LucideRepeat2 />,
+    element: <UserSubscriptionPage />,
     layout: 'dashboard',
     sidebar: true,
     roles: [RoleEnum.user],

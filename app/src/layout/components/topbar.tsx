@@ -70,10 +70,10 @@ export default function TopBar({ setIsSidebarOpen = undefined }: HeaderProps): R
                 },
               },
               {
-                label: 'Rentals',
+                label: 'My Rentals',
                 icon: <Car className="w-4 h-4" />,
                 onClick: () => {
-                  navigate(RouteKey.Auth.Profile.key);
+                  navigate(RouteKey.Renter.Renter.key);
                 },
               },
               {

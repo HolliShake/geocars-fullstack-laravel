@@ -34,11 +34,13 @@ type RouteStructure = {
     CompanyConfig: RouteConfig<'/user/company-config'>;
     Account: RouteConfig<'/user/account'>;
     CompanyCar: RouteConfig<'/user/company-config/cars/:company_id'>;
+    Subscription: RouteConfig<'/user/subscription'>;
   };
   Renter: {
     Browse: RouteConfig<'/renter/browse'>;
     Application: RouteConfig<'/renter/browse/:postingId'>;
     Renter: RouteConfig<'/renter/rental'>;
+    RentalDetail: RouteConfig<'/renter/rental/:id'>;
     CheckoutSuccess: RouteConfig<'/renter/checkout/success'>;
     CheckoutCancel: RouteConfig<'/renter/checkout/cancel'>;
   };
@@ -99,11 +101,13 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     CompanyConfig: createRoute('/user/company-config'),
     Account: createRoute('/user/account'),
     CompanyCar: createRoute('/user/company-config/cars/:company_id'),
+    Subscription: createRoute('/user/subscription'),
   },
   Renter: {
     Browse: createRoute('/renter/browse'),
     Application: createRoute('/renter/browse/:postingId'),
     Renter: createRoute('/renter/rental'),
+    RentalDetail: createRoute('/renter/rental/:id'),
     CheckoutSuccess: createRoute('/renter/checkout/success'),
     CheckoutCancel: createRoute('/renter/checkout/cancel'),
   },

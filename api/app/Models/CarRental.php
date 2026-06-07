@@ -35,6 +35,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "rental_status", type: "string", enum: ["pending", "confirmed", "cancelled", "completed", "rejected"], example: "pending"),
         new OA\Property(property: "payment_method", type: "string", enum: ["cash", "online"], example: "cash", nullable: true),
         new OA\Property(property: "payment_reference", type: "string", nullable: true, example: "TXN123456"),
+        new OA\Property(property: "refundable_amount", type: "number", format: "float", example: 0.00, description: "Computed refundable amount based on rental status and return timing."),
+        new OA\Property(property: "additional_charges", type: "number", format: "float", example: 0.00, description: "Computed additional charges, e.g., late return penalties."),
         new OA\Property(property: "cash_debt", type: "number", format: "float", nullable: true, example: 1500.00, description: "Outstanding cash owed by the renter. Set when confirmed with cash payment; null for online or unsettled."),
         new OA\Property(property: "cash_debt_settled", type: "boolean", example: false, description: "Whether the cash debt has been collected."),
         new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2023-01-01T00:00:00Z"),
