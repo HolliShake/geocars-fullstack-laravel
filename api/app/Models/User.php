@@ -211,6 +211,11 @@ class User extends Authenticatable implements HasMedia, OAuthenticatable
         return $this->hasMany(UserRequirement::class, 'user_id', 'id');
     }
 
+    public function userAccounts()
+    {
+        return $this->hasMany(UserAccount::class, 'user_id', 'id');
+    }
+
     public function subscription() {
         return $this->hasOne(UserSubscription::class, 'user_id', 'id')
             ->where('status', 'active');

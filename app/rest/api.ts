@@ -90,6 +90,7 @@ import type {
   GetRequirementResponse200,
   GetUserCompanyPaginatedParams,
   GetUserCompanyResponse200,
+  GetUserDashboard200,
   GetUserPaginatedParams,
   GetUserRequirementPaginatedParams,
   GetUserRequirementResponse200,
@@ -2373,6 +2374,95 @@ export function useGetAdminDashboard<TData = Awaited<ReturnType<typeof getAdminD
  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
 
   const queryOptions = getGetAdminDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Retrieve dashboard metrics for the authenticated car owner, including active bookings, total trips, total spent, average rating, and recent activity.
+ * @summary Get dashboard statistics for car owner
+ */
+export const getUserDashboard = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserDashboard200>(
+      {url: `/api/Dashboard/user`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetUserDashboardQueryKey = () => {
+    return [`/api/Dashboard/user`] as const;
+    }
+
+    
+export const getGetUserDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserDashboardQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserDashboard>>> = ({ signal }) => getUserDashboard(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getUserDashboard>>>
+export type GetUserDashboardQueryError = unknown
+
+
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getUserDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getUserDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get dashboard statistics for car owner
+ */
+
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserDashboardQueryOptions(options)
 
   const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
 

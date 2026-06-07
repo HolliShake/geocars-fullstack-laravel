@@ -13,6 +13,7 @@ use App\Http\Controllers\ReactionController;
 use App\Http\Controllers\RequirementController;
 use App\Http\Controllers\UserCompanyController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\UserAccountController;
 use App\Http\Controllers\UserRequirementController;
 use App\Http\Controllers\StripeWebhookController;
 use App\Http\Controllers\DeviceController;
@@ -22,9 +23,10 @@ use Illuminate\Support\Facades\Route;
 
 Route::get("/Machine/info", [MachineController::class, "info"]);
 
-Route::middleware(["auth:api", "role:admin"])->
+Route::middleware(["auth:api", "role:admin,user"])->
     controller(DashboardController::class)->group(function() {
         Route::get("/Dashboard/admin", "adminDashboard");
+        Route::get("/Dashboard/user", "userDashboard");
 });
 
 Route::controller(AuthController::class)->group(function () {
@@ -152,6 +154,16 @@ Route::middleware(["auth:api", "role:admin,user,renter"])
     });
 
 Route::middleware(["auth:api", "role:admin,user,renter"])
+    ->controller(UserAccountController::class)
+    ->group(function () {
+        Route::get("/UserAccount", "index");
+        Route::get("/UserAccount/{id}", "show")->where("id", "[0-9]+");
+        Route::post("/UserAccount", "store");
+        Route::put("/UserAccount/{id}", "update")->where("id", "[0-9]+");
+        Route::delete("/UserAccount/{id}", "destroy")->where("id", "[0-9]+");
+    });
+
+Route::middleware(["auth:api", "role:admin,user,renter"])
     ->controller(UserRequirementController::class)
     ->group(function () {
         Route::get("/UserRequirement/User", "getUserRequirements");
@@ -226,4 +238,3 @@ Route::post("/Stripe/webhook/ingest", [
     "gatewayIngest",
 ]);
 
-Route::middleware(["auth:api"])->get('/user/dashboard', UserDashboardController::class);

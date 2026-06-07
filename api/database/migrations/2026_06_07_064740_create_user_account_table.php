@@ -22,7 +22,7 @@ return new class extends Migration
             //
             $table->enum('type', array_column(UserAccountTypeEnum::cases(), 'value'))->default(UserAccountTypeEnum::BANK->value);
             $table->string('account_number');
-            $table->boolean('is_default', true);
+            $table->boolean('is_default')->default(true);
         });
     }
 

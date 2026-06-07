@@ -1,4 +1,5 @@
 import { RoleEnum } from '@/constants/role.constant';
+import UserAccountPage from '@/pages/user/account/page';
 import UserQuickCarPage from '@/pages/user/car-management/page';
 import UserCarPostingPage from '@/pages/user/car-posting/page';
 import UserCarRentalApplicationPage from '@/pages/user/car-rental/application/page';
@@ -11,6 +12,7 @@ import type { Route } from '@/types/route';
 import {
   LucideBuilding2,
   LucideCar,
+  LucideCreditCard,
   LucideLayoutDashboard,
   LucideMapPinPlus,
   LucidePodcast,
@@ -86,6 +88,16 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.CompanyConfig.key,
     icon: <LucideBuilding2 />,
     element: <UserCompanyConfigPage />,
+    layout: 'dashboard',
+    sidebar: true,
+    roles: [RoleEnum.user],
+  },
+  {
+    key: 'User.UserAccount',
+    title: 'Accounts',
+    path: RouteKey.User.Account.key,
+    icon: <LucideCreditCard />,
+    element: <UserAccountPage />,
     layout: 'dashboard',
     sidebar: true,
     roles: [RoleEnum.user],

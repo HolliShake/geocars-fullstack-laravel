@@ -12,6 +12,7 @@ use App\Interface\Repository\IRequirementRepo;
 use App\Interface\Repository\IPlanFeatureRepo;
 use App\Interface\Repository\IPlanRepo;
 use App\Interface\Repository\IReactionRepo;
+use App\Interface\Repository\IUserAccountRepo;
 use App\Interface\Repository\IUserCompanyRepo;
 use App\Interface\Repository\IUserRepo;
 use App\Interface\Repository\IUserRequirementRepo; // Added
@@ -26,6 +27,7 @@ use App\Interface\Service\IRequirementService;
 use App\Interface\Service\IPlanFeatureService;
 use App\Interface\Service\IPlanService;
 use App\Interface\Service\IReactionService;
+use App\Interface\Service\IUserAccountService;
 use App\Interface\Service\IUserCompanyService;
 use App\Interface\Service\IUserRequirementService; // Added
 use App\Interface\Service\IUserService;
@@ -39,6 +41,7 @@ use App\Repository\DeviceLocationRepo;
 use App\Repository\PlanFeatureRepo;
 use App\Repository\PlanRepo;
 use App\Repository\ReactionRepo;
+use App\Repository\UserAccountRepo;
 use App\Repository\UserCompanyRepo;
 use App\Repository\UserRepo;
 use App\Repository\UserRequirementRepo; // Added
@@ -54,6 +57,7 @@ use App\Service\RequirementService;
 use App\Service\PlanFeatureService;
 use App\Service\PlanService;
 use App\Service\ReactionService;
+use App\Service\UserAccountService;
 use App\Service\UserCompanyService;
 use App\Service\UserRequirementService; // Added
 use App\Service\UserService;
@@ -87,6 +91,7 @@ class AppServiceProvider extends ServiceProvider
             UserSubscriptionRepo::class,
         );
         $this->app->bind(IReactionRepo::class, ReactionRepo::class);
+        $this->app->bind(IUserAccountRepo::class, UserAccountRepo::class);
         $this->app->bind(ICommentRepo::class, CommentRepo::class);
         $this->app->bind(IDeviceRepo::class, DeviceRepo::class);
         $this->app->bind(IDeviceLocationRepo::class, DeviceLocationRepo::class);
@@ -108,6 +113,7 @@ class AppServiceProvider extends ServiceProvider
             UserSubscriptionService::class,
         );
         $this->app->bind(IReactionService::class, ReactionService::class);
+        $this->app->bind(IUserAccountService::class, UserAccountService::class);
         $this->app->bind(ICommentService::class, CommentService::class);
         $this->app->bind(IDeviceService::class, DeviceService::class);
         $this->app->bind(

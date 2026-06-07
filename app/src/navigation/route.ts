@@ -32,6 +32,7 @@ type RouteStructure = {
     CarPosting: RouteConfig<'/user/car-posting'>;
     QuickCar: RouteConfig<'/user/quick-car'>;
     CompanyConfig: RouteConfig<'/user/company-config'>;
+    Account: RouteConfig<'/user/account'>;
     CompanyCar: RouteConfig<'/user/company-config/cars/:company_id'>;
   };
   Renter: {
@@ -96,6 +97,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     CarPosting: createRoute('/user/car-posting'),
     QuickCar: createRoute('/user/quick-car'),
     CompanyConfig: createRoute('/user/company-config'),
+    Account: createRoute('/user/account'),
     CompanyCar: createRoute('/user/company-config/cars/:company_id'),
   },
   Renter: {
