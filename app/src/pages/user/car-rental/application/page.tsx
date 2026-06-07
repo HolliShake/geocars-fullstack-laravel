@@ -109,17 +109,13 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
     try {
       const result = await finishRental({ id });
       const data = result?.data;
-      if (data?.stripe_refund_id) {
-        toast.success(
-          `Rental completed! Stripe refund ₱${data.refundable_amount.toFixed(2)} issued (${data.stripe_refund_id}).`
-        );
-      } else if (data?.refundable_amount && data.refundable_amount > 0) {
+      if (data?.refundable_amount && data.refundable_amount > 0) {
         const payoutAcct = data.payout_account;
         const accountLabel = payoutAcct
           ? `${payoutAcct.type} ${payoutAcct.account_number}`
           : "the renter's account";
         toast.success(
-          `Rental completed! Please send ₱${data.refundable_amount.toFixed(2)} to ${accountLabel}.`
+          `Rental completed! Transferred ₱${(data.net_payout_amount ?? 0).toFixed(2)} to ${accountLabel} (10% platform share: ₱${(data.platform_fee_amount ?? 0).toFixed(2)}).`
         );
       } else {
         toast.success('Rental marked as completed.');
@@ -1101,8 +1097,8 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
 
                       <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
                         <p className="text-xs text-muted-foreground text-center">
-                          Marks the car as returned now. Eligible refunds are automatically sent to
-                          the renter's registered account.
+                          Marks the car as returned now. For ONLINE payments, refundable amount is
+                          sent to the renter's active payout account minus a 10% platform share.
                         </p>
                       </div>
                     </CardContent>

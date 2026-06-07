@@ -145,6 +145,19 @@ class UserAccountController extends Controller
                 'user_id' => 'required|integer|exists:users,id',
                 'type' => ['required', Rule::in(array_column(UserAccountTypeEnum::cases(), 'value'))],
                 'account_number' => 'required|string|max:255',
+                'expiry' => [
+                    'nullable',
+                    'string',
+                    'max:7',
+                    'required_if:type,' . UserAccountTypeEnum::BANK->value,
+                    'regex:/^(0[1-9]|1[0-2])\/[0-9]{2}$/',
+                ],
+                'cvv' => [
+                    'nullable',
+                    'string',
+                    'required_if:type,' . UserAccountTypeEnum::BANK->value,
+                    'regex:/^[0-9]{3,4}$/',
+                ],
                 'is_default' => 'sometimes|boolean',
             ]);
 
@@ -157,6 +170,11 @@ class UserAccountController extends Controller
 
             if ($user->role !== 'admin') {
                 $validated['user_id'] = $user->id;
+            }
+
+            if (($validated['type'] ?? null) !== UserAccountTypeEnum::BANK->value) {
+                $validated['expiry'] = null;
+                $validated['cvv'] = null;
             }
 
             $validated['is_default'] = (bool) ($validated['is_default'] ?? false);
@@ -201,6 +219,19 @@ class UserAccountController extends Controller
                 'user_id' => 'required|integer|exists:users,id',
                 'type' => ['required', Rule::in(array_column(UserAccountTypeEnum::cases(), 'value'))],
                 'account_number' => 'required|string|max:255',
+                'expiry' => [
+                    'nullable',
+                    'string',
+                    'max:7',
+                    'required_if:type,' . UserAccountTypeEnum::BANK->value,
+                    'regex:/^(0[1-9]|1[0-2])\/[0-9]{2}$/',
+                ],
+                'cvv' => [
+                    'nullable',
+                    'string',
+                    'required_if:type,' . UserAccountTypeEnum::BANK->value,
+                    'regex:/^[0-9]{3,4}$/',
+                ],
                 'is_default' => 'sometimes|boolean',
             ]);
 
@@ -212,6 +243,11 @@ class UserAccountController extends Controller
 
             if ($user->role !== 'admin') {
                 $validated['user_id'] = $user->id;
+            }
+
+            if (($validated['type'] ?? null) !== UserAccountTypeEnum::BANK->value) {
+                $validated['expiry'] = null;
+                $validated['cvv'] = null;
             }
 
             $validated['is_default'] = (bool) ($validated['is_default'] ?? false);

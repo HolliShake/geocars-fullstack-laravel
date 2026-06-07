@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Enum\TransactionTypeEnum;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -90,6 +92,7 @@ class SubscriptionTransaction extends Model
         'user_subscription_id',
         'amount',
         'type',
+        'stripe_session_id',
     ];
 
     protected $casts = [

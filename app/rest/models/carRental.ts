@@ -26,6 +26,17 @@ export interface CarRental {
   payment_method: CarRentalPaymentMethod;
   /** @nullable */
   payment_reference: string | null;
+  /** Computed refundable amount based on rental status and return timing. */
+  refundable_amount?: number;
+  /** Computed additional charges, e.g., late return penalties. */
+  additional_charges?: number;
+  /**
+   * Outstanding cash owed by the renter. Set when confirmed with cash payment; null for online or unsettled.
+   * @nullable
+   */
+  cash_debt?: number | null;
+  /** Whether the cash debt has been collected. */
+  cash_debt_settled?: boolean;
   created_at?: string;
   updated_at?: string;
 }

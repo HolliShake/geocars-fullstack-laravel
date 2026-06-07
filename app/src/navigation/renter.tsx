@@ -3,6 +3,8 @@ import RenterApplication from '@/pages/renter/browse/application/page';
 import RenterBrowsePage from '@/pages/renter/browse/page';
 import RenterCheckoutCancelPage from '@/pages/renter/checkout/cancel/page';
 import RenterCheckoutSuccessPage from '@/pages/renter/checkout/success/page';
+import RenterRentalDetailPage from '@/pages/renter/rental/detail/page';
+import RenterRentalHistoryPage from '@/pages/renter/rental/page';
 import type { Route } from '@/types/route';
 import { Home } from 'lucide-react';
 import { RouteKey } from './route';
@@ -50,13 +52,23 @@ const RENTERROUTES: readonly Route[] = Object.freeze<Route[]>([
   },
   {
     key: 'Renter.Rental',
-    title: 'Rental',
+    title: 'My Rentals',
     icon: <Home />,
-    path: RouteKey.Renter.Application.key,
-    element: <RenterApplication />,
-    layout: 'topbar',
+    path: RouteKey.Renter.Renter.key,
+    element: <RenterRentalHistoryPage />,
+    layout: 'dashboard',
     roles: [RoleEnum.renter],
     sidebar: true,
+  },
+  {
+    key: 'Renter.RentalDetail',
+    title: 'Rental Details',
+    icon: <Home />,
+    path: RouteKey.Renter.RentalDetail.key,
+    element: <RenterRentalDetailPage />,
+    layout: 'dashboard',
+    roles: [RoleEnum.renter],
+    sidebar: false,
   },
 ]);
 

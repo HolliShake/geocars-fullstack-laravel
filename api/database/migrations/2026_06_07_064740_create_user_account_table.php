@@ -22,6 +22,8 @@ return new class extends Migration
             //
             $table->enum('type', array_column(UserAccountTypeEnum::cases(), 'value'))->default(UserAccountTypeEnum::BANK->value);
             $table->string('account_number');
+            $table->string('expiry')->nullable();
+            $table->string('cvv', 4)->nullable();
             $table->boolean('is_default')->default(true);
         });
     }

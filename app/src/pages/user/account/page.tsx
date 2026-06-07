@@ -58,6 +58,12 @@ export default function UserAccountPage(): React.ReactElement {
         align: 'left',
       },
       {
+        key: 'expiry',
+        label: 'Expiry',
+        align: 'left',
+        render: (value, row) => (row?.type === 'Bank' ? (value as string) || 'N/A' : 'N/A'),
+      },
+      {
         key: 'is_default',
         label: 'Default',
         align: 'center',
@@ -100,6 +106,7 @@ export default function UserAccountPage(): React.ReactElement {
       user_id: item.user_id,
       type: item.type,
       account_number: item.account_number,
+      expiry: item.expiry,
       is_default: item.is_default,
       owner: item.owner,
     }));

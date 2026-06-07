@@ -1364,6 +1364,131 @@
                 }
             }
         },
+        "\/api\/CarRental\/{id}\/finish": {
+            "post": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Finish a confirmed CarRental",
+                "description": "Marks a confirmed rental as completed, records the return date as now, computes refundable amount \/ additional charges, and \u2014 when the payment method is online \u2014 computes net payout to the renter's active UserAccount (refund minus 10% platform fee). A REFUND transaction is recorded for the net payout amount.",
+                "operationId": "finishCarRental",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Rental finished successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/FinishCarRentalResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Rental is not in confirmed status"
+                    },
+                    "404": {
+                        "description": "CarRental not found"
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental\/Debt\/Pending": {
+            "get": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Get pending rental debts",
+                "description": "Returns car rentals with unsettled cash debt. For role=user, results are limited to rentals whose company owner matches the authenticated user via car_rental.car_posting.car.user_company.user_id.",
+                "operationId": "getPendingCarRentalDebts",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental\/{id}\/collect-debt": {
+            "post": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Collect pending cash debt",
+                "description": "Marks pending cash debt as settled by collecting from the renter's default UserAccount. Uses renter identity from car_rental.user_id. For role=user, authorization uses car_rental.car_posting.car.user_company.user_id.",
+                "operationId": "collectCarRentalDebt",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Debt collected successfully"
+                    },
+                    "400": {
+                        "description": "Debt not collectible"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "CarRental not found"
+                    }
+                }
+            }
+        },
         "\/api\/Comment": {
             "get": {
                 "tags": [
@@ -4709,6 +4834,401 @@
                     }
                 }
             }
+        },
+        "\/api\/UserSubscription\/me": {
+            "get": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Get current user active subscription",
+                "description": "Returns the authenticated user's active or most recent subscription with plan and transactions.",
+                "operationId": "getMySubscription",
+                "responses": {
+                    "200": {
+                        "description": "Subscription data",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetUserSubscriptionResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "No subscription found"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/plans": {
+            "get": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "List available subscription plans",
+                "description": "Returns all active plans that users can subscribe to.",
+                "operationId": "getSubscriptionPlans",
+                "responses": {
+                    "200": {
+                        "description": "List of plans",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedPlanResponse200"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/subscribe": {
+            "post": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Create Stripe Checkout session for a subscription plan",
+                "description": "Creates a pending UserSubscription and a Stripe Checkout session. Redirect the user to checkout_url to complete payment.",
+                "operationId": "subscribeToplan",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "plan_id",
+                                    "success_url",
+                                    "cancel_url"
+                                ],
+                                "properties": {
+                                    "plan_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "success_url": {
+                                        "type": "string",
+                                        "example": "https:\/\/example.com\/subscription\/success"
+                                    },
+                                    "cancel_url": {
+                                        "type": "string",
+                                        "example": "https:\/\/example.com\/subscription"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stripe Checkout URL returned",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "checkout_url": {
+                                            "type": "string",
+                                            "example": "https:\/\/checkout.stripe.com\/..."
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error"
+                    },
+                    "503": {
+                        "description": "Stripe not configured"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/confirm": {
+            "post": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Confirm Stripe payment and activate subscription",
+                "description": "Verifies the Stripe Checkout session, activates the subscription, records a payment transaction, and sets expires_at to 30 days from now.",
+                "operationId": "confirmSubscription",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id",
+                                    "subscription_id"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    },
+                                    "subscription_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subscription activated",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetUserSubscriptionResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Session does not belong to this user"
+                    },
+                    "422": {
+                        "description": "Payment not completed or invalid session"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/{id}\/renew": {
+            "post": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Renew a subscription via Stripe Checkout",
+                "description": "Creates a new Stripe Checkout session to renew the subscription. After payment, call \/confirm with the new session_id and the same subscription_id.",
+                "operationId": "renewSubscription",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "success_url",
+                                    "cancel_url"
+                                ],
+                                "properties": {
+                                    "success_url": {
+                                        "type": "string",
+                                        "example": "https:\/\/example.com\/subscription\/success"
+                                    },
+                                    "cancel_url": {
+                                        "type": "string",
+                                        "example": "https:\/\/example.com\/subscription"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Stripe Checkout URL returned",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "checkout_url": {
+                                            "type": "string"
+                                        },
+                                        "session_id": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/{id}\/confirm-renewal": {
+            "post": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Confirm Stripe renewal payment",
+                "description": "Verifies the renewal Stripe Checkout session, extends expires_at by 30 days, and records a RENEWAL transaction.",
+                "operationId": "confirmSubscriptionRenewal",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Subscription renewed",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetUserSubscriptionResponse200"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/{id}\/cancel": {
+            "post": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "Cancel a subscription",
+                "description": "Marks the subscription as cancelled. It remains accessible until expires_at.",
+                "operationId": "cancelSubscription",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Subscription cancelled",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetUserSubscriptionResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Not your subscription"
+                    },
+                    "422": {
+                        "description": "Already cancelled"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "\/api\/UserSubscription\/{id}\/transactions": {
+            "get": {
+                "tags": [
+                    "UserSubscription"
+                ],
+                "summary": "List transactions for a subscription",
+                "description": "Returns all payment\/renewal\/refund transactions for the given subscription.",
+                "operationId": "getSubscriptionTransactions",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Transaction list",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedSubscriptionTransactionResponse200"
+                                }
+                            }
+                        }
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
         }
     },
     "components": {
@@ -5422,6 +5942,30 @@
                         "example": "TXN123456",
                         "nullable": true
                     },
+                    "refundable_amount": {
+                        "description": "Computed refundable amount based on rental status and return timing.",
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "additional_charges": {
+                        "description": "Computed additional charges, e.g., late return penalties.",
+                        "type": "number",
+                        "format": "float",
+                        "example": 0
+                    },
+                    "cash_debt": {
+                        "description": "Outstanding cash owed by the renter. Set when confirmed with cash payment; null for online or unsettled.",
+                        "type": "number",
+                        "format": "float",
+                        "example": 1500,
+                        "nullable": true
+                    },
+                    "cash_debt_settled": {
+                        "description": "Whether the cash debt has been collected.",
+                        "type": "boolean",
+                        "example": false
+                    },
                     "created_at": {
                         "type": "string",
                         "format": "date-time",
@@ -5520,6 +6064,59 @@
                     "success": {
                         "type": "boolean",
                         "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "FinishCarRentalResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "properties": {
+                            "rental": {
+                                "$ref": "#\/components\/schemas\/CarRental"
+                            },
+                            "refundable_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 500
+                            },
+                            "additional_charges": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 0
+                            },
+                            "platform_fee_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 50
+                            },
+                            "net_payout_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 450
+                            },
+                            "refund_transaction": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#\/components\/schemas\/Transaction"
+                                    }
+                                ],
+                                "nullable": true
+                            },
+                            "payout_account": {
+                                "oneOf": [
+                                    {
+                                        "$ref": "#\/components\/schemas\/UserAccount"
+                                    }
+                                ],
+                                "nullable": true
+                            }
+                        },
+                        "type": "object"
                     }
                 },
                 "type": "object"
@@ -6972,6 +7569,18 @@
                         "type": "string",
                         "example": "0123456789"
                     },
+                    "expiry": {
+                        "description": "Required when type is Bank.",
+                        "type": "string",
+                        "example": "12\/30",
+                        "nullable": true
+                    },
+                    "cvv": {
+                        "description": "Required when type is Bank.",
+                        "type": "string",
+                        "example": "123",
+                        "nullable": true
+                    },
                     "is_default": {
                         "type": "boolean",
                         "example": true
@@ -7864,6 +8473,10 @@
         {
             "name": "UserRequirement",
             "description": "UserRequirement"
+        },
+        {
+            "name": "UserSubscription",
+            "description": "UserSubscription"
         }
     ]
 }

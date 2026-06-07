@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
@@ -153,10 +155,27 @@ class UserSubscription extends Model
     protected $fillable = [
         'user_id',
         'plan_id',
-        'status', // active | inactive
+        'status', // active | inactive | cancelled
+        'expires_at',
+        'stripe_session_id',
     ];
 
-    function plan() {
+    protected $casts = [
+        'expires_at' => 'datetime',
+    ];
+
+    public function plan(): BelongsTo
+    {
         return $this->belongsTo(Plan::class);
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function transactions(): HasMany
+    {
+        return $this->hasMany(SubscriptionTransaction::class);
     }
 }

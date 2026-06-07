@@ -1,1388 +1,1093 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>GeoCars — Installation & Run Guide</title>
-        <meta
-            name="description"
-            content="Single-file documentation for installing, configuring, and running the GeoCars full-stack Laravel, React, and Stripe services."
-        />
-        <script src="https://cdn.tailwindcss.com"></script>
-        <script>
-            tailwind.config = {
-                theme: {
-                    extend: {
-                        colors: {
-                            brand: {
-                                400: "#55b7ff",
-                                500: "#2897ff",
-                                600: "#1178ff",
-                            },
-                        },
-                        boxShadow: {
-                            glow: "0 10px 40px rgba(2, 8, 23, 0.35)",
-                        },
-                    },
-                },
-            };
-        </script>
-        <style>
-            html {
-                scroll-behavior: smooth;
-            }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GeoCars — Installation & Run Guide</title>
+    <meta
+      name="description"
+      content="Single-file documentation for installing, configuring, and running the GeoCars full-stack Laravel, React, and Stripe services."
+    />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              brand: {
+                400: '#55b7ff',
+                500: '#2897ff',
+                600: '#1178ff',
+              },
+            },
+            boxShadow: {
+              glow: '0 10px 40px rgba(2, 8, 23, 0.35)',
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      html {
+        scroll-behavior: smooth;
+      }
 
-            body {
-                background:
-                    radial-gradient(
-                        circle at top,
-                        rgba(37, 99, 235, 0.18),
-                        transparent 30%
-                    ),
-                    radial-gradient(
-                        circle at right,
-                        rgba(14, 165, 233, 0.12),
-                        transparent 25%
-                    ),
-                    linear-gradient(
-                        180deg,
-                        #020617 0%,
-                        #0f172a 35%,
-                        #111827 100%
-                    );
-            }
+      body {
+        background:
+          radial-gradient(circle at top, rgba(37, 99, 235, 0.18), transparent 30%),
+          radial-gradient(circle at right, rgba(14, 165, 233, 0.12), transparent 25%),
+          linear-gradient(180deg, #020617 0%, #0f172a 35%, #111827 100%);
+      }
 
-            .glass {
-                backdrop-filter: blur(14px);
-                -webkit-backdrop-filter: blur(14px);
-            }
+      .glass {
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
 
-            .grid-overlay {
-                background-image:
-                    linear-gradient(
-                        rgba(148, 163, 184, 0.08) 1px,
-                        transparent 1px
-                    ),
-                    linear-gradient(
-                        90deg,
-                        rgba(148, 163, 184, 0.08) 1px,
-                        transparent 1px
-                    );
-                background-size: 28px 28px;
-                mask-image: linear-gradient(to bottom, white, transparent);
-                -webkit-mask-image: linear-gradient(
-                    to bottom,
-                    white,
-                    transparent
-                );
-            }
-        </style>
-    </head>
-    <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
-        <div class="fixed inset-0 -z-10 grid-overlay"></div>
+      .grid-overlay {
+        background-image:
+          linear-gradient(rgba(148, 163, 184, 0.08) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(148, 163, 184, 0.08) 1px, transparent 1px);
+        background-size: 28px 28px;
+        mask-image: linear-gradient(to bottom, white, transparent);
+        -webkit-mask-image: linear-gradient(to bottom, white, transparent);
+      }
+    </style>
+  </head>
+  <body class="min-h-screen bg-slate-950 text-slate-100 antialiased">
+    <div class="fixed inset-0 -z-10 grid-overlay"></div>
 
-        <header
-            class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 glass"
-        >
+    <header class="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 glass">
+      <div class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8">
+        <a href="#top" class="flex items-center gap-3">
+          <div
+            class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-cyan-300 text-slate-950 shadow-glow"
+          >
+            <span class="text-lg font-black">G</span>
+          </div>
+          <div>
+            <p class="text-sm font-semibold tracking-[0.25em] text-brand-400">GEOCARS</p>
+            <p class="text-xs text-slate-400">Install & Run Documentation</p>
+          </div>
+        </a>
+        <nav class="hidden gap-5 text-sm text-slate-300 lg:flex">
+          <a class="transition hover:text-white" href="#overview">Overview</a>
+          <a class="transition hover:text-white" href="#docker">Docker</a>
+          <a class="transition hover:text-white" href="#local">Local Dev</a>
+          <a class="transition hover:text-white" href="#mobile">Mobile</a>
+          <a class="transition hover:text-white" href="#environment">Environment</a>
+          <a class="transition hover:text-white" href="#stripe">Stripe</a>
+          <a class="transition hover:text-white" href="#troubleshooting">Troubleshooting</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="top" class="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pt-14">
+      <section
+        class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow sm:p-10 lg:p-14"
+      >
+        <div class="grid gap-10 lg:grid-cols-[1.3fr_0.7fr] lg:items-center">
+          <div>
             <div
-                class="mx-auto flex max-w-7xl items-center justify-between px-4 py-4 sm:px-6 lg:px-8"
+              class="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-400/20 bg-brand-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-400"
             >
-                <a href="#top" class="flex items-center gap-3">
-                    <div
-                        class="flex h-10 w-10 items-center justify-center rounded-2xl bg-gradient-to-br from-brand-400 to-cyan-300 text-slate-950 shadow-glow"
-                    >
-                        <span class="text-lg font-black">G</span>
-                    </div>
-                    <div>
-                        <p
-                            class="text-sm font-semibold tracking-[0.25em] text-brand-400"
-                        >
-                            GEOCARS
-                        </p>
-                        <p class="text-xs text-slate-400">
-                            Install & Run Documentation
-                        </p>
-                    </div>
-                </a>
-                <nav class="hidden gap-5 text-sm text-slate-300 lg:flex">
-                    <a class="transition hover:text-white" href="#overview"
-                        >Overview</a
-                    >
-                    <a class="transition hover:text-white" href="#docker"
-                        >Docker</a
-                    >
-                    <a class="transition hover:text-white" href="#local"
-                        >Local Dev</a
-                    >
-                    <a class="transition hover:text-white" href="#environment"
-                        >Environment</a
-                    >
-                    <a class="transition hover:text-white" href="#stripe"
-                        >Stripe</a
-                    >
-                    <a
-                        class="transition hover:text-white"
-                        href="#troubleshooting"
-                        >Troubleshooting</a
-                    >
-                </nav>
+              Laravel API + React App + Stripe Service + Expo Mobile
             </div>
-        </header>
-
-        <main
-            id="top"
-            class="mx-auto max-w-7xl px-4 pb-24 pt-10 sm:px-6 lg:px-8 lg:pt-14"
-        >
-            <section
-                class="overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow sm:p-10 lg:p-14"
+            <h1
+              class="max-w-4xl text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl"
             >
-                <div
-                    class="grid gap-10 lg:grid-cols-[1.3fr_0.7fr] lg:items-center"
-                >
-                    <div>
-                        <div
-                            class="mb-4 inline-flex items-center gap-2 rounded-full border border-brand-400/20 bg-brand-500/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.22em] text-brand-400"
-                        >
-                            Laravel API + React App + Stripe Service
-                        </div>
-                        <h1
-                            class="max-w-4xl text-4xl font-black leading-tight text-white sm:text-5xl lg:text-6xl"
-                        >
-                            Run <span class="text-brand-400">GeoCars</span> with
-                            confidence.
-                        </h1>
-                        <p
-                            class="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg"
-                        >
-                            This guide was built from the real repository
-                            structure in
-                            <code
-                                class="rounded bg-white/10 px-2 py-1 text-slate-100"
-                                >api/</code
-                            >,
-                            <code
-                                class="rounded bg-white/10 px-2 py-1 text-slate-100"
-                                >app/</code
-                            >, and
-                            <code
-                                class="rounded bg-white/10 px-2 py-1 text-slate-100"
-                                >stripe/</code
-                            >. It reflects the actual scripts, ports, Docker
-                            services, environment variables, authentication
-                            setup, and Stripe payment flow wired into this
-                            codebase.
-                        </p>
-                        <div class="mt-8 flex flex-wrap gap-3">
-                            <a
-                                href="#docker"
-                                class="inline-flex items-center justify-center rounded-2xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-400"
-                                >Start with Docker</a
-                            >
-                            <a
-                                href="#local"
-                                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                                >Run Locally</a
-                            >
-                            <a
-                                href="#environment"
-                                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
-                                >Review Env Vars</a
-                            >
-                        </div>
-                    </div>
+              Run <span class="text-brand-400">GeoCars</span> with confidence.
+            </h1>
+            <p class="mt-6 max-w-3xl text-base leading-8 text-slate-300 sm:text-lg">
+              This guide was built from the real repository structure in
+              <code class="rounded bg-white/10 px-2 py-1 text-slate-100">api/</code>,
+              <code class="rounded bg-white/10 px-2 py-1 text-slate-100">app/</code>, and
+              <code class="rounded bg-white/10 px-2 py-1 text-slate-100">stripe/</code>. It reflects
+              the actual scripts, ports, Docker services, environment variables, authentication
+              setup, and Stripe payment flow wired into this codebase.
+            </p>
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a
+                href="#docker"
+                class="inline-flex items-center justify-center rounded-2xl bg-brand-500 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-400"
+                >Start with Docker</a
+              >
+              <a
+                href="#local"
+                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                >Run Locally</a
+              >
+              <a
+                href="#environment"
+                class="inline-flex items-center justify-center rounded-2xl border border-white/15 bg-white/5 px-5 py-3 text-sm font-semibold text-slate-100 transition hover:bg-white/10"
+                >Review Env Vars</a
+              >
+            </div>
+          </div>
 
-                    <div class="grid gap-4">
-                        <div
-                            class="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5"
-                        >
-                            <p
-                                class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200"
-                            >
-                                Recommended
-                            </p>
-                            <p class="mt-2 text-xl font-bold text-white">
-                                Docker Compose
-                            </p>
-                            <p
-                                class="mt-2 text-sm leading-7 text-emerald-100/90"
-                            >
-                                Fastest way to run frontend, backend, Stripe,
-                                MySQL, and phpMyAdmin together.
-                            </p>
-                        </div>
-                        <div
-                            class="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5"
-                        >
-                            <p
-                                class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200"
-                            >
-                                Actual frontend dev port
-                            </p>
-                            <p class="mt-2 text-xl font-bold text-white">
-                                http://localhost:3001
-                            </p>
-                            <p class="mt-2 text-sm leading-7 text-cyan-100/90">
-                                The Vite app is configured for port
-                                <strong>3001</strong>, not 3000.
-                            </p>
-                        </div>
-                        <div
-                            class="rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5"
-                        >
-                            <p
-                                class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200"
-                            >
-                                Important caveat
-                            </p>
-                            <p class="mt-2 text-xl font-bold text-white">
-                                <code>VITE_APP_API_URL</code> matters
-                            </p>
-                            <p class="mt-2 text-sm leading-7 text-amber-100/90">
-                                The frontend Axios client reads
-                                <code>VITE_APP_API_URL</code>. If API calls
-                                fail, check that variable before anything else.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+          <div class="grid gap-4">
+            <div class="rounded-3xl border border-emerald-400/20 bg-emerald-400/10 p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-emerald-200">
+                Recommended
+              </p>
+              <p class="mt-2 text-xl font-bold text-white">Docker Compose</p>
+              <p class="mt-2 text-sm leading-7 text-emerald-100/90">
+                Fastest way to run frontend, backend, Stripe, MySQL, and phpMyAdmin together.
+              </p>
+            </div>
+            <div class="rounded-3xl border border-cyan-400/20 bg-cyan-400/10 p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-cyan-200">
+                Actual frontend dev port
+              </p>
+              <p class="mt-2 text-xl font-bold text-white">http://localhost:3001</p>
+              <p class="mt-2 text-sm leading-7 text-cyan-100/90">
+                The Vite app is configured for port
+                <strong>3001</strong>, not 3000.
+              </p>
+            </div>
+            <div class="rounded-3xl border border-amber-400/20 bg-amber-400/10 p-5">
+              <p class="text-xs font-semibold uppercase tracking-[0.2em] text-amber-200">
+                Important caveat
+              </p>
+              <p class="mt-2 text-xl font-bold text-white"><code>VITE_APP_API_URL</code> matters</p>
+              <p class="mt-2 text-sm leading-7 text-amber-100/90">
+                The frontend Axios client reads
+                <code>VITE_APP_API_URL</code>. If API calls fail, check that variable before
+                anything else.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
 
-            <section id="overview" class="mt-16">
-                <div class="mb-8">
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                    >
-                        Overview
-                    </p>
-                    <h2 class="mt-2 text-3xl font-black text-white sm:text-4xl">
-                        What is in this repository?
-                    </h2>
-                </div>
+      <section id="overview" class="mt-16">
+        <div class="mb-8">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">Overview</p>
+          <h2 class="mt-2 text-3xl font-black text-white sm:text-4xl">
+            What is in this repository?
+          </h2>
+        </div>
 
-                <div class="grid gap-6 lg:grid-cols-3">
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 inline-flex rounded-2xl bg-brand-500/15 px-3 py-1 text-xs font-semibold text-brand-400"
-                        >
-                            api/
-                        </div>
-                        <h3 class="text-2xl font-bold text-white">
-                            Laravel 12 API
-                        </h3>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            Handles authentication, plans, users, companies,
-                            cars, rentals, requirements, comments, reactions,
-                            OpenAPI generation, Passport OAuth, and payment
-                            recording.
-                        </p>
-                        <ul class="mt-5 space-y-2 text-sm text-slate-300">
-                            <li>• Requires PHP 8.2+</li>
-                            <li>
-                                • Uses Laravel Passport for
-                                <code>auth:api</code>
-                            </li>
-                            <li>
-                                • Exposes Stripe endpoints under
-                                <code>/api/Stripe/*</code>
-                            </li>
-                        </ul>
-                    </article>
-
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 inline-flex rounded-2xl bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-300"
-                        >
-                            app/
-                        </div>
-                        <h3 class="text-2xl font-bold text-white">
-                            React 19 + TypeScript
-                        </h3>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            Vite-based frontend with Tailwind CSS, Radix UI,
-                            React Router, React Query, Zustand, and an
-                            Orval-generated API client.
-                        </p>
-                        <ul class="mt-5 space-y-2 text-sm text-slate-300">
-                            <li>• Runs on <code>3001</code></li>
-                            <li>
-                                • Reads API base URL from
-                                <code>VITE_APP_API_URL</code>
-                            </li>
-                            <li>
-                                • Proxies Stripe checkout in dev when needed
-                            </li>
-                        </ul>
-                    </article>
-
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 inline-flex rounded-2xl bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300"
-                        >
-                            stripe/
-                        </div>
-                        <h3 class="text-2xl font-bold text-white">
-                            Node Stripe Gateway
-                        </h3>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            An Express service that creates Checkout Sessions,
-                            verifies Stripe webhooks, and can forward validated
-                            payment data to Laravel.
-                        </p>
-                        <ul class="mt-5 space-y-2 text-sm text-slate-300">
-                            <li>• Runs on <code>5000</code></li>
-                            <li>• Needs Stripe secret and webhook secret</li>
-                            <li>• Helps local payment development</li>
-                        </ul>
-                    </article>
-                </div>
-            </section>
-
-            <section class="mt-16 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
-                <div
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        Service map
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        Ports & URLs
-                    </h2>
-                    <div
-                        class="mt-6 overflow-hidden rounded-2xl border border-white/10"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-white/10 text-left text-sm"
-                        >
-                            <thead class="bg-white/5 text-slate-200">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Service
-                                    </th>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Port
-                                    </th>
-                                    <th class="px-4 py-3 font-semibold">URL</th>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Purpose
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="divide-y divide-white/10 text-slate-300"
-                            >
-                                <tr>
-                                    <td class="px-4 py-3">Frontend</td>
-                                    <td class="px-4 py-3">3001</td>
-                                    <td class="px-4 py-3">
-                                        http://localhost:3001
-                                    </td>
-                                    <td class="px-4 py-3">React Vite app</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">Backend API</td>
-                                    <td class="px-4 py-3">8000</td>
-                                    <td class="px-4 py-3">
-                                        http://localhost:8000
-                                    </td>
-                                    <td class="px-4 py-3">Laravel API</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">Stripe Service</td>
-                                    <td class="px-4 py-3">5000</td>
-                                    <td class="px-4 py-3">
-                                        http://localhost:5000
-                                    </td>
-                                    <td class="px-4 py-3">
-                                        Checkout + webhooks
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">MySQL</td>
-                                    <td class="px-4 py-3">3306</td>
-                                    <td class="px-4 py-3">localhost:3306</td>
-                                    <td class="px-4 py-3">Database</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">phpMyAdmin</td>
-                                    <td class="px-4 py-3">8080</td>
-                                    <td class="px-4 py-3">
-                                        http://localhost:8080
-                                    </td>
-                                    <td class="px-4 py-3">DB admin UI</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <aside
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        Detected stack
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        Core technologies
-                    </h2>
-                    <div class="mt-6 flex flex-wrap gap-2">
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Laravel 12</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Passport</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >MySQL 8</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >React 19</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >TypeScript</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Vite</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Tailwind CSS</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >React Query</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Zustand</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Express</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Stripe</span
-                        >
-                        <span
-                            class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
-                            >Orval</span
-                        >
-                    </div>
-                </aside>
-            </section>
-
-            <section
-                id="docker"
-                class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+        <div class="grid gap-6 lg:grid-cols-3">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div
+              class="mb-4 inline-flex rounded-2xl bg-brand-500/15 px-3 py-1 text-xs font-semibold text-brand-400"
             >
-                <p
-                    class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                >
-                    Recommended path
-                </p>
-                <h2 class="mt-2 text-3xl font-black text-white">
-                    Run everything with Docker Compose
-                </h2>
-                <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-                    The repository ships with Docker definitions for the
-                    frontend, backend, Stripe, MySQL, phpMyAdmin, and mobile
-                    app. For most people, Docker is the quickest path to a
-                    working development environment.
-                </p>
+              api/
+            </div>
+            <h3 class="text-2xl font-bold text-white">Laravel 12 API</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              Handles authentication, plans, users, companies, cars, rentals, requirements,
+              comments, reactions, OpenAPI generation, Passport OAuth, and payment recording.
+            </p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-300">
+              <li>• Requires PHP 8.2+</li>
+              <li>
+                • Uses Laravel Passport for
+                <code>auth:api</code>
+              </li>
+              <li>
+                • Exposes Stripe endpoints under
+                <code>/api/Stripe/*</code>
+              </li>
+            </ul>
+          </article>
 
-                <div class="mt-8 grid gap-6 lg:grid-cols-2">
-                    <div
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <div
-                            class="mb-3 flex items-center justify-between gap-3"
-                        >
-                            <h3 class="text-lg font-bold text-white">
-                                1) Prepare environment files
-                            </h3>
-                            <button
-                                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="docker-env"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="docker-env"
-                            class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
-                        ><code>cd /home/andydevs69420/Documents/geocars-fullstack-laravel
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div
+              class="mb-4 inline-flex rounded-2xl bg-cyan-500/15 px-3 py-1 text-xs font-semibold text-cyan-300"
+            >
+              app/
+            </div>
+            <h3 class="text-2xl font-bold text-white">React 19 + TypeScript</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              Vite-based frontend with Tailwind CSS, Radix UI, React Router, React Query, Zustand,
+              and an Orval-generated API client.
+            </p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-300">
+              <li>• Runs on <code>3001</code></li>
+              <li>
+                • Reads API base URL from
+                <code>VITE_APP_API_URL</code>
+              </li>
+              <li>• Proxies Stripe checkout in dev when needed</li>
+            </ul>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div
+              class="mb-4 inline-flex rounded-2xl bg-emerald-500/15 px-3 py-1 text-xs font-semibold text-emerald-300"
+            >
+              stripe/
+            </div>
+            <h3 class="text-2xl font-bold text-white">Node Stripe Gateway</h3>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              An Express service that creates Checkout Sessions, verifies Stripe webhooks, and can
+              forward validated payment data to Laravel.
+            </p>
+            <ul class="mt-5 space-y-2 text-sm text-slate-300">
+              <li>• Runs on <code>5000</code></li>
+              <li>• Needs Stripe secret and webhook secret</li>
+              <li>• Helps local payment development</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section class="mt-16 grid gap-6 lg:grid-cols-[1.2fr_0.8fr]">
+        <div class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">Service map</p>
+          <h2 class="mt-2 text-2xl font-black text-white">Ports & URLs</h2>
+          <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">
+            <table class="min-w-full divide-y divide-white/10 text-left text-sm">
+              <thead class="bg-white/5 text-slate-200">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Service</th>
+                  <th class="px-4 py-3 font-semibold">Port</th>
+                  <th class="px-4 py-3 font-semibold">URL</th>
+                  <th class="px-4 py-3 font-semibold">Purpose</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/10 text-slate-300">
+                <tr>
+                  <td class="px-4 py-3">Frontend</td>
+                  <td class="px-4 py-3">3001</td>
+                  <td class="px-4 py-3">http://localhost:3001</td>
+                  <td class="px-4 py-3">React Vite app</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Backend API</td>
+                  <td class="px-4 py-3">8000</td>
+                  <td class="px-4 py-3">http://localhost:8000</td>
+                  <td class="px-4 py-3">Laravel API</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Stripe Service</td>
+                  <td class="px-4 py-3">5000</td>
+                  <td class="px-4 py-3">http://localhost:5000</td>
+                  <td class="px-4 py-3">Checkout + webhooks</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">MySQL</td>
+                  <td class="px-4 py-3">3306</td>
+                  <td class="px-4 py-3">localhost:3306</td>
+                  <td class="px-4 py-3">Database</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">phpMyAdmin</td>
+                  <td class="px-4 py-3">8080</td>
+                  <td class="px-4 py-3">http://localhost:8080</td>
+                  <td class="px-4 py-3">DB admin UI</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Mobile (Expo dev)</td>
+                  <td class="px-4 py-3">8081</td>
+                  <td class="px-4 py-3">http://localhost:8081</td>
+                  <td class="px-4 py-3">React Native app development server</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <aside class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">Stack</p>
+          <h2 class="mt-2 text-2xl font-black text-white">Core technologies</h2>
+          <div class="mt-6 flex flex-wrap gap-2">
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Laravel 12</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Passport</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >MySQL 8</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >React 19</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >TypeScript</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Vite</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Tailwind CSS</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >React Query</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Zustand</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Express</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Stripe</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Orval</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Expo</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >React Native</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >QR Device Bind</span
+            >
+            <span
+              class="rounded-full border border-white/10 bg-white/5 px-3 py-2 text-sm text-slate-200"
+              >Background GPS</span
+            >
+          </div>
+        </aside>
+      </section>
+
+      <section
+        id="docker"
+        class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+      >
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">
+          Recommended path
+        </p>
+        <h2 class="mt-2 text-3xl font-black text-white">Run everything with Docker Compose</h2>
+        <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+          The repository ships with Docker definitions for the frontend, backend, Stripe, MySQL,
+          phpMyAdmin, and mobile app. For most people, Docker is the quickest path to a working
+          development environment.
+        </p>
+
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">1) Prepare environment files</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="docker-env"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="docker-env"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>cd /home/andydevs69420/Documents/geocars-fullstack-laravel
 cp api/.env.example api/.env
 cp app/.env.example app/.env
 cp stripe/.env.example stripe/.env</code></pre>
-                    </div>
+          </div>
 
-                    <div
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <div
-                            class="mb-3 flex items-center justify-between gap-3"
-                        >
-                            <h3 class="text-lg font-bold text-white">
-                                2) Build and start services
-                            </h3>
-                            <button
-                                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="docker-up"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="docker-up"
-                            class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
-                        ><code>docker compose up --build -d</code></pre>
-                    </div>
+          <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">2) Build and start services</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="docker-up"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="docker-up"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>docker compose up --build -d</code></pre>
+          </div>
 
-                    <div
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5 lg:col-span-2"
-                    >
-                        <div
-                            class="mb-3 flex items-center justify-between gap-3"
-                        >
-                            <h3 class="text-lg font-bold text-white">
-                                3) First-time Laravel setup
-                            </h3>
-                            <button
-                                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="docker-laravel"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="docker-laravel"
-                            class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
-                        ><code>docker compose exec backend php artisan key:generate
+          <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-5 lg:col-span-2">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">3) First-time Laravel setup</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="docker-laravel"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="docker-laravel"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>docker compose exec backend php artisan key:generate
 docker compose exec backend php artisan migrate --seed
 docker compose exec backend php artisan passport:install</code></pre>
-                    </div>
-                </div>
+          </div>
+        </div>
 
-                <div
-                    class="mt-8 rounded-3xl border border-amber-300/15 bg-amber-400/10 p-5 text-sm leading-7 text-amber-50"
-                >
-                    <p class="font-semibold text-amber-200">
-                        Important Docker note
-                    </p>
-                    <p class="mt-2">
-                        The frontend code uses <code>VITE_APP_API_URL</code>,
-                        but the current compose file sets
-                        <code>REACT_APP_API_URL</code> for the frontend service.
-                        If API requests fail in Docker, define
-                        <code>VITE_APP_API_URL</code> in
-                        <code>app/.env</code> or update the compose service env.
-                    </p>
-                </div>
-            </section>
+        <div
+          class="mt-8 rounded-3xl border border-amber-300/15 bg-amber-400/10 p-5 text-sm leading-7 text-amber-50"
+        >
+          <p class="font-semibold text-amber-200">Important Docker note</p>
+          <p class="mt-2">
+            The frontend code uses <code>VITE_APP_API_URL</code>, but the current compose file sets
+            <code>REACT_APP_API_URL</code> for the frontend service. If API requests fail in Docker,
+            define <code>VITE_APP_API_URL</code> in <code>app/.env</code> or update the compose
+            service env.
+          </p>
+        </div>
+      </section>
 
-            <section id="local" class="mt-16">
-                <div class="mb-8">
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                    >
-                        Alternative path
-                    </p>
-                    <h2 class="mt-2 text-3xl font-black text-white">
-                        Run the services locally
-                    </h2>
-                    <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
-                        This path is useful when you want to work on the code in
-                        separate terminals, avoid containers, or debug the
-                        frontend, backend, and Stripe gateway independently.
-                    </p>
-                </div>
+      <section
+        id="mobile"
+        class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+      >
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">New feature</p>
+        <h2 class="mt-2 text-3xl font-black text-white">Mobile QR binding + location tracking</h2>
+        <p class="mt-4 max-w-4xl text-sm leading-7 text-slate-300">
+          The mobile app now includes an authenticated renter flow with QR-based rental binding,
+          offline-safe queueing, background GPS tracking, and an interactive map with route
+          guidance.
+        </p>
 
-                <div class="grid gap-6 xl:grid-cols-3">
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 flex min-w-0 items-start justify-between gap-3"
-                        >
-                            <h3
-                                class="min-w-0 flex-1 text-xl font-bold text-white"
-                            >
-                                Backend — <code>api/</code>
-                            </h3>
-                            <button
-                                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="local-api"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="local-api"
-                            class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
-                        ><code>cd api
+        <div class="mt-8 grid gap-6 xl:grid-cols-2">
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">User flow</h3>
+            <ol class="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+              <li><strong>1.</strong> User signs in on mobile using API login.</li>
+              <li>
+                <strong>2.</strong> App opens scanner and reads a QR payload containing
+                <code>{"car_rental_id":number,"user_id":number}</code>.
+              </li>
+              <li>
+                <strong>3.</strong> If online, the app binds the generated device identifier to a
+                rental via <code>POST /api/Device</code>.
+              </li>
+              <li>
+                <strong>4.</strong> If offline, the binding is stored locally in SQLite and synced
+                on resume.
+              </li>
+              <li>
+                <strong>5.</strong> GPS tracking starts and sends updates to
+                <code>POST /api/DeviceLocation</code>.
+              </li>
+              <li>
+                <strong>6.</strong> Map tab shows live position, route preview, distance, and ETA.
+              </li>
+            </ol>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">Run mobile locally</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="local-mobile"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="local-mobile"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>cd mobile
+npm install
+npx expo start</code></pre>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li>• Android: <code>npm run android</code></li>
+              <li>• iOS: <code>npm run ios</code></li>
+              <li>• Web: <code>npm run web</code></li>
+            </ul>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              Set API host in <code>mobile/src/lib/api.ts</code>
+              (<code>API_BASE</code>) based on target:
+              <code>10.0.2.2</code> for Android emulator, <code>127.0.0.1</code> for iOS simulator,
+              or your LAN IP for physical devices.
+            </p>
+          </article>
+        </div>
+
+        <div class="mt-6 grid gap-6 xl:grid-cols-2">
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Mobile permissions in app config</h3>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li>• Camera permission for QR scanning</li>
+              <li>• Foreground + background location permission</li>
+              <li>• Android foreground service for continuous tracking</li>
+              <li>• iOS background modes for location and fetch</li>
+            </ul>
+          </article>
+
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Key mobile routes</h3>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li>• <code>/login</code> — token login screen</li>
+              <li>• <code>/scan</code> — QR scanner and bind flow</li>
+              <li>• <code>/</code> — tracking dashboard with status and sync controls</li>
+              <li>• <code>/map</code> — live map + route planner</li>
+            </ul>
+          </article>
+        </div>
+      </section>
+
+      <section id="local" class="mt-16">
+        <div class="mb-8">
+          <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">
+            Alternative path
+          </p>
+          <h2 class="mt-2 text-3xl font-black text-white">Run the services locally</h2>
+          <p class="mt-4 max-w-3xl text-sm leading-7 text-slate-300">
+            This path is useful when you want to work on the code in separate terminals, avoid
+            containers, or debug the frontend, backend, and Stripe gateway independently.
+          </p>
+        </div>
+
+        <div class="grid gap-6 xl:grid-cols-3">
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div class="mb-4 flex min-w-0 items-start justify-between gap-3">
+              <h3 class="min-w-0 flex-1 text-xl font-bold text-white">
+                Backend — <code>api/</code>
+              </h3>
+              <button
+                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="local-api"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="local-api"
+              class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
+            ><code>cd api
 composer install
 cp .env.example .env
 php artisan key:generate
 php artisan migrate --seed
 php artisan passport:install
 php artisan serve --host=127.0.0.1 --port=8000</code></pre>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            Needs PHP 8.2+, Composer, and a reachable MySQL
-                            database.
-                        </p>
-                        <p class="mt-2 text-sm leading-7 text-slate-300">
-                            Useful shortcut: <code>composer dev</code> runs
-                            Laravel serve, queue listener, logs, and Vite
-                            concurrently.
-                        </p>
-                    </article>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              Needs PHP 8.2+, Composer, and a reachable MySQL database.
+            </p>
+            <p class="mt-2 text-sm leading-7 text-slate-300">
+              Useful shortcut: <code>composer dev</code> runs Laravel serve, queue listener, logs,
+              and Vite concurrently.
+            </p>
+          </article>
 
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 flex min-w-0 items-start justify-between gap-3"
-                        >
-                            <h3
-                                class="min-w-0 flex-1 text-xl font-bold text-white"
-                            >
-                                Frontend — <code>app/</code>
-                            </h3>
-                            <button
-                                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="local-app"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="local-app"
-                            class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
-                        ><code>cd app
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div class="mb-4 flex min-w-0 items-start justify-between gap-3">
+              <h3 class="min-w-0 flex-1 text-xl font-bold text-white">
+                Frontend — <code>app/</code>
+              </h3>
+              <button
+                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="local-app"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="local-app"
+              class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
+            ><code>cd app
 npm install
 cp .env.example .env
 npm run dev</code></pre>
-                        <div
-                            class="mt-4 space-y-2 text-sm leading-7 text-slate-300"
-                        >
-                            <p>
-                                <strong>Dev URL:</strong>
-                                <code>http://127.0.0.1:3001</code>
-                            </p>
-                            <p><strong>Required env:</strong></p>
-                            <p
-                                class="break-all rounded bg-slate-950/60 px-2 py-1 font-mono text-xs text-slate-300"
-                            >
-                                VITE_APP_API_URL=http://127.0.0.1:8000
-                            </p>
-                            <p><strong>Optional Stripe env:</strong></p>
-                            <p
-                                class="break-all rounded bg-slate-950/60 px-2 py-1 font-mono text-xs text-slate-300"
-                            >
-                                VITE_APP_STRIPE_CHECKOUT_URL=http://127.0.0.1:5000
-                            </p>
-                        </div>
-                    </article>
+            <div class="mt-4 space-y-2 text-sm leading-7 text-slate-300">
+              <p>
+                <strong>Dev URL:</strong>
+                <code>http://127.0.0.1:3001</code>
+              </p>
+              <p><strong>Required env:</strong></p>
+              <p
+                class="break-all rounded bg-slate-950/60 px-2 py-1 font-mono text-xs text-slate-300"
+              >
+                VITE_APP_API_URL=http://127.0.0.1:8000
+              </p>
+              <p><strong>Optional Stripe env:</strong></p>
+              <p
+                class="break-all rounded bg-slate-950/60 px-2 py-1 font-mono text-xs text-slate-300"
+              >
+                VITE_APP_STRIPE_CHECKOUT_URL=http://127.0.0.1:5000
+              </p>
+            </div>
+          </article>
 
-                    <article
-                        class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                    >
-                        <div
-                            class="mb-4 flex min-w-0 items-start justify-between gap-3"
-                        >
-                            <h3
-                                class="min-w-0 flex-1 text-xl font-bold text-white"
-                            >
-                                Stripe — <code>stripe/</code>
-                            </h3>
-                            <button
-                                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="local-stripe"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="local-stripe"
-                            class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
-                        ><code>cd stripe
+          <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+            <div class="mb-4 flex min-w-0 items-start justify-between gap-3">
+              <h3 class="min-w-0 flex-1 text-xl font-bold text-white">
+                Stripe — <code>stripe/</code>
+              </h3>
+              <button
+                class="shrink-0 copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="local-stripe"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="local-stripe"
+              class="overflow-x-auto rounded-2xl bg-slate-950 p-4 text-sm leading-7 text-slate-200"
+            ><code>cd stripe
 npm install
 cp .env.example .env
 npm run dev</code></pre>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            <strong>Dev URL:</strong>
-                            <code>http://127.0.0.1:5000</code>
-                        </p>
-                        <p class="mt-2 text-sm leading-7 text-slate-300">
-                            Shortcut: from <code>app/</code>, you can run
-                            <code>npm run dev:with-stripe</code>
-                            to start Vite and Stripe together.
-                        </p>
-                    </article>
-                </div>
-            </section>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              <strong>Dev URL:</strong>
+              <code>http://127.0.0.1:5000</code>
+            </p>
+            <p class="mt-2 text-sm leading-7 text-slate-300">
+              Shortcut: from <code>app/</code>, you can run
+              <code>npm run dev:with-stripe</code>
+              to start Vite and Stripe together.
+            </p>
+          </article>
+        </div>
+      </section>
 
-            <section
-                id="environment"
-                class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
-            >
-                <p
-                    class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                >
-                    Configuration
-                </p>
-                <h2 class="mt-2 text-3xl font-black text-white">
-                    Environment variables you should verify
-                </h2>
-                <p class="mt-4 max-w-4xl text-sm leading-7 text-slate-300">
-                    The repo includes <code>.env.example</code> files for the
-                    API, app, and Stripe service. Based on the runtime code and
-                    configuration, these are the most important variables.
-                </p>
+      <section
+        id="environment"
+        class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+      >
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">
+          Configuration
+        </p>
+        <h2 class="mt-2 text-3xl font-black text-white">Environment variables you should verify</h2>
+        <p class="mt-4 max-w-4xl text-sm leading-7 text-slate-300">
+          The repo includes <code>.env.example</code> files for the API, app, and Stripe service.
+          Based on the runtime code and configuration, these are the most important variables.
+        </p>
 
-                <div class="mt-8 grid gap-6 xl:grid-cols-3">
-                    <article
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <h3 class="text-xl font-bold text-white">
-                            API — <code>api/.env</code>
-                        </h3>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-300">
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                APP_NAME, APP_ENV, APP_DEBUG, APP_URL
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                APP_KEY
-                                <span class="text-slate-400 font-sans"
-                                    >— via key:generate</span
-                                >
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                DB_CONNECTION=mysql
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                DB_HOST, DB_PORT, DB_DATABASE,<br />DB_USERNAME,
-                                DB_PASSWORD
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_SECRET_KEY
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_WEBHOOK_SECRET
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_GATEWAY_INGEST_SECRET
-                            </li>
-                        </ul>
-                    </article>
+        <div class="mt-8 grid gap-6 xl:grid-cols-3">
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">API — <code>api/.env</code></h3>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                APP_NAME, APP_ENV, APP_DEBUG, APP_URL
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                APP_KEY
+                <span class="text-slate-400 font-sans">— via key:generate</span>
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                DB_CONNECTION=mysql
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                DB_HOST, DB_PORT, DB_DATABASE,<br />DB_USERNAME, DB_PASSWORD
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_SECRET_KEY
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_WEBHOOK_SECRET
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_GATEWAY_INGEST_SECRET
+              </li>
+            </ul>
+          </article>
 
-                    <article
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <h3 class="text-xl font-bold text-white">
-                            Frontend — <code>app/.env</code>
-                        </h3>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-300">
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                VITE_APP_API_URL=http://127.0.0.1:8000
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                VITE_APP_STRIPE_CHECKOUT_URL=http://127.0.0.1:5000
-                                <span class="text-slate-400 font-sans"
-                                    >(optional)</span
-                                >
-                            </li>
-                        </ul>
-                        <p class="mt-4 text-sm leading-7 text-slate-300">
-                            In development, if
-                            <code>VITE_APP_STRIPE_CHECKOUT_URL</code> is
-                            missing, the app falls back to
-                            <code>/stripe-service/checkout</code> and Vite
-                            proxies it.
-                        </p>
-                    </article>
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Frontend — <code>app/.env</code></h3>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                VITE_APP_API_URL=http://127.0.0.1:8000
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                VITE_APP_STRIPE_CHECKOUT_URL=http://127.0.0.1:5000
+                <span class="text-slate-400 font-sans">(optional)</span>
+              </li>
+            </ul>
+            <p class="mt-4 text-sm leading-7 text-slate-300">
+              In development, if
+              <code>VITE_APP_STRIPE_CHECKOUT_URL</code> is missing, the app falls back to
+              <code>/stripe-service/checkout</code> and Vite proxies it.
+            </p>
+          </article>
 
-                    <article
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <h3 class="text-xl font-bold text-white">
-                            Stripe — <code>stripe/.env</code>
-                        </h3>
-                        <ul class="mt-4 space-y-2 text-sm text-slate-300">
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                PORT=5000
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                CLIENT_URL=http://127.0.0.1:3001
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_SECRET_KEY
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_WEBHOOK_SECRET
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                LARAVEL_STRIPE_INGEST_URL=http://127.0.0.1:8000
-                            </li>
-                            <li
-                                class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all"
-                            >
-                                STRIPE_GATEWAY_INGEST_SECRET
-                                <span class="text-slate-400 font-sans"
-                                    >— must match the API</span
-                                >
-                            </li>
-                        </ul>
-                    </article>
-                </div>
-            </section>
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Stripe — <code>stripe/.env</code></h3>
+            <ul class="mt-4 space-y-2 text-sm text-slate-300">
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">PORT=5000</li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                CLIENT_URL=http://127.0.0.1:3001
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_SECRET_KEY
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_WEBHOOK_SECRET
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                LARAVEL_STRIPE_INGEST_URL=http://127.0.0.1:8000
+              </li>
+              <li class="rounded-lg bg-white/5 px-3 py-2 font-mono text-xs break-all">
+                STRIPE_GATEWAY_INGEST_SECRET
+                <span class="text-slate-400 font-sans">— must match the API</span>
+              </li>
+            </ul>
+          </article>
+        </div>
+      </section>
 
-            <section class="mt-16 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-                <article
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        Seed data
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        Default accounts
-                    </h2>
-                    <p class="mt-4 text-sm leading-7 text-slate-300">
-                        The database seeders create plans, users, companies,
-                        cars, car postings, subscriptions, and requirements.
-                        These accounts are useful for local testing.
-                    </p>
-                    <div
-                        class="mt-6 overflow-hidden rounded-2xl border border-white/10"
-                    >
-                        <table
-                            class="min-w-full divide-y divide-white/10 text-left text-sm"
-                        >
-                            <thead class="bg-white/5 text-slate-200">
-                                <tr>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Role
-                                    </th>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Email / Username
-                                    </th>
-                                    <th class="px-4 py-3 font-semibold">
-                                        Password
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody
-                                class="divide-y divide-white/10 text-slate-300"
-                            >
-                                <tr>
-                                    <td class="px-4 py-3">Admin</td>
-                                    <td class="px-4 py-3">
-                                        redondophilippandrewroa.dev@gmail.com /
-                                        andydevs69420
-                                    </td>
-                                    <td class="px-4 py-3">admin@user69420</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">User</td>
-                                    <td class="px-4 py-3">
-                                        john.doe@example.com / johndoe
-                                    </td>
-                                    <td class="px-4 py-3">password123</td>
-                                </tr>
-                                <tr>
-                                    <td class="px-4 py-3">Renter</td>
-                                    <td class="px-4 py-3">
-                                        robert.garcia@rentacar.com /
-                                        robertgarcia
-                                    </td>
-                                    <td class="px-4 py-3">password123</td>
-                                </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                    <p class="mt-4 text-xs leading-6 text-amber-200">
-                        These are development seed credentials and should never
-                        be used in production.
-                    </p>
-                </article>
+      <section class="mt-16 grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
+        <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">Seed data</p>
+          <h2 class="mt-2 text-2xl font-black text-white">Default accounts</h2>
+          <p class="mt-4 text-sm leading-7 text-slate-300">
+            The database seeders create plans, users, companies, cars, car postings, subscriptions,
+            and requirements. These accounts are useful for local testing.
+          </p>
+          <div class="mt-6 overflow-hidden rounded-2xl border border-white/10">
+            <table class="min-w-full divide-y divide-white/10 text-left text-sm">
+              <thead class="bg-white/5 text-slate-200">
+                <tr>
+                  <th class="px-4 py-3 font-semibold">Role</th>
+                  <th class="px-4 py-3 font-semibold">Email / Username</th>
+                  <th class="px-4 py-3 font-semibold">Password</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/10 text-slate-300">
+                <tr>
+                  <td class="px-4 py-3">Admin</td>
+                  <td class="px-4 py-3">redondophilippandrewroa.dev@gmail.com / andydevs69420</td>
+                  <td class="px-4 py-3">admin@user69420</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">User</td>
+                  <td class="px-4 py-3">john.doe@example.com / johndoe</td>
+                  <td class="px-4 py-3">password123</td>
+                </tr>
+                <tr>
+                  <td class="px-4 py-3">Renter</td>
+                  <td class="px-4 py-3">robert.garcia@rentacar.com / robertgarcia</td>
+                  <td class="px-4 py-3">password123</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="mt-4 text-xs leading-6 text-amber-200">
+            These are development seed credentials and should never be used in production.
+          </p>
+        </article>
 
-                <article
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        Roles
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        Main application areas
-                    </h2>
-                    <div class="mt-6 grid gap-4 sm:grid-cols-3">
-                        <div
-                            class="rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-                        >
-                            <p class="text-lg font-bold text-white">Admin</p>
-                            <ul
-                                class="mt-3 space-y-2 text-sm leading-7 text-slate-300"
-                            >
-                                <li>• Dashboard</li>
-                                <li>• User configuration</li>
-                                <li>• Company configuration</li>
-                                <li>• Plan configuration</li>
-                                <li>• Requirement configuration</li>
-                            </ul>
-                        </div>
-                        <div
-                            class="rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-                        >
-                            <p class="text-lg font-bold text-white">User</p>
-                            <ul
-                                class="mt-3 space-y-2 text-sm leading-7 text-slate-300"
-                            >
-                                <li>• Dashboard</li>
-                                <li>• Car rental management</li>
-                                <li>• Car posting</li>
-                                <li>• Car management</li>
-                                <li>• Company config</li>
-                            </ul>
-                        </div>
-                        <div
-                            class="rounded-2xl border border-white/10 bg-slate-950/50 p-4"
-                        >
-                            <p class="text-lg font-bold text-white">Renter</p>
-                            <ul
-                                class="mt-3 space-y-2 text-sm leading-7 text-slate-300"
-                            >
-                                <li>• Browse listings</li>
-                                <li>• Submit applications</li>
-                                <li>• Complete checkout</li>
-                                <li>• Success/cancel return routes</li>
-                            </ul>
-                        </div>
-                    </div>
-                </article>
-            </section>
+        <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">Roles</p>
+          <h2 class="mt-2 text-2xl font-black text-white">Main application areas</h2>
+          <div class="mt-6 grid gap-4 sm:grid-cols-3">
+            <div class="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+              <p class="text-lg font-bold text-white">Admin</p>
+              <ul class="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                <li>• Dashboard</li>
+                <li>• User configuration</li>
+                <li>• Company configuration</li>
+                <li>• Plan configuration</li>
+                <li>• Requirement configuration</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+              <p class="text-lg font-bold text-white">User</p>
+              <ul class="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                <li>• Dashboard</li>
+                <li>• Car rental management</li>
+                <li>• Car posting</li>
+                <li>• Car management</li>
+                <li>• Company config</li>
+              </ul>
+            </div>
+            <div class="rounded-2xl border border-white/10 bg-slate-950/50 p-4">
+              <p class="text-lg font-bold text-white">Renter</p>
+              <ul class="mt-3 space-y-2 text-sm leading-7 text-slate-300">
+                <li>• Browse listings</li>
+                <li>• Submit applications</li>
+                <li>• Complete checkout</li>
+                <li>• Success/cancel return routes</li>
+              </ul>
+            </div>
+          </div>
+        </article>
+      </section>
 
-            <section
-                id="stripe"
-                class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
-            >
-                <p
-                    class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                >
-                    Payments
-                </p>
-                <h2 class="mt-2 text-3xl font-black text-white">
-                    How Stripe works in this repo
-                </h2>
+      <section
+        id="stripe"
+        class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+      >
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">Payments</p>
+        <h2 class="mt-2 text-3xl font-black text-white">How Stripe works in this repo</h2>
 
-                <div class="mt-8 grid gap-6 xl:grid-cols-2">
-                    <article
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <h3 class="text-xl font-bold text-white">
-                            Checkout flow
-                        </h3>
-                        <ol
-                            class="mt-4 space-y-3 text-sm leading-7 text-slate-300"
-                        >
-                            <li>
-                                <strong>1.</strong> The frontend posts to the
-                                Stripe checkout endpoint.
-                            </li>
-                            <li>
-                                <strong>2.</strong> In dev, this is usually
-                                <code>/stripe-service/checkout</code> through
-                                Vite proxying, or directly
-                                <code>http://127.0.0.1:5000/checkout</code>.
-                            </li>
-                            <li>
-                                <strong>3.</strong> The Node Stripe service
-                                creates a Checkout Session with
-                                <code>car_rental_id</code> in metadata.
-                            </li>
-                            <li>
-                                <strong>4.</strong> On success, the browser
-                                returns to the renter success page with
-                                <code>?session_id=...</code>.
-                            </li>
-                            <li>
-                                <strong>5.</strong> The frontend then calls
-                                <code>/api/Stripe/checkout/confirm</code> so
-                                Laravel can verify and record the payment
-                                transaction.
-                            </li>
-                        </ol>
-                    </article>
+        <div class="mt-8 grid gap-6 xl:grid-cols-2">
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Checkout flow</h3>
+            <ol class="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+              <li><strong>1.</strong> The frontend posts to the Stripe checkout endpoint.</li>
+              <li>
+                <strong>2.</strong> In dev, this is usually
+                <code>/stripe-service/checkout</code> through Vite proxying, or directly
+                <code>http://127.0.0.1:5000/checkout</code>.
+              </li>
+              <li>
+                <strong>3.</strong> The Node Stripe service creates a Checkout Session with
+                <code>car_rental_id</code> in metadata.
+              </li>
+              <li>
+                <strong>4.</strong> On success, the browser returns to the renter success page with
+                <code>?session_id=...</code>.
+              </li>
+              <li>
+                <strong>5.</strong> The frontend then calls
+                <code>/api/Stripe/checkout/confirm</code> so Laravel can verify and record the
+                payment transaction.
+              </li>
+            </ol>
+          </article>
 
-                    <article
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <h3 class="text-xl font-bold text-white">
-                            Webhook choices
-                        </h3>
-                        <ul
-                            class="mt-4 space-y-3 text-sm leading-7 text-slate-300"
-                        >
-                            <li>
-                                <strong>Direct to Laravel:</strong> Stripe sends
-                                events to <code>/api/Stripe/webhook</code> and
-                                Laravel verifies
-                                <code>Stripe-Signature</code> using
-                                <code>STRIPE_WEBHOOK_SECRET</code>.
-                            </li>
-                            <li>
-                                <strong>Via Node gateway:</strong> Stripe sends
-                                events to the Node service at
-                                <code>/webhook</code>, which verifies the event
-                                and forwards a smaller payload to
-                                <code>/api/Stripe/webhook/ingest</code>.
-                            </li>
-                            <li>
-                                <strong>Shared secret:</strong>
-                                <code>STRIPE_GATEWAY_INGEST_SECRET</code> must
-                                match between the API and Stripe service if you
-                                use the ingest path.
-                            </li>
-                        </ul>
-                    </article>
-                </div>
+          <article class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <h3 class="text-xl font-bold text-white">Webhook choices</h3>
+            <ul class="mt-4 space-y-3 text-sm leading-7 text-slate-300">
+              <li>
+                <strong>Direct to Laravel:</strong> Stripe sends events to
+                <code>/api/Stripe/webhook</code> and Laravel verifies
+                <code>Stripe-Signature</code> using <code>STRIPE_WEBHOOK_SECRET</code>.
+              </li>
+              <li>
+                <strong>Via Node gateway:</strong> Stripe sends events to the Node service at
+                <code>/webhook</code>, which verifies the event and forwards a smaller payload to
+                <code>/api/Stripe/webhook/ingest</code>.
+              </li>
+              <li>
+                <strong>Shared secret:</strong>
+                <code>STRIPE_GATEWAY_INGEST_SECRET</code> must match between the API and Stripe
+                service if you use the ingest path.
+              </li>
+            </ul>
+          </article>
+        </div>
 
-                <div class="mt-8 grid gap-6 lg:grid-cols-2">
-                    <div
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <div
-                            class="mb-3 flex items-center justify-between gap-3"
-                        >
-                            <h3 class="text-lg font-bold text-white">
-                                Stripe CLI → Laravel webhook
-                            </h3>
-                            <button
-                                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="stripe-laravel"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="stripe-laravel"
-                            class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
-                        ><code>stripe listen --forward-to http://127.0.0.1:8000/api/Stripe/webhook</code></pre>
-                    </div>
+        <div class="mt-8 grid gap-6 lg:grid-cols-2">
+          <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">Stripe CLI → Laravel webhook</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="stripe-laravel"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="stripe-laravel"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>stripe listen --forward-to http://127.0.0.1:8000/api/Stripe/webhook</code></pre>
+          </div>
 
-                    <div
-                        class="rounded-3xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <div
-                            class="mb-3 flex items-center justify-between gap-3"
-                        >
-                            <h3 class="text-lg font-bold text-white">
-                                Stripe CLI → Node gateway
-                            </h3>
-                            <button
-                                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
-                                data-copy-target="stripe-node"
-                            >
-                                Copy
-                            </button>
-                        </div>
-                        <pre
-                            id="stripe-node"
-                            class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
-                        ><code>stripe listen --forward-to http://127.0.0.1:5000/webhook</code></pre>
-                    </div>
-                </div>
+          <div class="rounded-3xl border border-white/10 bg-slate-950/60 p-5">
+            <div class="mb-3 flex items-center justify-between gap-3">
+              <h3 class="text-lg font-bold text-white">Stripe CLI → Node gateway</h3>
+              <button
+                class="copy-btn rounded-xl border border-white/10 px-3 py-2 text-xs font-semibold text-slate-200 transition hover:bg-white/10"
+                data-copy-target="stripe-node"
+              >
+                Copy
+              </button>
+            </div>
+            <pre
+              id="stripe-node"
+              class="overflow-x-auto rounded-2xl bg-slate-900 p-4 text-sm leading-7 text-slate-200"
+            ><code>stripe listen --forward-to http://127.0.0.1:5000/webhook</code></pre>
+          </div>
+        </div>
 
-                <div
-                    class="mt-8 rounded-3xl border border-emerald-300/15 bg-emerald-400/10 p-5 text-sm leading-7 text-emerald-50"
-                >
-                    <p class="font-semibold text-emerald-200">
-                        Development-friendly detail
-                    </p>
-                    <p class="mt-2">
-                        Even without a webhook, the renter success page still
-                        calls Laravel's checkout confirm endpoint. That means
-                        payment recording can work in development as long as the
-                        API has a valid <code>STRIPE_SECRET_KEY</code>.
-                    </p>
-                </div>
-            </section>
+        <div
+          class="mt-8 rounded-3xl border border-emerald-300/15 bg-emerald-400/10 p-5 text-sm leading-7 text-emerald-50"
+        >
+          <p class="font-semibold text-emerald-200">Development-friendly detail</p>
+          <p class="mt-2">
+            Even without a webhook, the renter success page still calls Laravel's checkout confirm
+            endpoint. That means payment recording can work in development as long as the API has a
+            valid <code>STRIPE_SECRET_KEY</code>.
+          </p>
+        </div>
+      </section>
 
-            <section class="mt-16 grid gap-6 lg:grid-cols-2">
-                <article
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        Useful endpoints
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        API routes worth knowing
-                    </h2>
-                    <ul class="mt-6 space-y-3 text-sm leading-7 text-slate-300">
-                        <li><code>POST /api/Auth/login</code> — login</li>
-                        <li><code>POST /api/Auth/signup</code> — signup</li>
-                        <li><code>GET /api/User</code> — users</li>
-                        <li><code>GET /api/Plan</code> — plans</li>
-                        <li><code>GET /api/Car</code> — cars</li>
-                        <li><code>GET /api/CarPosting</code> — postings</li>
-                        <li><code>GET /api/CarRental</code> — rentals</li>
-                        <li>
-                            <code>POST /api/Stripe/checkout/confirm</code> —
-                            confirm paid checkout
-                        </li>
-                        <li>
-                            <code>POST /api/Stripe/webhook</code> — direct
-                            Stripe webhook
-                        </li>
-                        <li>
-                            <code>POST /api/Stripe/webhook/ingest</code> —
-                            gateway ingest
-                        </li>
-                    </ul>
-                    <p class="mt-4 text-sm leading-7 text-slate-300">
-                        OpenAPI output is generated into
-                        <code>api/public/openapi.json</code>, and the frontend
-                        Orval config consumes that file.
-                    </p>
-                </article>
+      <section class="mt-16 grid gap-6 lg:grid-cols-2">
+        <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">
+            Useful endpoints
+          </p>
+          <h2 class="mt-2 text-2xl font-black text-white">API routes worth knowing</h2>
+          <ul class="mt-6 space-y-3 text-sm leading-7 text-slate-300">
+            <li><code>POST /api/Auth/login</code> — login</li>
+            <li><code>POST /api/Auth/signup</code> — signup</li>
+            <li><code>GET /api/User</code> — users</li>
+            <li><code>GET /api/Plan</code> — plans</li>
+            <li><code>GET /api/Car</code> — cars</li>
+            <li><code>GET /api/CarPosting</code> — postings</li>
+            <li><code>GET /api/CarRental</code> — rentals</li>
+            <li><code>POST /api/Stripe/checkout/confirm</code> — confirm paid checkout</li>
+            <li><code>POST /api/Stripe/webhook</code> — direct Stripe webhook</li>
+            <li><code>POST /api/Stripe/webhook/ingest</code> — gateway ingest</li>
+          </ul>
+          <p class="mt-4 text-sm leading-7 text-slate-300">
+            OpenAPI output is generated into
+            <code>api/public/openapi.json</code>, and the frontend Orval config consumes that file.
+          </p>
+        </article>
 
-                <article
-                    class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow"
-                >
-                    <p
-                        class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400"
-                    >
-                        First-run checklist
-                    </p>
-                    <h2 class="mt-2 text-2xl font-black text-white">
-                        What success looks like
-                    </h2>
-                    <ul class="mt-6 space-y-4 text-sm leading-7 text-slate-300">
-                        <li>
-                            ✅ Frontend opens on
-                            <code>http://localhost:3001</code>
-                        </li>
-                        <li>
-                            ✅ Backend responds on
-                            <code>http://localhost:8000</code>
-                        </li>
-                        <li>✅ MySQL is reachable and migrations succeed</li>
-                        <li>✅ Passport is installed and login works</li>
-                        <li>
-                            ✅ Seeded admin, user, and renter accounts can sign
-                            in
-                        </li>
-                        <li>
-                            ✅ Stripe checkout returns a hosted session URL when
-                            configured
-                        </li>
-                        <li>
-                            ✅ After success redirect, Laravel records the
-                            transaction
-                        </li>
-                    </ul>
-                </article>
-            </section>
+        <article class="rounded-3xl border border-white/10 bg-white/5 p-6 shadow-glow">
+          <p class="text-sm font-semibold uppercase tracking-[0.2em] text-brand-400">
+            First-run checklist
+          </p>
+          <h2 class="mt-2 text-2xl font-black text-white">What success looks like</h2>
+          <ul class="mt-6 space-y-4 text-sm leading-7 text-slate-300">
+            <li>
+              ✅ Frontend opens on
+              <code>http://localhost:3001</code>
+            </li>
+            <li>
+              ✅ Backend responds on
+              <code>http://localhost:8000</code>
+            </li>
+            <li>✅ MySQL is reachable and migrations succeed</li>
+            <li>✅ Passport is installed and login works</li>
+            <li>✅ Seeded admin, user, and renter accounts can sign in</li>
+            <li>✅ Stripe checkout returns a hosted session URL when configured</li>
+            <li>✅ After success redirect, Laravel records the transaction</li>
+          </ul>
+        </article>
+      </section>
 
-            <section
-                id="troubleshooting"
-                class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
-            >
-                <p
-                    class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400"
-                >
-                    Troubleshooting
-                </p>
-                <h2 class="mt-2 text-3xl font-black text-white">
-                    Common issues and fixes
-                </h2>
+      <section
+        id="troubleshooting"
+        class="mt-16 rounded-3xl border border-white/10 bg-white/5 p-8 shadow-glow"
+      >
+        <p class="text-sm font-semibold uppercase tracking-[0.25em] text-brand-400">
+          Troubleshooting
+        </p>
+        <h2 class="mt-2 text-3xl font-black text-white">Common issues and fixes</h2>
 
-                <div class="mt-8 space-y-4">
-                    <details
-                        class="rounded-2xl border border-white/10 bg-slate-950/60 p-5"
-                        open
-                    >
-                        <summary
-                            class="cursor-pointer list-none text-lg font-semibold text-white"
-                        >
-                            The frontend loads but API requests fail
-                        </summary>
-                        <p class="mt-3 text-sm leading-7 text-slate-300">
-                            Check <code>VITE_APP_API_URL</code> first. The
-                            frontend Axios client reads that exact variable. In
-                            Docker, also note that the compose file currently
-                            uses <code>REACT_APP_API_URL</code> for the frontend
-                            service.
-                        </p>
-                    </details>
+        <div class="mt-8 space-y-4">
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5" open>
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              The frontend loads but API requests fail
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Check <code>VITE_APP_API_URL</code> first. The frontend Axios client reads that exact
+              variable. In Docker, also note that the compose file currently uses
+              <code>REACT_APP_API_URL</code> for the frontend service.
+            </p>
+          </details>
 
-                    <details
-                        class="rounded-2xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <summary
-                            class="cursor-pointer list-none text-lg font-semibold text-white"
-                        >
-                            Stripe checkout cannot reach port 5000
-                        </summary>
-                        <p class="mt-3 text-sm leading-7 text-slate-300">
-                            Start the Stripe service with
-                            <code>docker compose up stripe</code> or run
-                            <code>cd stripe &amp;&amp; npm run dev</code>.
-                        </p>
-                    </details>
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              Stripe checkout cannot reach port 5000
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Start the Stripe service with
+              <code>docker compose up stripe</code> or run
+              <code>cd stripe &amp;&amp; npm run dev</code>.
+            </p>
+          </details>
 
-                    <details
-                        class="rounded-2xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <summary
-                            class="cursor-pointer list-none text-lg font-semibold text-white"
-                        >
-                            Laravel says Stripe is not configured
-                        </summary>
-                        <p class="mt-3 text-sm leading-7 text-slate-300">
-                            Set <code>STRIPE_SECRET_KEY</code> in
-                            <code>api/.env</code>. The checkout confirmation
-                            endpoint returns <code>503</code> when it is
-                            missing.
-                        </p>
-                    </details>
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              Laravel says Stripe is not configured
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Set <code>STRIPE_SECRET_KEY</code> in <code>api/.env</code>. The checkout confirmation
+              endpoint returns <code>503</code> when it is missing.
+            </p>
+          </details>
 
-                    <details
-                        class="rounded-2xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <summary
-                            class="cursor-pointer list-none text-lg font-semibold text-white"
-                        >
-                            Webhooks are not being accepted
-                        </summary>
-                        <p class="mt-3 text-sm leading-7 text-slate-300">
-                            Verify that
-                            <code>STRIPE_WEBHOOK_SECRET</code> matches your
-                            target endpoint and that you are forwarding to the
-                            correct URL. For the gateway path, also verify
-                            <code>STRIPE_GATEWAY_INGEST_SECRET</code> matches in
-                            both services.
-                        </p>
-                    </details>
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              Webhooks are not being accepted
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Verify that
+              <code>STRIPE_WEBHOOK_SECRET</code> matches your target endpoint and that you are
+              forwarding to the correct URL. For the gateway path, also verify
+              <code>STRIPE_GATEWAY_INGEST_SECRET</code> matches in both services.
+            </p>
+          </details>
 
-                    <details
-                        class="rounded-2xl border border-white/10 bg-slate-950/60 p-5"
-                    >
-                        <summary
-                            class="cursor-pointer list-none text-lg font-semibold text-white"
-                        >
-                            Passport auth looks broken
-                        </summary>
-                        <p class="mt-3 text-sm leading-7 text-slate-300">
-                            Run <code>php artisan passport:install</code> after
-                            migrations. The API guard is configured to use
-                            Passport.
-                        </p>
-                    </details>
-                </div>
-            </section>
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              Passport auth looks broken
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Run <code>php artisan passport:install</code> after migrations. The API guard is
+              configured to use Passport.
+            </p>
+          </details>
 
-            <footer
-                class="mt-16 border-t border-white/10 pt-8 text-sm text-slate-400"
-            >
-                <div
-                    class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between"
-                >
-                    <p>
-                        Built as a self-contained documentation page for the
-                        GeoCars repository root.
-                    </p>
-                    <a
-                        href="#top"
-                        class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-slate-200 transition hover:bg-white/10"
-                        >Back to top</a
-                    >
-                </div>
-            </footer>
-        </main>
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              Mobile app cannot authenticate against API
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Confirm <code>API_BASE</code> in <code>mobile/src/lib/api.ts</code> uses a host your
+              emulator or device can reach. For Android emulator, use <code>10.0.2.2</code> instead
+              of <code>localhost</code>.
+            </p>
+          </details>
 
-        <script>
-            document.querySelectorAll(".copy-btn").forEach((button) => {
-                button.addEventListener("click", async () => {
-                    const targetId = button.getAttribute("data-copy-target");
-                    const source = targetId
-                        ? document.getElementById(targetId)
-                        : null;
-                    const text = source ? source.innerText.trim() : "";
-                    if (!text) return;
+          <details class="rounded-2xl border border-white/10 bg-slate-950/60 p-5">
+            <summary class="cursor-pointer list-none text-lg font-semibold text-white">
+              QR scanning or tracking is not working on mobile
+            </summary>
+            <p class="mt-3 text-sm leading-7 text-slate-300">
+              Re-check camera and location permissions in the app, then verify the QR payload format
+              is valid JSON with
+              <code>car_rental_id</code> and <code>user_id</code>. If offline, the app queues
+              binding/location updates locally and syncs when connectivity returns.
+            </p>
+          </details>
+        </div>
+      </section>
 
-                    try {
-                        await navigator.clipboard.writeText(text);
-                        const original = button.textContent;
-                        button.textContent = "Copied";
-                        button.classList.add(
-                            "bg-emerald-500/20",
-                            "text-emerald-200",
-                        );
-                        setTimeout(() => {
-                            button.textContent = original;
-                            button.classList.remove(
-                                "bg-emerald-500/20",
-                                "text-emerald-200",
-                            );
-                        }, 1400);
-                    } catch {
-                        button.textContent = "Copy failed";
-                        setTimeout(() => {
-                            button.textContent = "Copy";
-                        }, 1400);
-                    }
-                });
-            });
-        </script>
-    </body>
+      <footer class="mt-16 border-t border-white/10 pt-8 text-sm text-slate-400">
+        <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+          <p>Built as a self-contained documentation page for the GeoCars repository root.</p>
+          <a
+            href="#top"
+            class="rounded-xl border border-white/10 bg-white/5 px-4 py-2 text-slate-200 transition hover:bg-white/10"
+            >Back to top</a
+          >
+        </div>
+      </footer>
+    </main>
+
+    <script>
+      document.querySelectorAll('.copy-btn').forEach((button) => {
+        button.addEventListener('click', async () => {
+          const targetId = button.getAttribute('data-copy-target');
+          const source = targetId ? document.getElementById(targetId) : null;
+          const text = source ? source.innerText.trim() : '';
+          if (!text) return;
+
+          try {
+            await navigator.clipboard.writeText(text);
+            const original = button.textContent;
+            button.textContent = 'Copied';
+            button.classList.add('bg-emerald-500/20', 'text-emerald-200');
+            setTimeout(() => {
+              button.textContent = original;
+              button.classList.remove('bg-emerald-500/20', 'text-emerald-200');
+            }, 1400);
+          } catch {
+            button.textContent = 'Copy failed';
+            setTimeout(() => {
+              button.textContent = 'Copy';
+            }, 1400);
+          }
+        });
+      });
+    </script>
+  </body>
 </html>
