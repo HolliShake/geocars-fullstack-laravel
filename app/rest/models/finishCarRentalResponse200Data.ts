@@ -13,10 +13,10 @@ export type FinishCarRentalResponse200Data = {
   rental?: CarRental;
   refundable_amount?: number;
   additional_charges?: number;
+  platform_fee_amount?: number;
+  net_payout_amount?: number;
   /** @nullable */
   refund_transaction?: FinishCarRentalResponse200DataRefundTransaction;
-  /** @nullable */
-  stripe_refund_id?: string | null;
   /** @nullable */
   payout_account?: FinishCarRentalResponse200DataPayoutAccount;
 };

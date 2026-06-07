@@ -20,6 +20,7 @@ type RouteStructure = {
     UserConfig: RouteConfig<'/admin/user-config'>;
     CompanyConfig: RouteConfig<'/admin/company-config'>;
     CompanyCar: RouteConfig<'/admin/company-config/cars/:company_id'>;
+    DebtCollection: RouteConfig<'/admin/debt-collection'>;
     PlanConfig: RouteConfig<'/admin/plan-config'>;
     PlanFeatureConfig: RouteConfig<'/admin/plan-config/features/:id'>;
     RequirementConfig: RouteConfig<'/admin/requirement-config'>;
@@ -87,6 +88,7 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     UserConfig: createRoute('/admin/user-config'),
     CompanyConfig: createRoute('/admin/company-config'),
     CompanyCar: createRoute('/admin/company-config/cars/:company_id'),
+    DebtCollection: createRoute('/admin/debt-collection'),
     PlanConfig: createRoute('/admin/plan-config'),
     PlanFeatureConfig: createRoute('/admin/plan-config/features/:id'),
     RequirementConfig: createRoute('/admin/requirement-config'),

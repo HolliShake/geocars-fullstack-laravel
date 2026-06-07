@@ -20,6 +20,8 @@ export interface UserAccount {
   user_id: number;
   type: UserAccountType;
   account_number: string;
+  expiry?: string | null;
+  cvv?: string | null;
   is_default: boolean;
   owner?: UserAccountOwner;
   created_at?: string;

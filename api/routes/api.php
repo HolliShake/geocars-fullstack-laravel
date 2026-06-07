@@ -76,6 +76,7 @@ Route::middleware(["auth:api", "role:admin,user,renter"])
     ->controller(CarRentalController::class)
     ->group(function () {
         Route::get("/CarRental", "index");
+        Route::middleware("role:admin,user")->get("/CarRental/Debt/Pending", "pendingDebt");
         Route::get("/CarRental/{id}", "show")->where("id", "[0-9]+");
         Route::get("/CarRental/CheckSubmission/{id}", "checkSubmission")->where(
             "id",
@@ -90,6 +91,9 @@ Route::middleware(["auth:api", "role:admin,user,renter"])
             ->where("id", "[0-9]+");
         Route::middleware("role:user")
             ->post("/CarRental/{id}/finish", "finishRental")
+            ->where("id", "[0-9]+");
+        Route::middleware("role:admin,user")
+            ->post("/CarRental/{id}/collect-debt", "collectDebt")
             ->where("id", "[0-9]+");
     });
 

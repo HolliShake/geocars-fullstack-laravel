@@ -87,6 +87,7 @@ import type {
   GetDeviceResponse200,
   GetDeviceWithLocationsResponse200,
   GetMachineInfo200,
+  GetPendingCarRentalDebtsParams,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
   GetPlanResponse200,
@@ -1939,7 +1940,7 @@ export function useCheckCarPostingSubmission<TData = Awaited<ReturnType<typeof c
 
 
 /**
- * Marks a confirmed rental as completed, records the return date as now, computes refundable amount / additional charges, and — when the payment method is online — issues a Stripe refund for the refundable amount back to the original payment source, then records it as a REFUND transaction. The renter's default UserAccount (bank / e-wallet) is returned in the response so the caller knows where any manual payout should be sent.
+ * Marks a confirmed rental as completed, records the return date as now, computes refundable amount / additional charges, and — when the payment method is online — computes net payout to the renter's active UserAccount (refund minus 10% platform fee). A REFUND transaction is recorded for the net payout amount.
  * @summary Finish a confirmed CarRental
  */
 export const finishCarRental = (
@@ -1998,6 +1999,160 @@ export const useFinishCarRental = <TError = null | null | InternalServerErrorRes
       > => {
 
       const mutationOptions = getFinishCarRentalMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Returns car rentals with unsettled cash debt. For role=user, results are limited to rentals whose company owner matches the authenticated user via car_rental.car_posting.car.user_company.user_id.
+ * @summary Get pending rental debts
+ */
+export const getPendingCarRentalDebts = (
+    params?: GetPendingCarRentalDebtsParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<null>(
+      {url: `/api/CarRental/Debt/Pending`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetPendingCarRentalDebtsQueryKey = (params?: GetPendingCarRentalDebtsParams,) => {
+    return [`/api/CarRental/Debt/Pending`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetPendingCarRentalDebtsQueryOptions = <TData = Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError = unknown>(params?: GetPendingCarRentalDebtsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetPendingCarRentalDebtsQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getPendingCarRentalDebts>>> = ({ signal }) => getPendingCarRentalDebts(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetPendingCarRentalDebtsQueryResult = NonNullable<Awaited<ReturnType<typeof getPendingCarRentalDebts>>>
+export type GetPendingCarRentalDebtsQueryError = unknown
+
+
+export function useGetPendingCarRentalDebts<TData = Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError = unknown>(
+ params: undefined |  GetPendingCarRentalDebtsParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPendingCarRentalDebts>>,
+          TError,
+          Awaited<ReturnType<typeof getPendingCarRentalDebts>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPendingCarRentalDebts<TData = Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError = unknown>(
+ params?: GetPendingCarRentalDebtsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getPendingCarRentalDebts>>,
+          TError,
+          Awaited<ReturnType<typeof getPendingCarRentalDebts>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetPendingCarRentalDebts<TData = Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError = unknown>(
+ params?: GetPendingCarRentalDebtsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get pending rental debts
+ */
+
+export function useGetPendingCarRentalDebts<TData = Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError = unknown>(
+ params?: GetPendingCarRentalDebtsParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getPendingCarRentalDebts>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetPendingCarRentalDebtsQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Marks pending cash debt as settled by collecting from the renter's default UserAccount. Uses renter identity from car_rental.user_id. For role=user, authorization uses car_rental.car_posting.car.user_company.user_id.
+ * @summary Collect pending cash debt
+ */
+export const collectCarRentalDebt = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<null>(
+      {url: `/api/CarRental/${id}/collect-debt`, method: 'POST', signal
+    },
+      );
+    }
+  
+
+
+export const getCollectCarRentalDebtMutationOptions = <TError = null | null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collectCarRentalDebt>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof collectCarRentalDebt>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['collectCarRentalDebt'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof collectCarRentalDebt>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  collectCarRentalDebt(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CollectCarRentalDebtMutationResult = NonNullable<Awaited<ReturnType<typeof collectCarRentalDebt>>>
+    
+    export type CollectCarRentalDebtMutationError = null | null | null
+
+    /**
+ * @summary Collect pending cash debt
+ */
+export const useCollectCarRentalDebt = <TError = null | null | null,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof collectCarRentalDebt>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof collectCarRentalDebt>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getCollectCarRentalDebtMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

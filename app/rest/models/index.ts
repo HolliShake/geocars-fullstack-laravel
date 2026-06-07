@@ -104,6 +104,7 @@ export * from './getDevicePaginatedParams';
 export * from './getDeviceResponse200';
 export * from './getDeviceWithLocationsResponse200';
 export * from './getMachineInfo200';
+export * from './getPendingCarRentalDebtsParams';
 export * from './getPlanFeaturePaginatedParams';
 export * from './getPlanFeatureResponse200';
 export * from './getPlanPlanResponse200';

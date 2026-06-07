@@ -13,6 +13,16 @@ export interface UserAccount {
   user_id: number;
   type: UserAccountType;
   account_number: string;
+  /**
+   * Required when type is Bank.
+   * @nullable
+   */
+  expiry?: string | null;
+  /**
+   * Required when type is Bank.
+   * @nullable
+   */
+  cvv?: string | null;
   is_default?: boolean;
   created_at?: string;
   updated_at?: string;

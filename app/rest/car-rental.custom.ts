@@ -13,6 +13,8 @@ export interface FinishCarRentalData {
   };
   refundable_amount: number;
   additional_charges: number;
+  platform_fee_amount: number;
+  net_payout_amount: number;
   refund_transaction: {
     id: number;
     car_rental_id: number;
@@ -20,7 +22,6 @@ export interface FinishCarRentalData {
     type: string;
     reference_number: string;
   } | null;
-  stripe_refund_id: string | null;
   payout_account: UserAccount | null;
 }
 

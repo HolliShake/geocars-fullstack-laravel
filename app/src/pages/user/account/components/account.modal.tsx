@@ -21,13 +21,50 @@ import { z } from 'zod';
 
 const accountTypes: UserAccountType[] = ['Bank', 'GCash', 'Maya'];
 
-const schema = z.object({
-  id: z.number().optional(),
-  user_id: z.number().min(1, 'User ID is required'),
-  type: z.enum(['Bank', 'GCash', 'Maya']),
-  account_number: z.string().min(1, 'Account number is required').max(255),
-  is_default: z.boolean(),
-});
+const schema = z
+  .object({
+    id: z.number().optional(),
+    user_id: z.number().min(1, 'User ID is required'),
+    type: z.enum(['Bank', 'GCash', 'Maya']),
+    account_number: z.string().min(1, 'Account number is required').max(255),
+    expiry: z.string().optional().nullable(),
+    cvv: z.string().optional().nullable(),
+    is_default: z.boolean(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.type !== 'Bank') return;
+
+    const expiry = data.expiry?.trim() ?? '';
+    const cvv = data.cvv?.trim() ?? '';
+
+    if (!expiry) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Expiry is required for bank accounts',
+        path: ['expiry'],
+      });
+    } else if (!/^(0[1-9]|1[0-2])\/[0-9]{2}$/.test(expiry)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'Expiry must be in MM/YY format',
+        path: ['expiry'],
+      });
+    }
+
+    if (!cvv) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'CVV is required for bank accounts',
+        path: ['cvv'],
+      });
+    } else if (!/^[0-9]{3,4}$/.test(cvv)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: 'CVV must be 3 to 4 digits',
+        path: ['cvv'],
+      });
+    }
+  });
 
 type Schema = z.infer<typeof schema>;
 
@@ -35,6 +72,8 @@ const field = (userId = 0): Schema => ({
   user_id: userId,
   type: 'Bank',
   account_number: '',
+  expiry: '',
+  cvv: '',
   is_default: false,
 });
 
@@ -68,20 +107,33 @@ export default function UserAccountModal({
   const isEdit = useMemo(() => !!controller.data?.id, [controller.data]);
   const isSaving = useMemo(() => isCreating || isUpdating, [isCreating, isUpdating]);
   const selectedType = watch('type');
+  const isBank = selectedType === 'Bank';
 
   const onSubmit = async (data: Schema) => {
     try {
       if (isEdit) {
+        const payload: Schema = {
+          ...data,
+          expiry: data.type === 'Bank' ? (data.expiry ?? '') : null,
+          cvv: data.type === 'Bank' ? (data.cvv ?? '') : null,
+        };
+
         await updateUserAccount({
           id: controller.data?.id || 0,
           data: {
             ...controller.data,
-            ...data,
+            ...payload,
           },
         });
       } else {
+        const payload: Schema = {
+          ...data,
+          expiry: data.type === 'Bank' ? (data.expiry ?? '') : null,
+          cvv: data.type === 'Bank' ? (data.cvv ?? '') : null,
+        };
+
         await createUserAccount({
-          data,
+          data: payload,
         });
       }
 
@@ -104,6 +156,8 @@ export default function UserAccountModal({
       user_id: userId,
       type: controller.data.type,
       account_number: controller.data.account_number,
+      expiry: controller.data.expiry ?? '',
+      cvv: controller.data.cvv ?? '',
       is_default: controller.data.is_default,
     });
   }, [controller.data, reset, userId]);
@@ -144,6 +198,36 @@ export default function UserAccountModal({
             <p className="text-sm text-destructive">{errors.account_number.message}</p>
           )}
         </div>
+
+        {isBank && (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="expiry">Expiry (MM/YY)</Label>
+              <Input
+                id="expiry"
+                type="text"
+                maxLength={5}
+                disabled={isSaving}
+                {...register('expiry')}
+                placeholder="MM/YY"
+              />
+              {errors.expiry && <p className="text-sm text-destructive">{errors.expiry.message}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cvv">CVV</Label>
+              <Input
+                id="cvv"
+                type="password"
+                maxLength={4}
+                disabled={isSaving}
+                {...register('cvv')}
+                placeholder="3 or 4 digits"
+              />
+              {errors.cvv && <p className="text-sm text-destructive">{errors.cvv.message}</p>}
+            </div>
+          </div>
+        )}
 
         <div className="flex items-center space-x-3 rounded-lg border p-3">
           <Checkbox

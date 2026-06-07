@@ -22,6 +22,7 @@ import {
   User,
   XCircle,
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import type React from 'react';
 import { useNavigate, useParams } from 'react-router';
 
@@ -174,6 +175,28 @@ export default function RenterRentalDetailPage(): React.ReactNode {
               {getStatusIcon(rental.rental_status)}
               <span>{getStatusMessage(rental.rental_status)}</span>
             </div>
+
+            {rental.rental_status === CarRentalRentalStatus.confirmed && (
+              <div className="space-y-2 rounded-lg border border-primary/20 bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 p-4">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Scan to bind mobile app
+                </p>
+                <div className="flex justify-center rounded-lg bg-white p-3 shadow-sm">
+                  <QRCodeSVG
+                    value={JSON.stringify({
+                      car_rental_id: rental.id,
+                      user_id: rental.user_id,
+                    })}
+                    size={160}
+                    level="M"
+                    includeMargin={false}
+                  />
+                </div>
+                <p className="text-center text-xs text-muted-foreground">
+                  Rental #{rental.id} · User #{rental.user_id}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
 

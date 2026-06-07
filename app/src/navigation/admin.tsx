@@ -2,12 +2,14 @@ import { RoleEnum } from '@/constants/role.constant';
 import AdminCompanyCarPage from '@/pages/admin/company-config/cars/page';
 import AdminCompanyConfigPage from '@/pages/admin/company-config/page';
 import AdminDashboardPage from '@/pages/admin/dashboard/page';
+import AdminDebtCollectionPage from '@/pages/admin/debt-collection/page';
 import AdminPlanConfigPage from '@/pages/admin/plan-config';
 import AdminPlanFeaturePage from '@/pages/admin/plan-config/features/page';
 import AdminRequirementConfigPage from '@/pages/admin/requirement-config/page';
 import AdminUserConfigPage from '@/pages/admin/user-config/page';
 import type { Route } from '@/types/route';
 import {
+  LucideBanknote,
   LucideBuilding2,
   LucideCar,
   LucideCheck,
@@ -86,6 +88,16 @@ const ADMINROUTES: readonly Route[] = Object.freeze<Route[]>([
     icon: <LucideCheck />,
     path: RouteKey.Admin.RequirementConfig.key,
     element: <AdminRequirementConfigPage />,
+    layout: 'dashboard',
+    sidebar: true,
+    roles: [RoleEnum.admin],
+  },
+  {
+    key: 'Admin.DebtCollection',
+    title: 'Debt Collection',
+    icon: <LucideBanknote />,
+    path: RouteKey.Admin.DebtCollection.key,
+    element: <AdminDebtCollectionPage />,
     layout: 'dashboard',
     sidebar: true,
     roles: [RoleEnum.admin],

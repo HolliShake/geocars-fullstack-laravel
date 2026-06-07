@@ -16,6 +16,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "user_id", type: "integer", example: 12),
         new OA\Property(property: "type", type: "string", enum: ["GCash", "Maya", "Bank"], example: "Bank"),
         new OA\Property(property: "account_number", type: "string", example: "0123456789"),
+        new OA\Property(property: "expiry", type: "string", nullable: true, example: "12/30", description: "Required when type is Bank."),
+        new OA\Property(property: "cvv", type: "string", nullable: true, example: "123", description: "Required when type is Bank."),
         new OA\Property(property: "is_default", type: "boolean", example: true),
         new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2026-01-01T00:00:00Z"),
         new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2026-01-01T00:00:00Z"),
@@ -83,6 +85,8 @@ class UserAccount extends Model
         'user_id',
         'type',
         'account_number',
+        'expiry',
+        'cvv',
         'is_default',
     ];
 
@@ -91,6 +95,8 @@ class UserAccount extends Model
         return [
             'type' => UserAccountTypeEnum::class,
             'is_default' => 'boolean',
+            'expiry' => 'string',
+            'cvv' => 'string',
             'created_at' => 'datetime',
             'updated_at' => 'datetime',
         ];

@@ -115,8 +115,9 @@ use OpenApi\Attributes as OA;
                 new OA\Property(property: "rental", ref: "#/components/schemas/CarRental"),
                 new OA\Property(property: "refundable_amount", type: "number", format: "float", example: 500.00),
                 new OA\Property(property: "additional_charges", type: "number", format: "float", example: 0.00),
+                new OA\Property(property: "platform_fee_amount", type: "number", format: "float", example: 50.00),
+                new OA\Property(property: "net_payout_amount", type: "number", format: "float", example: 450.00),
                 new OA\Property(property: "refund_transaction", nullable: true, ref: "#/components/schemas/Transaction"),
-                new OA\Property(property: "stripe_refund_id", type: "string", nullable: true, example: "re_3Pq..."),
                 new OA\Property(property: "payout_account", nullable: true, ref: "#/components/schemas/UserAccount"),
             ]
         ),

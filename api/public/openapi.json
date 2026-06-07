@@ -1370,7 +1370,7 @@
                     "CarRental"
                 ],
                 "summary": "Finish a confirmed CarRental",
-                "description": "Marks a confirmed rental as completed, records the return date as now, computes refundable amount \/ additional charges, and \u2014 when the payment method is online \u2014 issues a Stripe refund for the refundable amount back to the original payment source, then records it as a REFUND transaction. The renter's default UserAccount (bank \/ e-wallet) is returned in the response so the caller knows where any manual payout should be sent.",
+                "description": "Marks a confirmed rental as completed, records the return date as now, computes refundable amount \/ additional charges, and \u2014 when the payment method is online \u2014 computes net payout to the renter's active UserAccount (refund minus 10% platform fee). A REFUND transaction is recorded for the net payout amount.",
                 "operationId": "finishCarRental",
                 "parameters": [
                     {
@@ -1408,6 +1408,83 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental\/Debt\/Pending": {
+            "get": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Get pending rental debts",
+                "description": "Returns car rentals with unsettled cash debt. For role=user, results are limited to rentals whose company owner matches the authenticated user via car_rental.car_posting.car.user_company.user_id.",
+                "operationId": "getPendingCarRentalDebts",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation"
+                    }
+                }
+            }
+        },
+        "\/api\/CarRental\/{id}\/collect-debt": {
+            "post": {
+                "tags": [
+                    "CarRental"
+                ],
+                "summary": "Collect pending cash debt",
+                "description": "Marks pending cash debt as settled by collecting from the renter's default UserAccount. Uses renter identity from car_rental.user_id. For role=user, authorization uses car_rental.car_posting.car.user_company.user_id.",
+                "operationId": "collectCarRentalDebt",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Debt collected successfully"
+                    },
+                    "400": {
+                        "description": "Debt not collectible"
+                    },
+                    "403": {
+                        "description": "Forbidden"
+                    },
+                    "404": {
+                        "description": "CarRental not found"
                     }
                 }
             }
@@ -6012,17 +6089,22 @@
                                 "format": "float",
                                 "example": 0
                             },
+                            "platform_fee_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 50
+                            },
+                            "net_payout_amount": {
+                                "type": "number",
+                                "format": "float",
+                                "example": 450
+                            },
                             "refund_transaction": {
                                 "oneOf": [
                                     {
                                         "$ref": "#\/components\/schemas\/Transaction"
                                     }
                                 ],
-                                "nullable": true
-                            },
-                            "stripe_refund_id": {
-                                "type": "string",
-                                "example": "re_3Pq...",
                                 "nullable": true
                             },
                             "payout_account": {
@@ -7486,6 +7568,18 @@
                     "account_number": {
                         "type": "string",
                         "example": "0123456789"
+                    },
+                    "expiry": {
+                        "description": "Required when type is Bank.",
+                        "type": "string",
+                        "example": "12\/30",
+                        "nullable": true
+                    },
+                    "cvv": {
+                        "description": "Required when type is Bank.",
+                        "type": "string",
+                        "example": "123",
+                        "nullable": true
                     },
                     "is_default": {
                         "type": "boolean",
