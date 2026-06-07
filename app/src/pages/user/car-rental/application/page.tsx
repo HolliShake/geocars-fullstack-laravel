@@ -9,9 +9,11 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { dumbCurrency } from '@/lib/dumb-currency';
 import { useGetCarRentalById, useUpdateCarRental } from '@rest/api';
+import { useFinishCarRental } from '@rest/car-rental.custom';
 import { CarRentalRentalStatus, type CarRental, type UserRequirement } from '@rest/models';
 import {
   AlertTriangle,
+  Banknote,
   Building2,
   Calendar,
   CalendarDays,
@@ -22,6 +24,7 @@ import {
   CreditCard,
   Eye,
   FileText,
+  Flag,
   Fuel,
   Gauge,
   Hash,
@@ -38,6 +41,7 @@ import {
   XCircle,
   Zap,
 } from 'lucide-react';
+import { QRCodeSVG } from 'qrcode.react';
 import type React from 'react';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -51,6 +55,7 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
   const rental = data?.data;
 
   const { mutateAsync: updateRental } = useUpdateCarRental();
+  const { mutateAsync: finishRental, isPending: isFinishing } = useFinishCarRental();
 
   const confirm = useConfirm();
 
@@ -97,6 +102,31 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
       refetchRental();
     } catch {
       toast.error('Failed to reject rental');
+    }
+  };
+
+  const handleFinishRental = async (id: number) => {
+    try {
+      const result = await finishRental({ id });
+      const data = result?.data;
+      if (data?.stripe_refund_id) {
+        toast.success(
+          `Rental completed! Stripe refund ₱${data.refundable_amount.toFixed(2)} issued (${data.stripe_refund_id}).`
+        );
+      } else if (data?.refundable_amount && data.refundable_amount > 0) {
+        const payoutAcct = data.payout_account;
+        const accountLabel = payoutAcct
+          ? `${payoutAcct.type} ${payoutAcct.account_number}`
+          : "the renter's account";
+        toast.success(
+          `Rental completed! Please send ₱${data.refundable_amount.toFixed(2)} to ${accountLabel}.`
+        );
+      } else {
+        toast.success('Rental marked as completed.');
+      }
+      refetchRental();
+    } catch {
+      toast.error('Failed to finish rental');
     }
   };
 
@@ -976,6 +1006,103 @@ export default function UserCarRentalApplicationPage(): React.ReactElement {
                       <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
                         <p className="text-xs text-muted-foreground text-center">
                           Please review all details carefully before making a decision
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {rental.rental_status === CarRentalRentalStatus.confirmed && (
+                  <Card className="border-border/50 bg-card/90 backdrop-blur-md hover:shadow-xl transition-all duration-300 shadow-lg">
+                    <CardContent className="p-4 sm:p-6 space-y-3 sm:space-y-4">
+                      <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm font-medium text-muted-foreground">
+                        <Flag className="h-3 w-3 sm:h-4 sm:w-4" />
+                        Complete Rental
+                      </div>
+
+                      {/* QR Code for mobile binding */}
+                      <div className="flex flex-col items-center gap-2 p-4 rounded-xl bg-gradient-to-br from-cyan-500/10 via-blue-500/10 to-purple-500/10 border border-primary/20">
+                        <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">
+                          Scan to bind mobile app
+                        </p>
+                        <div className="p-3 bg-white rounded-lg shadow-md">
+                          <QRCodeSVG
+                            value={JSON.stringify({
+                              car_rental_id: rental.id,
+                              user_id: rental.user_id,
+                            })}
+                            size={160}
+                            level="M"
+                            includeMargin={false}
+                          />
+                        </div>
+                        <p className="text-xs text-muted-foreground text-center">
+                          Rental #{rental.id} · User #{rental.user_id}
+                        </p>
+                      </div>
+
+                      {/* Cash debt notice */}
+                      {(rental as any)?.cash_debt != null && (
+                        <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-3 py-3 space-y-1">
+                          <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-600">
+                            <Banknote className="h-3.5 w-3.5" />
+                            Cash Payment — Outstanding Debt
+                          </div>
+                          <div className="flex justify-between items-center text-xs sm:text-sm">
+                            <span className="text-muted-foreground">Amount owed (cash)</span>
+                            <span className="font-bold text-amber-600">
+                              {dumbCurrency(Number((rental as any).cash_debt))}
+                            </span>
+                          </div>
+                          {(rental as any)?.cash_debt_settled && (
+                            <Badge className="bg-green-500/20 text-green-700 border-green-500/30 text-xs">
+                              Settled
+                            </Badge>
+                          )}
+                        </div>
+                      )}
+
+                      {/* Refund / payout preview */}
+                      <div className="rounded-lg border border-border/50 bg-muted/30 divide-y divide-border/40">
+                        <div className="flex justify-between items-center px-3 py-2 text-xs sm:text-sm">
+                          <span className="text-muted-foreground">Scheduled return</span>
+                          <span className="font-semibold">
+                            {new Date(
+                              new Date(rental.start_date).getTime() + days * 24 * 60 * 60 * 1000
+                            ).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center px-3 py-2 text-xs sm:text-sm">
+                          <span className="text-muted-foreground">Est. refundable</span>
+                          <span className="font-semibold text-green-600">
+                            {dumbCurrency(Number((rental as any)?.refundable_amount || 0))}
+                          </span>
+                        </div>
+                        {Number((rental as any)?.additional_charges || 0) > 0 && (
+                          <div className="flex justify-between items-center px-3 py-2 text-xs sm:text-sm">
+                            <span className="text-muted-foreground">Additional charges</span>
+                            <span className="font-semibold text-destructive">
+                              {dumbCurrency(Number((rental as any)?.additional_charges || 0))}
+                            </span>
+                          </div>
+                        )}
+                      </div>
+
+                      <Button
+                        className="w-full h-10 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-[1.02] active:scale-[0.98] group text-sm sm:text-base"
+                        disabled={isFinishing}
+                        onClick={() =>
+                          confirm.confirm(async () => await handleFinishRental(rental.id as number))
+                        }
+                      >
+                        <Banknote className="h-3 w-3 sm:h-4 sm:w-4 mr-1.5 sm:mr-2 group-hover:animate-pulse" />
+                        {isFinishing ? 'Processing...' : 'Finish & Return Car'}
+                      </Button>
+
+                      <div className="p-3 rounded-lg bg-muted/30 border border-border/50">
+                        <p className="text-xs text-muted-foreground text-center">
+                          Marks the car as returned now. Eligible refunds are automatically sent to
+                          the renter's registered account.
                         </p>
                       </div>
                     </CardContent>

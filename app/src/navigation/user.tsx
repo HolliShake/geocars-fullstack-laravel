@@ -1,8 +1,10 @@
 import { RoleEnum } from '@/constants/role.constant';
+import UserAccountPage from '@/pages/user/account/page';
 import UserQuickCarPage from '@/pages/user/car-management/page';
 import UserCarPostingPage from '@/pages/user/car-posting/page';
 import UserCarRentalApplicationPage from '@/pages/user/car-rental/application/page';
 import UserCarRentalPage from '@/pages/user/car-rental/page';
+import CarRentalViewLocationPage from '@/pages/user/car-rental/view-location/page';
 import UserCompanyCarPage from '@/pages/user/company-config/cars/page';
 import UserCompanyConfigPage from '@/pages/user/company-config/page';
 import UserDashboardPage from '@/pages/user/dashboard/page';
@@ -10,6 +12,7 @@ import type { Route } from '@/types/route';
 import {
   LucideBuilding2,
   LucideCar,
+  LucideCreditCard,
   LucideLayoutDashboard,
   LucideMapPinPlus,
   LucidePodcast,
@@ -48,6 +51,17 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     roles: [RoleEnum.user],
     sidebar: false,
   },
+  // Car Rental View Location
+  {
+    key: 'User.CarRentalViewLocation',
+    title: 'View Device Location',
+    path: RouteKey.User.CarRentalViewLocation.key,
+    icon: <LucideMapPinPlus />,
+    element: <CarRentalViewLocationPage />,
+    layout: 'dashboard',
+    roles: [RoleEnum.user],
+    sidebar: false,
+  },
   {
     key: 'User.CarPosting',
     title: 'Car Posting',
@@ -74,6 +88,16 @@ const USERROUTES: readonly Route[] = Object.freeze<Route[]>([
     path: RouteKey.User.CompanyConfig.key,
     icon: <LucideBuilding2 />,
     element: <UserCompanyConfigPage />,
+    layout: 'dashboard',
+    sidebar: true,
+    roles: [RoleEnum.user],
+  },
+  {
+    key: 'User.UserAccount',
+    title: 'Accounts',
+    path: RouteKey.User.Account.key,
+    icon: <LucideCreditCard />,
+    element: <UserAccountPage />,
     layout: 'dashboard',
     sidebar: true,
     roles: [RoleEnum.user],

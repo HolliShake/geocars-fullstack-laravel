@@ -209,8 +209,8 @@ export default function RenterBrowsePage(): React.ReactNode {
       </div>
 
       {/* Main Content with Sidebar */}
-      <div className="flex-1 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 flex gap-4 sm:gap-6 h-full">
+      <div className="flex-1 min-h-0">
+        <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8 flex gap-4 sm:gap-6 h-full min-h-0 items-start">
           {/* Mobile Filter Overlay */}
           {showFilters && (
             <div
@@ -222,13 +222,14 @@ export default function RenterBrowsePage(): React.ReactNode {
           {/* Sticky Sidebar Filters */}
           <aside
             className={`
-              fixed lg:static inset-y-0 left-0 z-50 w-80 sm:w-64 lg:w-64 flex-shrink-0 
+              fixed inset-y-0 left-0 z-50 w-80 sm:w-64 lg:w-64 flex-shrink-0 
               transform transition-transform duration-300 ease-in-out
               ${showFilters ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
+              lg:sticky lg:top-4 lg:self-start lg:z-10
             `}
           >
             <div className="h-full overflow-y-auto bg-background lg:bg-transparent p-4 lg:p-0">
-              <div className="lg:sticky lg:top-4">
+              <div>
                 {/* Mobile Close Button */}
                 <div className="flex items-center justify-between mb-4 lg:hidden">
                   <h2 className="text-lg font-semibold">Filters</h2>
@@ -244,7 +245,7 @@ export default function RenterBrowsePage(): React.ReactNode {
 
                 <div className="space-y-4 sm:space-y-6">
                   {/* Filter Card */}
-                  <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4 sm:p-6">
+                  <div className="bg-card/80 backdrop-blur-sm rounded-xl shadow-lg border p-4 sm:p-6 sticky top-4 z-30 lg:static">
                     <div className="flex items-center justify-between mb-4">
                       <h2 className="text-base sm:text-lg font-semibold">Filters</h2>
                       <Button
@@ -395,7 +396,7 @@ export default function RenterBrowsePage(): React.ReactNode {
           </aside>
 
           {/* Main Feed Container */}
-          <div className="flex-1 min-w-0 overflow-y-auto">
+          <div className="flex-1 min-h-0 min-w-0 overflow-y-auto">
             {/* Stats Bar */}
             {allPostings.length > 0 && (
               <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 text-xs sm:text-sm text-muted-foreground bg-card/50 backdrop-blur-sm rounded-lg px-3 sm:px-4 py-2.5 sm:py-3 border shadow-sm">

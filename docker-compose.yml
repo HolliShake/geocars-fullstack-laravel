@@ -7,7 +7,7 @@ services:
       context: ./app
       dockerfile: ../docker/app/Dockerfile
     ports:
-      - '3000:3000'
+      - '3001:3001'
     volumes:
       - ./app:/app:cached # cached improves macOS/Windows perf
       - /app/node_modules # exclude node_modules from host mount
@@ -22,8 +22,11 @@ services:
       - /app/.pnpm-store # exclude PNPM store
     environment:
       - REACT_APP_API_URL=http://backend:8000 # use service name, not localhost
+      # Vite dev proxy: browser → frontend → stripe service (see app/vite.config.ts)
+      - VITE_STRIPE_PROXY_TARGET=http://stripe:5000
     depends_on:
       - backend
+      - stripe
 
   # Laravel API
   backend:
@@ -46,6 +49,8 @@ services:
       - DB_DATABASE=geocars
       - DB_USERNAME=geocars
       - DB_PASSWORD=password
+      - STRIPE_WEBHOOK_SECRET=${STRIPE_WEBHOOK_SECRET:-}
+      - STRIPE_GATEWAY_INGEST_SECRET=${STRIPE_GATEWAY_INGEST_SECRET:-}
     depends_on:
       - mysql
 
@@ -60,8 +65,13 @@ services:
       - ./stripe:/stripe:cached
       - /stripe/node_modules
       - /stripe/dist
+    depends_on:
+      - backend
     environment:
       - NODE_ENV=development
+      - PORT=5000
+      - LARAVEL_STRIPE_INGEST_URL=http://backend:8000
+      - STRIPE_GATEWAY_INGEST_SECRET=${STRIPE_GATEWAY_INGEST_SECRET:-}
 
   # MySQL Database
   mysql:
@@ -96,6 +106,30 @@ services:
       - PMA_PASSWORD=password
     depends_on:
       - mysql
+
+  # Mobile App (React Native / Expo)
+  mobile:
+    build:
+      context: ./mobile
+      dockerfile: ../docker/mobile/Dockerfile
+    ports:
+      - '8081:8081'
+    volumes:
+      - ./mobile:/app:cached
+      - /app/node_modules
+      - /app/.expo
+    environment:
+      - NODE_ENV=development
+      # Use backend service name for network resolution within Docker container
+      - REACT_APP_API_URL=http://backend:8000
+      # CRITICAL: Replace 192.168.X.X with your machine's actual local IP address
+      # so your physical mobile phone can find the Metro Bundler over Wi-Fi.
+      - REACT_NATIVE_PACKAGER_HOSTNAME=192.168.X.X
+      - EXPO_DEVTOOLS_LISTEN_ADDRESS=0.0.0.0
+    depends_on:
+      - backend
+    tty: true
+    stdin_open: true
 
 volumes:
   mysql_data:

@@ -28,14 +28,19 @@ type RouteStructure = {
     Dashboard: RouteConfig<'/user/dashboard'>;
     CarRental: RouteConfig<'/user/car-rental'>;
     CarRentalApplication: RouteConfig<'/user/car-rental/application/:id'>;
+    CarRentalViewLocation: RouteConfig<'/user/car-rental/:id/view-location'>;
     CarPosting: RouteConfig<'/user/car-posting'>;
     QuickCar: RouteConfig<'/user/quick-car'>;
     CompanyConfig: RouteConfig<'/user/company-config'>;
+    Account: RouteConfig<'/user/account'>;
     CompanyCar: RouteConfig<'/user/company-config/cars/:company_id'>;
   };
   Renter: {
     Browse: RouteConfig<'/renter/browse'>;
     Application: RouteConfig<'/renter/browse/:postingId'>;
+    Renter: RouteConfig<'/renter/rental'>;
+    CheckoutSuccess: RouteConfig<'/renter/checkout/success'>;
+    CheckoutCancel: RouteConfig<'/renter/checkout/cancel'>;
   };
 };
 
@@ -88,13 +93,18 @@ export const RouteKey: RouteStructure = Object.freeze<RouteStructure>({
     Dashboard: createRoute('/user/dashboard'),
     CarRental: createRoute('/user/car-rental'),
     CarRentalApplication: createRoute('/user/car-rental/application/:id'),
+    CarRentalViewLocation: createRoute('/user/car-rental/:id/view-location'),
     CarPosting: createRoute('/user/car-posting'),
     QuickCar: createRoute('/user/quick-car'),
     CompanyConfig: createRoute('/user/company-config'),
+    Account: createRoute('/user/account'),
     CompanyCar: createRoute('/user/company-config/cars/:company_id'),
   },
   Renter: {
     Browse: createRoute('/renter/browse'),
     Application: createRoute('/renter/browse/:postingId'),
+    Renter: createRoute('/renter/rental'),
+    CheckoutSuccess: createRoute('/renter/checkout/success'),
+    CheckoutCancel: createRoute('/renter/checkout/cancel'),
   },
 });

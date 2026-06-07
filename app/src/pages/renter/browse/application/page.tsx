@@ -6,6 +6,8 @@ import { Separator } from '@/components/ui/separator';
 import { Skeleton } from '@/components/ui/skeleton';
 import { PaymentMethod, type PaymentMethodType } from '@/constants/payment-method.constant';
 import { dumbCurrency } from '@/lib/dumb-currency';
+import { createStripeCheckoutSession } from '@/lib/stripe-checkout';
+import { RouteKey } from '@/navigation/route';
 import { useCheckCarPostingSubmission, useCreateCarRental, useGetCarPostingById } from '@rest/api';
 import type { CarRental } from '@rest/models';
 import {
@@ -60,7 +62,7 @@ export default function RenterApplication(): React.ReactNode {
   );
 
   const handleSubmitApplication = async () => {
-    if (!data?.data) {
+    if (!data?.data || !postingId) {
       toast.error('Car posting data not available. Please refresh the page.');
       return;
     }
@@ -68,8 +70,11 @@ export default function RenterApplication(): React.ReactNode {
     try {
       const carPosting = data.data;
       const startDate = new Date(carPosting.start_date);
+      const rentalTotal = carPosting.price * rentalDays;
+      /** PHP: Stripe expects smallest currency unit (centavos). */
+      const amountCentavos = Math.round(rentalTotal * 100);
 
-      await submitApplication({
+      const result = await submitApplication({
         data: {
           car_posting_id: Number(postingId),
           user_id: 0, // zero means, current user in the backend
@@ -80,10 +85,41 @@ export default function RenterApplication(): React.ReactNode {
         } as CarRental,
       });
 
+      const rentalId = result?.data?.id;
+
+      if (paymentMethod === PaymentMethod.ONLINE) {
+        if (!rentalId) {
+          toast.error('Application saved but payment could not start (missing rental id).');
+          navigate(RouteKey.Renter.Browse.parse());
+          return;
+        }
+        if (amountCentavos < 1) {
+          toast.error('Amount must be greater than zero for card payment.');
+          return;
+        }
+        const origin = window.location.origin;
+        const checkoutUrl = await createStripeCheckoutSession({
+          item: {
+            id: rentalId,
+            amount: amountCentavos,
+            image: carPosting.car?.image_url ?? undefined,
+          },
+          successUrl: `${origin}${RouteKey.Renter.CheckoutSuccess.key}?session_id={CHECKOUT_SESSION_ID}`,
+          cancelUrl: `${origin}${RouteKey.Renter.CheckoutCancel.key}?posting_id=${encodeURIComponent(postingId)}`,
+        });
+        toast.message('Redirecting to secure checkout…');
+        window.location.href = checkoutUrl;
+        return;
+      }
+
       toast.success('Application submitted successfully!');
-      navigate('/renter/rentals');
+      navigate(RouteKey.Renter.Browse.parse());
     } catch (error) {
-      toast.error('Failed to submit application. Please try again.');
+      const message =
+        error instanceof Error && error.message
+          ? error.message
+          : 'Failed to submit application. Please try again.';
+      toast.error(message);
       console.error('Application submission error:', error);
     }
   };

@@ -9,11 +9,14 @@ use OpenApi\Attributes as OA;
     schema: "Transaction",
     title: "Transaction",
     type: "object",
-    required: [
-        // Override required
-    ],
+    required: ["id", "user_id", "amount", "status", "created_at", "updated_at"],
     properties: [
-        // Override fillables
+        new OA\Property(property: "id", type: "integer", example: 1),
+        new OA\Property(property: "user_id", type: "integer", example: 1),
+        new OA\Property(property: "amount", type: "number", format: "float", example: 100.0),
+        new OA\Property(property: "status", type: "string", example: "completed"),
+        new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00Z"),
+        new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2024-01-01T00:00:00Z"),
     ]
 )]
 
@@ -78,5 +81,21 @@ use OpenApi\Attributes as OA;
 
 class Transaction extends Model
 {
-    //
+    protected $table = 'transactions';
+
+    protected $fillable = [
+        'car_rental_id',
+        'amount',
+        'type', // Payment | Refund
+        'reference_number',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+    ];
+
+    public function carRental()
+    {
+        return $this->belongsTo(CarRental::class, 'car_rental_id', 'id');
+    }
 }

@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Enum\PaymentMethodEnum;
 use App\Enum\RentalStatusEnum;
+use App\Enum\TransactionTypeEnum;
+use App\Models\CarRental;
+use App\Models\Transaction;
+use App\Models\UserAccount;
 use App\Service\CarRentalService;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use OpenApi\Attributes as OA;
 
@@ -272,8 +279,9 @@ class CarRentalController extends Controller
                 // 'start_date'        => 'required|date|after_or_equal:today',
                 // 'return_date'       => 'required|date|after:start_date',
                 'rental_status'     => 'sometimes|in:' . implode(',', array_column(RentalStatusEnum::cases(), 'value')),
-                'payment_method'    => 'sometimes|string',
-                'payment_reference' => 'nullable|string|max:255',
+                'payment_method'      => 'sometimes|string',
+                'payment_reference'   => 'nullable|string|max:255',
+                'cash_debt_settled'   => 'sometimes|boolean',
             ]);
 
             if ($validator->fails()) {
@@ -282,12 +290,194 @@ class CarRentalController extends Controller
 
             $validated = $validator->validated();
 
+            // When confirming a cash-payment rental, record the full amount as debt.
+            if (
+                isset($validated['rental_status'])
+                && $validated['rental_status'] === RentalStatusEnum::CONFIRMED->value
+            ) {
+                $existing = CarRental::with('carPosting')->findOrFail($id);
+                $paymentMethod = $validated['payment_method'] ?? $existing->payment_method;
+                if ($paymentMethod === PaymentMethodEnum::CASH->value) {
+                    $days          = $validated['days'] ?? $existing->days;
+                    $deposit       = $validated['deposit'] ?? $existing->deposit;
+                    $pricePerDay   = (float) ($existing->carPosting?->price ?? 0);
+                    $validated['cash_debt'] = ($days * $pricePerDay) + (float) $deposit;
+                }
+            }
+
             return $this->ok($this->service->update($id, $validated));
         } catch (ModelNotFoundException $e) {
             return $this->notFound('CarRental not found');
         } catch (\Exception $e) {
             return $this->internalServerError($e->getMessage());
         }
+    }
+
+    /**
+     * Finish (complete) a confirmed car rental, set return date, and
+     * process a Stripe refund + UserAccount payout if the payment was online.
+     */
+    #[OA\Post(
+        path: "/api/CarRental/{id}/finish",
+        summary: "Finish a confirmed CarRental",
+        tags: ["CarRental"],
+        description: "Marks a confirmed rental as completed, records the return date as now, computes refundable amount / additional charges, and — when the payment method is online — issues a Stripe refund for the refundable amount back to the original payment source, then records it as a REFUND transaction. The renter's default UserAccount (bank / e-wallet) is returned in the response so the caller knows where any manual payout should be sent.",
+        operationId: "finishCarRental",
+    )]
+    #[OA\Parameter(name: "id", in: "path", required: true, schema: new OA\Schema(type: "integer"))]
+    #[OA\Response(
+        response: 200,
+        description: "Rental finished successfully",
+        content: new OA\JsonContent(ref: "#/components/schemas/FinishCarRentalResponse200"),
+    )]
+    #[OA\Response(response: 400, description: "Rental is not in confirmed status")]
+    #[OA\Response(response: 404, description: "CarRental not found")]
+    #[OA\Response(
+        response: 500,
+        description: "Internal server error",
+        content: new OA\JsonContent(ref: "#/components/schemas/InternalServerErrorResponse"),
+    )]
+    public function finishRental(int $id)
+    {
+        try {
+            /** @var CarRental $rental */
+            $rental = CarRental::with([
+                'carPosting.car',
+                'user.userAccounts',
+                'transactions',
+            ])->findOrFail($id);
+
+            if ($rental->rental_status !== RentalStatusEnum::CONFIRMED->value) {
+                return $this->badRequest(
+                    'Only confirmed rentals can be finished. Current status: ' . $rental->rental_status
+                );
+            }
+
+            // Mark as completed and set return date
+            $updates = [
+                'rental_status' => RentalStatusEnum::COMPLETED->value,
+                'return_date'   => now(),
+            ];
+
+            // For cash payments, finalise the debt (original debt + additional charges).
+            if ($rental->payment_method === PaymentMethodEnum::CASH->value) {
+                $additionalChargesPreview = (float) $rental->additional_charges;
+                $updates['cash_debt'] = ((float) ($rental->cash_debt ?? 0)) + $additionalChargesPreview;
+            }
+
+            $rental->forceFill($updates)->save();
+
+            $rental->refresh();
+
+            $refundableAmount   = (float) $rental->refundable_amount;
+            $additionalCharges  = (float) $rental->additional_charges;
+            $refundTransaction  = null;
+            $stripeRefundId     = null;
+
+            // Stripe refund for online payments when there is a refundable amount
+            if (
+                $rental->payment_method === PaymentMethodEnum::ONLINE->value
+                && $refundableAmount > 0
+            ) {
+                // Find the original payment transaction (reference_number = Stripe session id)
+                /** @var Transaction|null $paymentTx */
+                $paymentTx = $rental->transactions()
+                    ->where('type', TransactionTypeEnum::PAYMENT->value)
+                    ->latest()
+                    ->first();
+
+                if ($paymentTx && $paymentTx->reference_number) {
+                    $stripeRefundId = $this->issueStripeRefund(
+                        sessionId:        $paymentTx->reference_number,
+                        refundAmountMajor: $refundableAmount,
+                    );
+                }
+
+                // Record the refund transaction regardless (even if Stripe isn't configured)
+                $refundReference = $stripeRefundId ?? ('refund_manual_' . $id . '_' . time());
+
+                $refundTransaction = Transaction::firstOrCreate(
+                    ['reference_number' => $refundReference],
+                    [
+                        'car_rental_id' => $rental->id,
+                        'amount'        => $refundableAmount,
+                        'type'          => TransactionTypeEnum::REFUND->value,
+                    ]
+                );
+            }
+
+            // Resolve renter's default payout account
+            $payoutAccount = UserAccount::where('user_id', $rental->user_id)
+                ->where('is_default', true)
+                ->first();
+
+            if (!$payoutAccount) {
+                $payoutAccount = UserAccount::where('user_id', $rental->user_id)->first();
+            }
+
+            return $this->ok([
+                'rental'             => $rental->load('carPosting.car', 'user', 'transactions'),
+                'refundable_amount'  => $refundableAmount,
+                'additional_charges' => $additionalCharges,
+                'refund_transaction' => $refundTransaction,
+                'stripe_refund_id'   => $stripeRefundId,
+                'payout_account'     => $payoutAccount,
+            ]);
+        } catch (ModelNotFoundException) {
+            return $this->notFound('CarRental not found');
+        } catch (\Exception $e) {
+            Log::error('finishRental error: ' . $e->getMessage(), ['rental_id' => $id]);
+            return $this->internalServerError($e->getMessage());
+        }
+    }
+
+    /**
+     * Retrieve the payment_intent from a Stripe checkout session, then create a refund.
+     * Returns the Stripe refund id on success, null if Stripe is not configured or unavailable.
+     */
+    private function issueStripeRefund(string $sessionId, float $refundAmountMajor): ?string
+    {
+        $apiKey = config('stripe.secret');
+        if (!is_string($apiKey) || $apiKey === '') {
+            Log::warning('finishRental: STRIPE_SECRET_KEY is not configured — skipping Stripe refund.');
+            return null;
+        }
+
+        $http = Http::withHeaders(['Authorization' => 'Bearer ' . $apiKey])->timeout(15);
+
+        // 1. Retrieve checkout session to get payment_intent
+        $sessionResponse = $http->get("https://api.stripe.com/v1/checkout/sessions/{$sessionId}");
+        if ($sessionResponse->failed()) {
+            Log::warning('finishRental: could not retrieve Stripe session.', [
+                'session_id' => $sessionId,
+                'status'     => $sessionResponse->status(),
+            ]);
+            return null;
+        }
+
+        $sessionData    = $sessionResponse->json();
+        $paymentIntent  = $sessionData['payment_intent'] ?? null;
+
+        if (!$paymentIntent) {
+            Log::warning('finishRental: Stripe session has no payment_intent.', ['session_id' => $sessionId]);
+            return null;
+        }
+
+        // 2. Create refund (amount in minor units)
+        $refundResponse = $http->asForm()->post('https://api.stripe.com/v1/refunds', [
+            'payment_intent' => $paymentIntent,
+            'amount'         => (int) round($refundAmountMajor * 100),
+        ]);
+
+        if ($refundResponse->failed()) {
+            Log::warning('finishRental: Stripe refund creation failed.', [
+                'payment_intent' => $paymentIntent,
+                'body'           => $refundResponse->body(),
+            ]);
+            return null;
+        }
+
+        return $refundResponse->json()['id'] ?? null;
     }
 
     /**

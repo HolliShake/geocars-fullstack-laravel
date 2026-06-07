@@ -13,7 +13,7 @@ RUN npm install --legacy-peer-deps
 COPY . .
 
 # Expose port (common dev server ports)
-EXPOSE 3000
+EXPOSE 3001
 
 # Start development server
 CMD ["npm", "run", "dev"]

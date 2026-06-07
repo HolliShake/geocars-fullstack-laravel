@@ -25,17 +25,25 @@ import type {
 } from '@tanstack/react-query';
 
 import type {
+  AdminDashboardResponse200,
   AuthResponse200,
   BrowseCarPostingParams,
   CarPosting,
   CarRental,
   CheckCarPostingSubmission200,
   Comment,
+  ConfirmStripeCheckoutSession200,
+  ConfirmStripeCheckoutSession401,
+  ConfirmStripeCheckoutSession403,
+  ConfirmStripeCheckoutSession503,
+  ConfirmStripeCheckoutSessionBody,
   CreateCarBody,
   CreateCarPostingResponse200,
   CreateCarRentalResponse200,
   CreateCarResponse200,
   CreateCommentResponse200,
+  CreateDeviceLocationResponse200,
+  CreateDeviceResponse200,
   CreatePlanFeatureResponse200,
   CreatePlanResponse200,
   CreateReactionResponse200,
@@ -48,6 +56,8 @@ import type {
   DeleteCarRentalResponse200,
   DeleteCarResponse200,
   DeleteCommentResponse200,
+  DeleteDeviceLocationResponse200,
+  DeleteDeviceResponse200,
   DeletePlanFeatureResponse200,
   DeletePlanResponse200,
   DeleteReactionResponse200,
@@ -55,6 +65,8 @@ import type {
   DeleteUserCompanyResponse200,
   DeleteUserRequirementResponse200,
   DeleteUserResponse200,
+  Device,
+  DeviceLocation,
   ForbiddenResponse,
   GetCarPaginatedParams,
   GetCarPostingPaginatedParams,
@@ -64,6 +76,12 @@ import type {
   GetCarResponse200,
   GetCommentPaginatedParams,
   GetCommentResponse200,
+  GetDeviceLocationPaginatedParams,
+  GetDeviceLocationResponse200,
+  GetDevicePaginatedParams,
+  GetDeviceResponse200,
+  GetDeviceWithLocationsResponse200,
+  GetMachineInfo200,
   GetPlanFeaturePaginatedParams,
   GetPlanFeatureResponse200,
   GetPlanResponse200,
@@ -72,6 +90,7 @@ import type {
   GetRequirementResponse200,
   GetUserCompanyPaginatedParams,
   GetUserCompanyResponse200,
+  GetUserDashboard200,
   GetUserPaginatedParams,
   GetUserRequirementPaginatedParams,
   GetUserRequirementResponse200,
@@ -84,6 +103,8 @@ import type {
   PaginatedCarRentalResponse200,
   PaginatedCarResponse200,
   PaginatedCommentResponse200,
+  PaginatedDeviceLocationResponse200,
+  PaginatedDeviceResponse200,
   PaginatedPlanFeatureResponse200,
   PaginatedPlanResponse200,
   PaginatedRequirementResponse200,
@@ -95,12 +116,21 @@ import type {
   Reaction,
   Requirement,
   SignupRequest,
+  StripeGatewayIngest200,
+  StripeGatewayIngest401,
+  StripeGatewayIngestBody,
+  StripeWebhook200,
+  StripeWebhook400,
+  StripeWebhook503,
+  StripeWebhookBody,
   UnauthorizedResponse,
   UpdateCarBody,
   UpdateCarPostingResponse200,
   UpdateCarRentalResponse200,
   UpdateCarResponse200,
   UpdateCommentResponse200,
+  UpdateDeviceLocationResponse200,
+  UpdateDeviceResponse200,
   UpdatePlanFeatureResponse200,
   UpdatePlanResponse200,
   UpdateReactionResponse200,
@@ -117,6 +147,33 @@ import type {
 } from './models';
 
 import { fetchData } from './axios';
+
+// https://stackoverflow.com/questions/49579094/typescript-conditional-types-filter-out-readonly-properties-pick-only-requir/49579497#49579497
+type IfEquals<X, Y, A = X, B = never> = (<T>() => T extends X ? 1 : 2) extends <
+T,
+>() => T extends Y ? 1 : 2
+? A
+: B;
+
+type WritableKeys<T> = {
+[P in keyof T]-?: IfEquals<
+  { [Q in P]: T[P] },
+  { -readonly [Q in P]: T[P] },
+  P
+>;
+}[keyof T];
+
+type UnionToIntersection<U> =
+  (U extends any ? (k: U)=>void : never) extends ((k: infer I)=>void) ? I : never;
+type DistributeReadOnlyOverUnions<T> = T extends any ? NonReadonly<T> : never;
+
+type Writable<T> = Pick<T, WritableKeys<T>>;
+type NonReadonly<T> = [T] extends [UnionToIntersection<T>] ? {
+  [P in keyof Writable<T>]: T[P] extends object
+    ? NonReadonly<NonNullable<T[P]>>
+    : T[P];
+} : DistributeReadOnlyOverUnions<T>;
+
 /**
  *  Login with the provided details
  * @summary Login
@@ -2240,6 +2297,1110 @@ export const useDeleteComment = <TError = null | InternalServerErrorResponse,
     }
     
 /**
+ * Retrieve admin dashboard stats and revenue history
+ * @summary Get admin dashboard data
+ */
+export const getAdminDashboard = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<AdminDashboardResponse200>(
+      {url: `/api/Dashboard/admin`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetAdminDashboardQueryKey = () => {
+    return [`/api/Dashboard/admin`] as const;
+    }
+
+    
+export const getGetAdminDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getAdminDashboard>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetAdminDashboardQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getAdminDashboard>>> = ({ signal }) => getAdminDashboard(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetAdminDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getAdminDashboard>>>
+export type GetAdminDashboardQueryError = unknown
+
+
+export function useGetAdminDashboard<TData = Awaited<ReturnType<typeof getAdminDashboard>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAdminDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getAdminDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAdminDashboard<TData = Awaited<ReturnType<typeof getAdminDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getAdminDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getAdminDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetAdminDashboard<TData = Awaited<ReturnType<typeof getAdminDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get admin dashboard data
+ */
+
+export function useGetAdminDashboard<TData = Awaited<ReturnType<typeof getAdminDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getAdminDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetAdminDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Retrieve dashboard metrics for the authenticated car owner, including active bookings, total trips, total spent, average rating, and recent activity.
+ * @summary Get dashboard statistics for car owner
+ */
+export const getUserDashboard = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetUserDashboard200>(
+      {url: `/api/Dashboard/user`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetUserDashboardQueryKey = () => {
+    return [`/api/Dashboard/user`] as const;
+    }
+
+    
+export const getGetUserDashboardQueryOptions = <TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetUserDashboardQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getUserDashboard>>> = ({ signal }) => getUserDashboard(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetUserDashboardQueryResult = NonNullable<Awaited<ReturnType<typeof getUserDashboard>>>
+export type GetUserDashboardQueryError = unknown
+
+
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getUserDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getUserDashboard>>,
+          TError,
+          Awaited<ReturnType<typeof getUserDashboard>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get dashboard statistics for car owner
+ */
+
+export function useGetUserDashboard<TData = Awaited<ReturnType<typeof getUserDashboard>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getUserDashboard>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetUserDashboardQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Retrieve a paginated list of Device with optional search
+ * @summary Get paginated list of Device
+ */
+export const getDevicePaginated = (
+    params?: GetDevicePaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedDeviceResponse200>(
+      {url: `/api/Device`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetDevicePaginatedQueryKey = (params?: GetDevicePaginatedParams,) => {
+    return [`/api/Device`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetDevicePaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDevicePaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDevicePaginated>>> = ({ signal }) => getDevicePaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDevicePaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getDevicePaginated>>>
+export type GetDevicePaginatedQueryError = unknown
+
+
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params: undefined |  GetDevicePaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDevicePaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDevicePaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDevicePaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDevicePaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of Device
+ */
+
+export function useGetDevicePaginated<TData = Awaited<ReturnType<typeof getDevicePaginated>>, TError = unknown>(
+ params?: GetDevicePaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDevicePaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDevicePaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ *  Create a new Device with the provided details
+ * @summary Create a new Device
+ */
+export const createDevice = (
+    device: NonReadonly<Device>,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateDeviceResponse200>(
+      {url: `/api/Device`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: device, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateDeviceMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext> => {
+
+const mutationKey = ['createDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDevice>>, {data: NonReadonly<Device>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDevice(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof createDevice>>>
+    export type CreateDeviceMutationBody = NonReadonly<Device>
+    export type CreateDeviceMutationError = ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Create a new Device
+ */
+export const useCreateDevice = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDevice>>, TError,{data: NonReadonly<Device>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createDevice>>,
+        TError,
+        {data: NonReadonly<Device>},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a Device by its ID
+ * @summary Get a specific Device
+ */
+export const getDeviceById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceByIdQueryKey = (id?: number,) => {
+    return [`/api/Device/${id}`] as const;
+    }
+
+    
+export const getGetDeviceByIdQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceById>>> = ({ signal }) => getDeviceById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceById>>>
+export type GetDeviceByIdQueryError = null
+
+
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific Device
+ */
+
+export function useGetDeviceById<TData = Awaited<ReturnType<typeof getDeviceById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing Device with the provided details
+ * @summary Update a Device
+ */
+export const updateDevice = (
+    id: number,
+    device: NonReadonly<Device>,
+ ) => {
+      
+      
+      return fetchData<UpdateDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: device
+    },
+      );
+    }
+  
+
+
+export const getUpdateDeviceMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext> => {
+
+const mutationKey = ['updateDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDevice>>, {id: number;data: NonReadonly<Device>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDevice(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof updateDevice>>>
+    export type UpdateDeviceMutationBody = NonReadonly<Device>
+    export type UpdateDeviceMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Update a Device
+ */
+export const useUpdateDevice = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDevice>>, TError,{id: number;data: NonReadonly<Device>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDevice>>,
+        TError,
+        {id: number;data: NonReadonly<Device>},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a Device by its ID
+ * @summary Delete a Device
+ */
+export const deleteDevice = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteDeviceResponse200>(
+      {url: `/api/Device/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteDeviceMutationOptions = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteDevice'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDevice>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDevice(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDeviceMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDevice>>>
+    
+    export type DeleteDeviceMutationError = null | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a Device
+ */
+export const useDeleteDevice = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDevice>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDevice>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteDeviceMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve the Device assigned to a Car Rental, along with its full location history and latest location
+ * @summary Get Device by Car Rental ID with all location history
+ */
+export const getDeviceByCarRental = (
+    carRentalId: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceWithLocationsResponse200>(
+      {url: `/api/Device/ByCarRental/${carRentalId}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceByCarRentalQueryKey = (carRentalId?: number,) => {
+    return [`/api/Device/ByCarRental/${carRentalId}`] as const;
+    }
+
+    
+export const getGetDeviceByCarRentalQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceByCarRentalQueryKey(carRentalId);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceByCarRental>>> = ({ signal }) => getDeviceByCarRental(carRentalId, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(carRentalId), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceByCarRentalQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceByCarRental>>>
+export type GetDeviceByCarRentalQueryError = null
+
+
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceByCarRental>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceByCarRental>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceByCarRental>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceByCarRental>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get Device by Car Rental ID with all location history
+ */
+
+export function useGetDeviceByCarRental<TData = Awaited<ReturnType<typeof getDeviceByCarRental>>, TError = null>(
+ carRentalId: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceByCarRental>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceByCarRentalQueryOptions(carRentalId,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Retrieve a paginated list of DeviceLocation with optional search
+ * @summary Get paginated list of DeviceLocation
+ */
+export const getDeviceLocationPaginated = (
+    params?: GetDeviceLocationPaginatedParams,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<PaginatedDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation`, method: 'GET',
+        params, signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceLocationPaginatedQueryKey = (params?: GetDeviceLocationPaginatedParams,) => {
+    return [`/api/DeviceLocation`, ...(params ? [params]: [])] as const;
+    }
+
+    
+export const getGetDeviceLocationPaginatedQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceLocationPaginatedQueryKey(params);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceLocationPaginated>>> = ({ signal }) => getDeviceLocationPaginated(params, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceLocationPaginatedQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceLocationPaginated>>>
+export type GetDeviceLocationPaginatedQueryError = unknown
+
+
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params: undefined |  GetDeviceLocationPaginatedParams, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationPaginated>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get paginated list of DeviceLocation
+ */
+
+export function useGetDeviceLocationPaginated<TData = Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError = unknown>(
+ params?: GetDeviceLocationPaginatedParams, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationPaginated>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceLocationPaginatedQueryOptions(params,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ *  Create a new DeviceLocation with the provided details
+ * @summary Create a new DeviceLocation
+ */
+export const createDeviceLocation = (
+    deviceLocation: NonReadonly<DeviceLocation>,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<CreateDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: deviceLocation, signal
+    },
+      );
+    }
+  
+
+
+export const getCreateDeviceLocationMutationOptions = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext> => {
+
+const mutationKey = ['createDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof createDeviceLocation>>, {data: NonReadonly<DeviceLocation>}> = (props) => {
+          const {data} = props ?? {};
+
+          return  createDeviceLocation(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type CreateDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof createDeviceLocation>>>
+    export type CreateDeviceLocationMutationBody = NonReadonly<DeviceLocation>
+    export type CreateDeviceLocationMutationError = ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Create a new DeviceLocation
+ */
+export const useCreateDeviceLocation = <TError = ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof createDeviceLocation>>, TError,{data: NonReadonly<DeviceLocation>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof createDeviceLocation>>,
+        TError,
+        {data: NonReadonly<DeviceLocation>},
+        TContext
+      > => {
+
+      const mutationOptions = getCreateDeviceLocationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve a DeviceLocation by its ID
+ * @summary Get a specific DeviceLocation
+ */
+export const getDeviceLocationById = (
+    id: number,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetDeviceLocationByIdQueryKey = (id?: number,) => {
+    return [`/api/DeviceLocation/${id}`] as const;
+    }
+
+    
+export const getGetDeviceLocationByIdQueryOptions = <TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetDeviceLocationByIdQueryKey(id);
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getDeviceLocationById>>> = ({ signal }) => getDeviceLocationById(id, signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, enabled: !!(id), ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetDeviceLocationByIdQueryResult = NonNullable<Awaited<ReturnType<typeof getDeviceLocationById>>>
+export type GetDeviceLocationByIdQueryError = null
+
+
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getDeviceLocationById>>,
+          TError,
+          Awaited<ReturnType<typeof getDeviceLocationById>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get a specific DeviceLocation
+ */
+
+export function useGetDeviceLocationById<TData = Awaited<ReturnType<typeof getDeviceLocationById>>, TError = null>(
+ id: number, options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getDeviceLocationById>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetDeviceLocationByIdQueryOptions(id,options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
+ * Update an existing DeviceLocation with the provided details
+ * @summary Update a DeviceLocation
+ */
+export const updateDeviceLocation = (
+    id: number,
+    deviceLocation: NonReadonly<DeviceLocation>,
+ ) => {
+      
+      
+      return fetchData<UpdateDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'PUT',
+      headers: {'Content-Type': 'application/json', },
+      data: deviceLocation
+    },
+      );
+    }
+  
+
+
+export const getUpdateDeviceLocationMutationOptions = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext> => {
+
+const mutationKey = ['updateDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof updateDeviceLocation>>, {id: number;data: NonReadonly<DeviceLocation>}> = (props) => {
+          const {id,data} = props ?? {};
+
+          return  updateDeviceLocation(id,data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type UpdateDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof updateDeviceLocation>>>
+    export type UpdateDeviceLocationMutationBody = NonReadonly<DeviceLocation>
+    export type UpdateDeviceLocationMutationError = null | ValidationErrorResponse | InternalServerErrorResponse
+
+    /**
+ * @summary Update a DeviceLocation
+ */
+export const useUpdateDeviceLocation = <TError = null | ValidationErrorResponse | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof updateDeviceLocation>>, TError,{id: number;data: NonReadonly<DeviceLocation>}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof updateDeviceLocation>>,
+        TError,
+        {id: number;data: NonReadonly<DeviceLocation>},
+        TContext
+      > => {
+
+      const mutationOptions = getUpdateDeviceLocationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Delete a DeviceLocation by its ID
+ * @summary Delete a DeviceLocation
+ */
+export const deleteDeviceLocation = (
+    id: number,
+ ) => {
+      
+      
+      return fetchData<DeleteDeviceLocationResponse200>(
+      {url: `/api/DeviceLocation/${id}`, method: 'DELETE'
+    },
+      );
+    }
+  
+
+
+export const getDeleteDeviceLocationMutationOptions = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext> => {
+
+const mutationKey = ['deleteDeviceLocation'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof deleteDeviceLocation>>, {id: number}> = (props) => {
+          const {id} = props ?? {};
+
+          return  deleteDeviceLocation(id,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type DeleteDeviceLocationMutationResult = NonNullable<Awaited<ReturnType<typeof deleteDeviceLocation>>>
+    
+    export type DeleteDeviceLocationMutationError = null | InternalServerErrorResponse
+
+    /**
+ * @summary Delete a DeviceLocation
+ */
+export const useDeleteDeviceLocation = <TError = null | InternalServerErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof deleteDeviceLocation>>, TError,{id: number}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof deleteDeviceLocation>>,
+        TError,
+        {id: number},
+        TContext
+      > => {
+
+      const mutationOptions = getDeleteDeviceLocationMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Retrieve detailed statistics regarding the host operating system, memory metrics, and CPU metrics.
+ * @summary Get machine hardware and system information
+ */
+export const getMachineInfo = (
+    
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<GetMachineInfo200>(
+      {url: `/api/Machine/info`, method: 'GET', signal
+    },
+      );
+    }
+  
+
+export const getGetMachineInfoQueryKey = () => {
+    return [`/api/Machine/info`] as const;
+    }
+
+    
+export const getGetMachineInfoQueryOptions = <TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>( options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+) => {
+
+const {query: queryOptions} = options ?? {};
+
+  const queryKey =  queryOptions?.queryKey ?? getGetMachineInfoQueryKey();
+
+  
+
+    const queryFn: QueryFunction<Awaited<ReturnType<typeof getMachineInfo>>> = ({ signal }) => getMachineInfo(signal);
+
+      
+
+      
+
+   return  { queryKey, queryFn, ...queryOptions} as UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData> & { queryKey: DataTag<QueryKey, TData, TError> }
+}
+
+export type GetMachineInfoQueryResult = NonNullable<Awaited<ReturnType<typeof getMachineInfo>>>
+export type GetMachineInfoQueryError = unknown
+
+
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options: { query:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>> & Pick<
+        DefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMachineInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getMachineInfo>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  DefinedUseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>> & Pick<
+        UndefinedInitialDataOptions<
+          Awaited<ReturnType<typeof getMachineInfo>>,
+          TError,
+          Awaited<ReturnType<typeof getMachineInfo>>
+        > , 'initialData'
+      >, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+ , queryClient?: QueryClient
+  ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> }
+/**
+ * @summary Get machine hardware and system information
+ */
+
+export function useGetMachineInfo<TData = Awaited<ReturnType<typeof getMachineInfo>>, TError = unknown>(
+  options?: { query?:Partial<UseQueryOptions<Awaited<ReturnType<typeof getMachineInfo>>, TError, TData>>, }
+ , queryClient?: QueryClient 
+ ):  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> } {
+
+  const queryOptions = getGetMachineInfoQueryOptions(options)
+
+  const query = useQuery(queryOptions , queryClient) as  UseQueryResult<TData, TError> & { queryKey: DataTag<QueryKey, TData, TError> };
+
+  query.queryKey = queryOptions.queryKey ;
+
+  return query;
+}
+
+
+
+
+/**
  * Retrieve a paginated list of plans with optional search
  * @summary Get paginated list of plans
  */
@@ -3552,6 +4713,204 @@ export const useDeleteRequirement = <TError = null | InternalServerErrorResponse
       > => {
 
       const mutationOptions = getDeleteRequirementMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Authenticated renter only. Retrieves the Checkout Session from Stripe, verifies payment_status is paid and metadata.car_rental_id belongs to the current user, then inserts a Transaction row.
+ * @summary Confirm Stripe Checkout and record a payment transaction
+ */
+export const confirmStripeCheckoutSession = (
+    confirmStripeCheckoutSessionBody: ConfirmStripeCheckoutSessionBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<ConfirmStripeCheckoutSession200>(
+      {url: `/api/Stripe/checkout/confirm`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: confirmStripeCheckoutSessionBody, signal
+    },
+      );
+    }
+  
+
+
+export const getConfirmStripeCheckoutSessionMutationOptions = <TError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext> => {
+
+const mutationKey = ['confirmStripeCheckoutSession'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, {data: ConfirmStripeCheckoutSessionBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  confirmStripeCheckoutSession(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type ConfirmStripeCheckoutSessionMutationResult = NonNullable<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>>
+    export type ConfirmStripeCheckoutSessionMutationBody = ConfirmStripeCheckoutSessionBody
+    export type ConfirmStripeCheckoutSessionMutationError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503
+
+    /**
+ * @summary Confirm Stripe Checkout and record a payment transaction
+ */
+export const useConfirmStripeCheckoutSession = <TError = ConfirmStripeCheckoutSession401 | ConfirmStripeCheckoutSession403 | ValidationErrorResponse | InternalServerErrorResponse | ConfirmStripeCheckoutSession503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof confirmStripeCheckoutSession>>, TError,{data: ConfirmStripeCheckoutSessionBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof confirmStripeCheckoutSession>>,
+        TError,
+        {data: ConfirmStripeCheckoutSessionBody},
+        TContext
+      > => {
+
+      const mutationOptions = getConfirmStripeCheckoutSessionMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Receives Stripe webhook events. Verifies `Stripe-Signature` using STRIPE_WEBHOOK_SECRET. On `checkout.session.completed`, inserts a Transaction when metadata contains car_rental_id.
+ * @summary Stripe webhook (signed)
+ */
+export const stripeWebhook = (
+    stripeWebhookBody: StripeWebhookBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<StripeWebhook200>(
+      {url: `/api/Stripe/webhook`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: stripeWebhookBody, signal
+    },
+      );
+    }
+  
+
+
+export const getStripeWebhookMutationOptions = <TError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext> => {
+
+const mutationKey = ['stripeWebhook'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stripeWebhook>>, {data: StripeWebhookBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stripeWebhook(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StripeWebhookMutationResult = NonNullable<Awaited<ReturnType<typeof stripeWebhook>>>
+    export type StripeWebhookMutationBody = StripeWebhookBody
+    export type StripeWebhookMutationError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503
+
+    /**
+ * @summary Stripe webhook (signed)
+ */
+export const useStripeWebhook = <TError = StripeWebhook400 | InternalServerErrorResponse | StripeWebhook503,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeWebhook>>, TError,{data: StripeWebhookBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stripeWebhook>>,
+        TError,
+        {data: StripeWebhookBody},
+        TContext
+      > => {
+
+      const mutationOptions = getStripeWebhookMutationOptions(options);
+
+      return useMutation(mutationOptions , queryClient);
+    }
+    
+/**
+ * Internal use: the Node `/stripe` service verifies the Stripe webhook, then forwards a minimal payload here. Requires header `X-Stripe-Gateway-Secret` matching STRIPE_GATEWAY_INGEST_SECRET.
+ * @summary Ingest checkout completion from Stripe gateway (Node)
+ */
+export const stripeGatewayIngest = (
+    stripeGatewayIngestBody: StripeGatewayIngestBody,
+ signal?: AbortSignal
+) => {
+      
+      
+      return fetchData<StripeGatewayIngest200>(
+      {url: `/api/Stripe/webhook/ingest`, method: 'POST',
+      headers: {'Content-Type': 'application/json', },
+      data: stripeGatewayIngestBody, signal
+    },
+      );
+    }
+  
+
+
+export const getStripeGatewayIngestMutationOptions = <TError = StripeGatewayIngest401 | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext>, }
+): UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext> => {
+
+const mutationKey = ['stripeGatewayIngest'];
+const {mutation: mutationOptions} = options ?
+      options.mutation && 'mutationKey' in options.mutation && options.mutation.mutationKey ?
+      options
+      : {...options, mutation: {...options.mutation, mutationKey}}
+      : {mutation: { mutationKey, }};
+
+      
+
+
+      const mutationFn: MutationFunction<Awaited<ReturnType<typeof stripeGatewayIngest>>, {data: StripeGatewayIngestBody}> = (props) => {
+          const {data} = props ?? {};
+
+          return  stripeGatewayIngest(data,)
+        }
+
+        
+
+
+  return  { mutationFn, ...mutationOptions }}
+
+    export type StripeGatewayIngestMutationResult = NonNullable<Awaited<ReturnType<typeof stripeGatewayIngest>>>
+    export type StripeGatewayIngestMutationBody = StripeGatewayIngestBody
+    export type StripeGatewayIngestMutationError = StripeGatewayIngest401 | ValidationErrorResponse
+
+    /**
+ * @summary Ingest checkout completion from Stripe gateway (Node)
+ */
+export const useStripeGatewayIngest = <TError = StripeGatewayIngest401 | ValidationErrorResponse,
+    TContext = unknown>(options?: { mutation?:UseMutationOptions<Awaited<ReturnType<typeof stripeGatewayIngest>>, TError,{data: StripeGatewayIngestBody}, TContext>, }
+ , queryClient?: QueryClient): UseMutationResult<
+        Awaited<ReturnType<typeof stripeGatewayIngest>>,
+        TError,
+        {data: StripeGatewayIngestBody},
+        TContext
+      > => {
+
+      const mutationOptions = getStripeGatewayIngestMutationOptions(options);
 
       return useMutation(mutationOptions , queryClient);
     }

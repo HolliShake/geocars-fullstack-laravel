@@ -10,75 +10,61 @@ class UserSubscriptionSeeder extends Seeder
 {
     /**
      * Run the database seeds.
+     *
+     * ROLE NOTE:
+     *   role='user'   = subscriber — they pay for a plan to list cars on the platform.
+     *   role='renter' = customer   — they simply rent cars; they do NOT subscribe.
+     *   role='admin'  = platform admin — no subscription needed.
+     *
+     * Only role='user' (subscribers) receive a UserSubscription record.
+     * Plan distribution for CDO car-rental subscribers:
+     *   Free       (₱0 /mo)  — 20 % : new or occasional listers
+     *   Pro        (₱10/mo)  — 50 % : established small fleet
+     *   Enterprise (₱50/mo)  — 30 % : large fleet / multi-vehicle operators
      */
     public function run(): void
     {
-        $users = User::all();
+        // Only subscribers get subscriptions.
+        $subscribers = User::where('role', 'user')->get();
 
-        foreach ($users as $user) {
-            // Skip admin user - they don't need subscriptions
-            if ($user->role === 'admin') {
+        foreach ($subscribers as $subscriber) {
+            // Guard: skip if a subscription already exists (idempotent re-seeding).
+            if (UserSubscription::where('user_id', $subscriber->id)->exists()) {
                 continue;
             }
-
-            // Skip if user already has a subscription
-            if (UserSubscription::where('user_id', $user->id)->exists()) {
-                continue;
-            }
-
-            // Determine subscription plan based on user role and random chance
-            $planId = $this->getPlanForUser($user);
-            $status = $this->getStatusForUser($user);
 
             UserSubscription::create([
-                'user_id' => $user->id,
-                'plan_id' => $planId,
-                'status' => $status,
+                'user_id' => $subscriber->id,
+                'plan_id' => $this->pickPlan(),
+                'status'  => $this->pickStatus(),
             ]);
         }
     }
 
     /**
-     * Get appropriate plan for user based on role and random distribution
+     * Pick a subscription plan for a subscriber.
+     * Distribution: Free 20 % | Pro 50 % | Enterprise 30 %
      */
-    private function getPlanForUser($user): int
+    private function pickPlan(): int
     {
-        // Renter users are more likely to have higher-tier plans
-        if ($user->role === 'renter') {
-            $rand = rand(1, 100);
-            if ($rand <= 20) {
-                return 1; // Free plan (20% chance)
-            } elseif ($rand <= 70) {
-                return 2; // Pro plan (50% chance)
-            } else {
-                return 3; // Enterprise plan (30% chance)
-            }
+        $rand = rand(1, 100);
+
+        if ($rand <= 20) {
+            return 1; // Free
+        } elseif ($rand <= 70) {
+            return 2; // Pro  (20+50 = 70)
         } else {
-            // Regular users are more likely to have free or pro plans
-            $rand = rand(1, 100);
-            if ($rand <= 60) {
-                return 1; // Free plan (60% chance)
-            } elseif ($rand <= 90) {
-                return 2; // Pro plan (30% chance)
-            } else {
-                return 3; // Enterprise plan (10% chance)
-            }
+            return 3; // Enterprise
         }
     }
 
     /**
-     * Get subscription status for user
+     * Pick a subscription status.
+     * Most subscribers are active; a small portion is inactive.
+     * Note: the user_subscriptions.status enum only allows 'active' | 'inactive'.
      */
-    private function getStatusForUser($user): string
+    private function pickStatus(): string
     {
-        // Most users have active subscriptions
-        $rand = rand(1, 100);
-        if ($rand <= 85) {
-            return 'active';
-        } elseif ($rand <= 95) {
-            return 'inactive';
-        } else {
-            return 'cancelled';
-        }
+        return rand(1, 100) <= 85 ? 'active' : 'inactive';
     }
 }

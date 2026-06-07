@@ -10,7 +10,7 @@ import useCompanyStore from '@/store/company.store';
 import useSearchStore from '@/store/search.store';
 import { useDeleteCarRental, useGetCarRentalPaginated } from '@rest/api';
 import type { CarRental } from '@rest/models/carRental';
-import { LucideEye, LucideTrash2 } from 'lucide-react';
+import { LucideEye, LucideMapPin, LucideTrash2 } from 'lucide-react';
 import React, { useMemo } from 'react';
 import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
@@ -122,6 +122,11 @@ export default function UserCarRentalPage(): React.ReactElement {
                 label: 'View',
                 icon: <LucideEye className="h-4 w-4 text-yellow-500" />,
                 onClick: () => navigate(RouteKey.User.CarRentalApplication.parse(row.id!)),
+              },
+              {
+                label: 'View Location',
+                icon: <LucideMapPin className="h-4 w-4 text-blue-500" />,
+                onClick: () => navigate(RouteKey.User.CarRentalViewLocation.parse(row.id!)),
               },
               {
                 label: 'Delete',

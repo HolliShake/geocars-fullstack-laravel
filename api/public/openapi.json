@@ -1617,6 +1617,753 @@
                 }
             }
         },
+        "\/api\/Dashboard\/admin": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get admin dashboard data",
+                "description": "Retrieve admin dashboard stats and revenue history",
+                "operationId": "getAdminDashboard",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/AdminDashboardResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Dashboard\/user": {
+            "get": {
+                "tags": [
+                    "Dashboard"
+                ],
+                "summary": "Get dashboard statistics for car owner",
+                "description": "Retrieve dashboard metrics for the authenticated car owner, including active bookings, total trips, total spent, average rating, and recent activity.",
+                "operationId": "getUserDashboard",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "stats": {
+                                            "properties": {
+                                                "activeBookings": {
+                                                    "properties": {
+                                                        "value": {
+                                                            "type": "integer",
+                                                            "example": 2
+                                                        },
+                                                        "change": {
+                                                            "type": "string",
+                                                            "example": "+12.0%"
+                                                        },
+                                                        "isPositive": {
+                                                            "type": "boolean",
+                                                            "example": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "totalTrips": {
+                                                    "properties": {
+                                                        "value": {
+                                                            "type": "integer",
+                                                            "example": 12
+                                                        },
+                                                        "change": {
+                                                            "type": "string",
+                                                            "example": "+8.0%"
+                                                        },
+                                                        "isPositive": {
+                                                            "type": "boolean",
+                                                            "example": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "totalSpent": {
+                                                    "properties": {
+                                                        "value": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 2450
+                                                        },
+                                                        "formatted": {
+                                                            "type": "string",
+                                                            "example": "$2,450"
+                                                        },
+                                                        "change": {
+                                                            "type": "string",
+                                                            "example": "+10.0%"
+                                                        },
+                                                        "isPositive": {
+                                                            "type": "boolean",
+                                                            "example": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                },
+                                                "avgRating": {
+                                                    "properties": {
+                                                        "value": {
+                                                            "type": "number",
+                                                            "format": "float",
+                                                            "example": 4.8,
+                                                            "nullable": true
+                                                        },
+                                                        "change": {
+                                                            "type": "string",
+                                                            "example": "+2.0%"
+                                                        },
+                                                        "isPositive": {
+                                                            "type": "boolean",
+                                                            "example": true
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "activeBookings": {
+                                            "type": "array",
+                                            "items": {
+                                                "$ref": "#\/components\/schemas\/CarRental"
+                                            }
+                                        },
+                                        "revenueHistory": {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "month": {
+                                                        "type": "string",
+                                                        "example": "Jan"
+                                                    },
+                                                    "revenue": {
+                                                        "type": "number",
+                                                        "format": "float",
+                                                        "example": 1200.5
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        },
+                                        "recentActivity": {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object"
+                                            }
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Device": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get paginated list of Device",
+                "description": "Retrieve a paginated list of Device with optional search",
+                "operationId": "getDevicePaginated",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedDeviceResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Create a new Device",
+                "description": " Create a new Device with the provided details",
+                "operationId": "createDevice",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/Device"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Device created successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/CreateDeviceResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Device\/{id}": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get a specific Device",
+                "description": "Retrieve a Device by its ID",
+                "operationId": "getDeviceById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetDeviceResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Update a Device",
+                "description": "Update an existing Device with the provided details",
+                "operationId": "updateDevice",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/Device"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Device updated successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UpdateDeviceResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Delete a Device",
+                "description": "Delete a Device by its ID",
+                "operationId": "deleteDevice",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "Device deleted successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/DeleteDeviceResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found"
+                    },
+                    "500": {
+                        "description": " Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Device\/ByCarRental\/{car_rental_id}": {
+            "get": {
+                "tags": [
+                    "Device"
+                ],
+                "summary": "Get Device by Car Rental ID with all location history",
+                "description": "Retrieve the Device assigned to a Car Rental, along with its full location history and latest location",
+                "operationId": "getDeviceByCarRental",
+                "parameters": [
+                    {
+                        "name": "car_rental_id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetDeviceWithLocationsResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "Device not found for this car rental"
+                    }
+                }
+            }
+        },
+        "\/api\/DeviceLocation": {
+            "get": {
+                "tags": [
+                    "DeviceLocation"
+                ],
+                "summary": "Get paginated list of DeviceLocation",
+                "description": "Retrieve a paginated list of DeviceLocation with optional search",
+                "operationId": "getDeviceLocationPaginated",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedDeviceLocationResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "DeviceLocation"
+                ],
+                "summary": "Create a new DeviceLocation",
+                "description": " Create a new DeviceLocation with the provided details",
+                "operationId": "createDeviceLocation",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/DeviceLocation"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "DeviceLocation created successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/CreateDeviceLocationResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/DeviceLocation\/{id}": {
+            "get": {
+                "tags": [
+                    "DeviceLocation"
+                ],
+                "summary": "Get a specific DeviceLocation",
+                "description": "Retrieve a DeviceLocation by its ID",
+                "operationId": "getDeviceLocationById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetDeviceLocationResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "DeviceLocation not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "DeviceLocation"
+                ],
+                "summary": "Update a DeviceLocation",
+                "description": "Update an existing DeviceLocation with the provided details",
+                "operationId": "updateDeviceLocation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/DeviceLocation"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "DeviceLocation updated successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UpdateDeviceLocationResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "DeviceLocation not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "DeviceLocation"
+                ],
+                "summary": "Delete a DeviceLocation",
+                "description": "Delete a DeviceLocation by its ID",
+                "operationId": "deleteDeviceLocation",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "DeviceLocation deleted successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/DeleteDeviceLocationResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "DeviceLocation not found"
+                    },
+                    "500": {
+                        "description": " Internal server error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Machine\/info": {
+            "get": {
+                "tags": [
+                    "Machine"
+                ],
+                "summary": "Get machine hardware and system information",
+                "description": "Retrieve detailed statistics regarding the host operating system, memory metrics, and CPU metrics.",
+                "operationId": "getMachineInfo",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "required": [
+                                        "HOSTOS",
+                                        "TotalRam",
+                                        "AvailableRam",
+                                        "CpuVendor",
+                                        "CpuModel",
+                                        "CpuSpeed",
+                                        "CpuUtilization"
+                                    ],
+                                    "properties": {
+                                        "HOSTOS": {
+                                            "description": "Detailed Operating System version string",
+                                            "type": "string",
+                                            "example": "Ubuntu 24.04 LTS"
+                                        },
+                                        "TotalRam": {
+                                            "description": "Total available system RAM in MB",
+                                            "type": "integer",
+                                            "example": 16384
+                                        },
+                                        "AvailableRam": {
+                                            "description": "Currently free\/available RAM in MB",
+                                            "type": "integer",
+                                            "example": 8192
+                                        },
+                                        "CpuVendor": {
+                                            "description": "Processor manufacturer or brand string",
+                                            "type": "string",
+                                            "example": "GenuineIntel"
+                                        },
+                                        "CpuModel": {
+                                            "description": "Specific marketing model of the processor",
+                                            "type": "string",
+                                            "example": "Intel(R) Core(TM) i7-10700K CPU @ 3.80GHz"
+                                        },
+                                        "CpuSpeed": {
+                                            "description": "Processor maximum or current clock speed",
+                                            "type": "string",
+                                            "example": "3.50 GHz"
+                                        },
+                                        "CpuUtilization": {
+                                            "description": "Current CPU utilization percentage",
+                                            "type": "number",
+                                            "format": "float",
+                                            "example": 12.5
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Plan": {
             "get": {
                 "tags": [
@@ -2493,6 +3240,563 @@
                                 }
                             }
                         }
+                    }
+                }
+            }
+        },
+        "\/api\/Stripe\/checkout\/confirm": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Confirm Stripe Checkout and record a payment transaction",
+                "description": "Authenticated renter only. Retrieves the Checkout Session from Stripe, verifies payment_status is paid and metadata.car_rental_id belongs to the current user, then inserts a Transaction row.",
+                "operationId": "confirmStripeCheckoutSession",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "description": "Stripe Checkout Session id (cs_\u2026)",
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction recorded or already present for this session",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "success": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Transaction recorded"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Unauthenticated (Bearer token required)",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthenticated"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "403": {
+                        "description": "Session rental does not belong to the authenticated user",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "This payment does not belong to your account"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error, Stripe API error, unpaid session, or missing metadata",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Could not persist transaction",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "STRIPE_SECRET_KEY not configured on server",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Stripe not configured on server"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Stripe\/webhook": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Stripe webhook (signed)",
+                "description": "Receives Stripe webhook events. Verifies `Stripe-Signature` using STRIPE_WEBHOOK_SECRET. On `checkout.session.completed`, inserts a Transaction when metadata contains car_rental_id.",
+                "operationId": "stripeWebhook",
+                "parameters": [
+                    {
+                        "name": "Stripe-Signature",
+                        "in": "header",
+                        "description": "Stripe webhook signing header",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "description": "Raw JSON body of the Stripe Event (must not be re-encoded; used for signature verification).",
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "type": "object",
+                                "additionalProperties": true
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Event accepted",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "received": {
+                                            "type": "boolean",
+                                            "example": true
+                                        },
+                                        "skipped": {
+                                            "type": "string",
+                                            "example": "no_car_rental_id",
+                                            "nullable": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Invalid signature",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Invalid signature"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "500": {
+                        "description": "Handler error while processing checkout.session.completed",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/InternalServerErrorResponse"
+                                }
+                            }
+                        }
+                    },
+                    "503": {
+                        "description": "stripe\/stripe-php missing or STRIPE_WEBHOOK_SECRET not set",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Webhook not configured"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/Stripe\/webhook\/ingest": {
+            "post": {
+                "tags": [
+                    "Stripe"
+                ],
+                "summary": "Ingest checkout completion from Stripe gateway (Node)",
+                "description": "Internal use: the Node `\/stripe` service verifies the Stripe webhook, then forwards a minimal payload here. Requires header `X-Stripe-Gateway-Secret` matching STRIPE_GATEWAY_INGEST_SECRET.",
+                "operationId": "stripeGatewayIngest",
+                "parameters": [
+                    {
+                        "name": "X-Stripe-Gateway-Secret",
+                        "in": "header",
+                        "description": "Must equal api\/.env STRIPE_GATEWAY_INGEST_SECRET",
+                        "required": true,
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "required": [
+                                    "session_id",
+                                    "car_rental_id",
+                                    "amount_total"
+                                ],
+                                "properties": {
+                                    "session_id": {
+                                        "description": "Stripe Checkout Session id",
+                                        "type": "string",
+                                        "example": "cs_test_a1b2c3"
+                                    },
+                                    "car_rental_id": {
+                                        "type": "integer",
+                                        "example": 1
+                                    },
+                                    "amount_total": {
+                                        "description": "Amount in minor units (e.g. centavos)",
+                                        "type": "integer",
+                                        "example": 150000
+                                    },
+                                    "currency": {
+                                        "type": "string",
+                                        "example": "php",
+                                        "nullable": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "Transaction recorded",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "received": {
+                                            "type": "boolean",
+                                            "example": true
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "401": {
+                        "description": "Missing or invalid gateway secret",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "properties": {
+                                        "message": {
+                                            "type": "string",
+                                            "example": "Unauthorized"
+                                        }
+                                    },
+                                    "type": "object"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation failed or business rule error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/UserAccount": {
+            "get": {
+                "tags": [
+                    "UserAccount"
+                ],
+                "summary": "Get paginated list of UserAccount",
+                "description": "Retrieve a paginated list of UserAccount with optional search",
+                "operationId": "getUserAccountPaginated",
+                "parameters": [
+                    {
+                        "name": "search",
+                        "in": "query",
+                        "description": "Search term for account number",
+                        "required": false,
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "type",
+                        "in": "query",
+                        "description": "Filter by account type",
+                        "required": false,
+                        "schema": {
+                            "type": "string",
+                            "enum": [
+                                "GCash",
+                                "Maya",
+                                "Bank"
+                            ]
+                        }
+                    },
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "description": "Page number",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 1
+                        }
+                    },
+                    {
+                        "name": "rows",
+                        "in": "query",
+                        "description": "Number of items per page",
+                        "required": false,
+                        "schema": {
+                            "type": "integer",
+                            "default": 10
+                        }
+                    },
+                    {
+                        "name": "current_user",
+                        "in": "query",
+                        "description": "When true, only return accounts for authenticated user",
+                        "required": false,
+                        "schema": {
+                            "type": "boolean",
+                            "default": true
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/PaginatedUserAccountResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "post": {
+                "tags": [
+                    "UserAccount"
+                ],
+                "summary": "Create a new UserAccount",
+                "description": "Create a new bank or e-wallet account",
+                "operationId": "createUserAccount",
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/UserAccount"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "UserAccount created successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/CreateUserAccountResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "\/api\/UserAccount\/{id}": {
+            "get": {
+                "tags": [
+                    "UserAccount"
+                ],
+                "summary": "Get a specific UserAccount",
+                "description": "Retrieve a UserAccount by its ID",
+                "operationId": "getUserAccountById",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/GetUserAccountResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UserAccount not found"
+                    }
+                }
+            },
+            "put": {
+                "tags": [
+                    "UserAccount"
+                ],
+                "summary": "Update a UserAccount",
+                "description": "Update an existing bank or e-wallet account",
+                "operationId": "updateUserAccount",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "requestBody": {
+                    "required": true,
+                    "content": {
+                        "application\/json": {
+                            "schema": {
+                                "$ref": "#\/components\/schemas\/UserAccount"
+                            }
+                        }
+                    }
+                },
+                "responses": {
+                    "200": {
+                        "description": "UserAccount updated successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/UpdateUserAccountResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UserAccount not found"
+                    },
+                    "422": {
+                        "description": "Validation error",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/ValidationErrorResponse"
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "delete": {
+                "tags": [
+                    "UserAccount"
+                ],
+                "summary": "Delete a UserAccount",
+                "description": "Delete a UserAccount by ID",
+                "operationId": "deleteUserAccount",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "path",
+                        "required": true,
+                        "schema": {
+                            "type": "integer"
+                        }
+                    }
+                ],
+                "responses": {
+                    "204": {
+                        "description": "UserAccount deleted successfully",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/DeleteUserAccountResponse200"
+                                }
+                            }
+                        }
+                    },
+                    "404": {
+                        "description": "UserAccount not found"
                     }
                 }
             }
@@ -4375,6 +5679,302 @@
                 },
                 "type": "object"
             },
+            "Device": {
+                "title": "Device",
+                "required": [
+                    "device_identifier",
+                    "car_rental_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "device_identifier": {
+                        "type": "string"
+                    },
+                    "car_rental_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedDevice": {
+                "title": "PaginatedDevice",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/Device"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedDeviceResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedDevice"
+                    }
+                },
+                "type": "object"
+            },
+            "GetDeviceResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Device"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateDeviceResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Device"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateDeviceResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Device"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteDeviceResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "DeviceWithLocations": {
+                "title": "DeviceWithLocations",
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "device_identifier": {
+                        "type": "string"
+                    },
+                    "car_rental_id": {
+                        "type": "integer"
+                    },
+                    "latest_location": {
+                        "oneOf": [
+                            {
+                                "$ref": "#\/components\/schemas\/DeviceLocation"
+                            }
+                        ],
+                        "nullable": true
+                    },
+                    "locations": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/DeviceLocation"
+                        }
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "type": "object"
+            },
+            "GetDeviceWithLocationsResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/DeviceWithLocations"
+                    }
+                },
+                "type": "object"
+            },
+            "DeviceLocation": {
+                "title": "DeviceLocation",
+                "required": [
+                    "latitude",
+                    "longitude",
+                    "device_id"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "readOnly": true
+                    },
+                    "latitude": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "longitude": {
+                        "type": "number",
+                        "format": "float"
+                    },
+                    "device_id": {
+                        "type": "integer"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "readOnly": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedDeviceLocation": {
+                "title": "PaginatedDeviceLocation",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/DeviceLocation"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedDeviceLocationResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedDeviceLocation"
+                    }
+                },
+                "type": "object"
+            },
+            "GetDeviceLocationResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/DeviceLocation"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateDeviceLocationResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/DeviceLocation"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateDeviceLocationResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/DeviceLocation"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteDeviceLocationResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "Media": {
                 "title": "Media",
                 "required": [
@@ -4912,6 +6512,271 @@
                 },
                 "type": "object"
             },
+            "SubscriptionTransaction": {
+                "title": "SubscriptionTransaction",
+                "required": [
+                    "id",
+                    "user_id",
+                    "plan_id",
+                    "amount",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "plan_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 50
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "active"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedSubscriptionTransaction": {
+                "title": "PaginatedSubscriptionTransaction",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/SubscriptionTransaction"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedSubscriptionTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedSubscriptionTransaction"
+                    }
+                },
+                "type": "object"
+            },
+            "GetSubscriptionTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/SubscriptionTransaction"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateSubscriptionTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/SubscriptionTransaction"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateSubscriptionTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/SubscriptionTransaction"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteSubscriptionTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "Transaction": {
+                "title": "Transaction",
+                "required": [
+                    "id",
+                    "user_id",
+                    "amount",
+                    "status",
+                    "created_at",
+                    "updated_at"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "amount": {
+                        "type": "number",
+                        "format": "float",
+                        "example": 100
+                    },
+                    "status": {
+                        "type": "string",
+                        "example": "completed"
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2024-01-01T00:00:00Z"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedTransaction": {
+                "title": "PaginatedTransaction",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/Transaction"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedTransaction"
+                    }
+                },
+                "type": "object"
+            },
+            "GetTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Transaction"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Transaction"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/Transaction"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteTransactionResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
             "User": {
                 "title": "User",
                 "required": [
@@ -5070,6 +6935,144 @@
                 "type": "object"
             },
             "DeleteUserResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "UserAccount": {
+                "title": "UserAccount",
+                "required": [
+                    "user_id",
+                    "type",
+                    "account_number"
+                ],
+                "properties": {
+                    "id": {
+                        "type": "integer",
+                        "example": 1
+                    },
+                    "user_id": {
+                        "type": "integer",
+                        "example": 12
+                    },
+                    "type": {
+                        "type": "string",
+                        "enum": [
+                            "GCash",
+                            "Maya",
+                            "Bank"
+                        ],
+                        "example": "Bank"
+                    },
+                    "account_number": {
+                        "type": "string",
+                        "example": "0123456789"
+                    },
+                    "is_default": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "created_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    },
+                    "updated_at": {
+                        "type": "string",
+                        "format": "date-time",
+                        "example": "2026-01-01T00:00:00Z"
+                    },
+                    "owner": {
+                        "$ref": "#\/components\/schemas\/User"
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedUserAccount": {
+                "title": "PaginatedUserAccount",
+                "properties": {
+                    "data": {
+                        "type": "array",
+                        "items": {
+                            "$ref": "#\/components\/schemas\/UserAccount"
+                        }
+                    },
+                    "current_page": {
+                        "type": "integer"
+                    },
+                    "last_page": {
+                        "type": "integer"
+                    },
+                    "per_page": {
+                        "type": "integer"
+                    },
+                    "total": {
+                        "type": "integer"
+                    },
+                    "from": {
+                        "type": "integer",
+                        "nullable": true
+                    },
+                    "to": {
+                        "type": "integer",
+                        "nullable": true
+                    }
+                },
+                "type": "object"
+            },
+            "PaginatedUserAccountResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/PaginatedUserAccount"
+                    }
+                },
+                "type": "object"
+            },
+            "GetUserAccountResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserAccount"
+                    }
+                },
+                "type": "object"
+            },
+            "CreateUserAccountResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserAccount"
+                    }
+                },
+                "type": "object"
+            },
+            "UpdateUserAccountResponse200": {
+                "properties": {
+                    "success": {
+                        "type": "boolean",
+                        "example": true
+                    },
+                    "data": {
+                        "$ref": "#\/components\/schemas\/UserAccount"
+                    }
+                },
+                "type": "object"
+            },
+            "DeleteUserAccountResponse200": {
                 "properties": {
                     "success": {
                         "type": "boolean",
@@ -5368,12 +7371,13 @@
                                     "example": 1
                                 },
                                 "role": {
-                                    "type": "enum",
-                                    "example": [
+                                    "type": "string",
+                                    "enum": [
                                         "admin",
                                         "user",
                                         "renter"
-                                    ]
+                                    ],
+                                    "example": "admin"
                                 },
                                 "user_id": {
                                     "type": "integer",
@@ -5461,6 +7465,106 @@
                     "success": {
                         "type": "boolean",
                         "example": true
+                    }
+                },
+                "type": "object"
+            },
+            "AdminDashboardResponse200": {
+                "properties": {
+                    "stats": {
+                        "properties": {
+                            "newUsers": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 124
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+12.5%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "subscriptionRenewals": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 8
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "-2.0%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "monthlyRevenue": {
+                                "properties": {
+                                    "value": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10100
+                                    },
+                                    "formatted": {
+                                        "type": "string",
+                                        "example": "$10,100"
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+5.2%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "activeRentals": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 892
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+10.1%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "revenueHistory": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "month": {
+                                    "type": "string",
+                                    "example": "Jan"
+                                },
+                                "revenue": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 8000
+                                }
+                            },
+                            "type": "object"
+                        }
                     }
                 },
                 "type": "object"
@@ -5710,6 +7814,22 @@
             "description": "Comment"
         },
         {
+            "name": "Dashboard",
+            "description": "Dashboard"
+        },
+        {
+            "name": "Device",
+            "description": "Device"
+        },
+        {
+            "name": "DeviceLocation",
+            "description": "DeviceLocation"
+        },
+        {
+            "name": "Machine",
+            "description": "Machine"
+        },
+        {
             "name": "Plans",
             "description": "Plans"
         },
@@ -5724,6 +7844,14 @@
         {
             "name": "Requirement",
             "description": "Requirement"
+        },
+        {
+            "name": "Stripe",
+            "description": "Stripe"
+        },
+        {
+            "name": "UserAccount",
+            "description": "UserAccount"
         },
         {
             "name": "UserCompany",

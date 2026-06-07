@@ -16,6 +16,7 @@ import { useNavigate } from 'react-router';
 import { toast } from 'sonner';
 import { useDebounce } from 'use-debounce';
 import UserCompanyModal from './components/company.modal';
+import { to12HourTime } from '@/lib/date';
 
 export default function UserCompanyConfigPage(): React.ReactElement {
   const navigate = useNavigate();
@@ -84,11 +85,17 @@ export default function UserCompanyConfigPage(): React.ReactElement {
         key: 'opening_time',
         label: 'Opening Time',
         align: 'center',
+        render: (value, _) => {
+          return to12HourTime(value)
+        }
       },
       {
         key: 'closing_time',
         label: 'Closing Time',
         align: 'center',
+        render: (value, _) => {
+          return to12HourTime(value)
+        }
       },
       {
         key: 'actions',

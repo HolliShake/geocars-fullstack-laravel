@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { renderError } from '@/lib/error';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useCreateUserCompany, useUpdateUserCompany } from '@rest/api';
-import type { UserCompany } from '@rest/models';
+import { useCreateUserCompany, useGetUserPaginated, useUpdateUserCompany } from '@rest/api';
+import type { User, UserCompany } from '@rest/models';
 import { Loader2 } from 'lucide-react';
 import { useEffect, useMemo } from 'react';
 import { useForm } from 'react-hook-form';
@@ -62,12 +63,24 @@ export default function AdminCompanyModal({
     mode: 'all',
   });
 
+
+  const { data: usersData } = useGetUserPaginated({
+    page:1,
+    rows: Number.MAX_SAFE_INTEGER,
+  });
+
   const { mutateAsync: createUserCompany, isPending: isCreating } = useCreateUserCompany();
   const { mutateAsync: updateUserCompany, isPending: isUpdating } = useUpdateUserCompany();
 
   const isEdit = useMemo(() => {
     return !!controller.data?.id;
   }, [controller.data]);
+  
+
+  const users = useMemo<{ label: string; value: number }[]>(() => usersData?.data?.data?.map((user:User) => ({
+    label: user.name ?? '',
+    value: user.id,
+  })) || [], [usersData]);
 
   const isSaving = useMemo(() => isCreating || isUpdating, [isCreating, isUpdating]);
 
@@ -141,14 +154,23 @@ export default function AdminCompanyModal({
                 <label htmlFor="user_id" className="block text-sm font-medium text-gray-700">
                   User ID <span className="text-red-500">*</span>
                 </label>
-                <Input
-                  {...register('user_id', { valueAsNumber: true })}
-                  type="number"
-                  id="user_id"
+                <Select
+                  value={watch('user_id') ? String(watch('user_id')) : ''}
+                  onValueChange={val => setValue('user_id', Number(val))}
                   disabled={isSaving}
-                  className={errors.user_id ? 'border-red-500' : ''}
                   aria-describedby={errors.user_id ? 'user_id-error' : undefined}
-                />
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a user" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((user) => (
+                      <SelectItem key={user.value} value={String(user.value)}>
+                        {user.label}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
                 {errors.user_id && (
                   <p id="user_id-error" className="mt-1 text-sm text-red-600">
                     {errors.user_id.message}
