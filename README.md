@@ -1,152 +1,207 @@
-# GeoCars - Car Rental Management System
+# GeoCars - Full-Stack Car Rental Platform
 
-A comprehensive full-stack car rental management and tracking system built with Laravel API and React TypeScript frontend.
+GeoCars is a multi-role car rental platform with a Laravel 12 API, a React 19 web client, an Expo mobile app, and a small Stripe payment service. The system covers the full lifecycle from authentication and company onboarding to car posting, booking, requirement submission, rental monitoring, and subscription billing.
 
-## 🚗 Overview
+## Overview
 
-GeoCars is a modern car rental management platform that provides:
+GeoCars currently supports three primary experiences:
 
-- **User Management**: Multi-role authentication (Admin, User)
-- **Plan Management**: Subscription-based feature access
-- **Company Management**: Multi-tenant company support
-- **Feature Management**: Granular feature control per plan
-- **Real-time Tracking**: Vehicle tracking and analytics
-- **Modern UI**: Beautiful, responsive interface with dark/light themes
+- Admin operations for user, company, plan, feature, and requirement management
+- Company owner workflows for fleet management, postings, rental monitoring, payouts, and subscriptions
+- Renter workflows for browsing listings, booking vehicles, uploading requirements, and tracking rental history
 
-## 🏗️ Architecture
+## Product Features
 
-```
-geocars-agent/
-├── api/                 # Laravel 12 API Backend
+### Admin
+
+- Admin dashboard with system summary cards and activity widgets
+- User configuration with create, edit, activation, and role management
+- Company configuration with nested car access and business hours setup
+- Plan configuration with feature-level limits and per-plan pricing
+- Requirement configuration split by role with active and required flags
+- Admin profile and document views
+
+### Company Owner
+
+- Business dashboard with booking, trip, spend, and rating summaries
+- Company profile and requirement status management
+- Company configuration and operating schedule management
+- Fleet management with rich car metadata and multi-image uploads
+- Car postings with pricing, availability windows, comments, and listing states
+- Rental management with booking detail pages, payment summaries, QR snapshots, and GPS location tracking
+- Payout account management for bank and e-wallet destinations
+- Subscription management with plan selection, renewal, cancellation, and Stripe payment handoff
+
+### Renter
+
+- Public browsing with filters and listing cards
+- Booking flow and rental request detail view
+- Profile management and requirement upload status
+- Rental history with payment snapshots and booking details
+- Mobile-first renter surface via Expo app
+
+### Platform Services
+
+- OAuth-style auth flow via Laravel Passport
+- Swagger/OpenAPI generation for the backend API
+- Generated TypeScript client support through Orval
+- Stripe-backed payment service for subscription checkout
+- Media handling for uploaded images and documents
+- GPS/location visualization with Leaflet on the web and map-ready mobile foundations
+
+## Repository Structure
+
+```text
+geocars-fullstack-laravel/
+├── api/                     # Laravel 12 API and business logic
 │   ├── app/
-│   │   ├── Controllers/ # REST API Controllers
-│   │   ├── Models/      # Eloquent Models
-│   │   ├── Services/    # Business Logic Layer
-│   │   └── Repository/  # Data Access Layer
-│   ├── database/        # Migrations & Seeders
-│   └── routes/          # API Routes
-├── app/                 # React TypeScript Frontend
-│   ├── src/
-│   │   ├── components/  # Reusable UI Components
-│   │   ├── pages/       # Application Pages
-│   │   ├── navigation/  # Routing & Navigation
-│   │   └── store/       # State Management
-│   └── rest/            # Auto-generated API Client
-└── docker/              # Docker Configuration
+│   │   ├── Enum/
+│   │   ├── Http/
+│   │   ├── Interface/
+│   │   ├── Models/
+│   │   ├── Repository/
+│   │   └── Service/
+│   ├── database/            # Migrations, factories, seeders
+│   ├── public/              # OpenAPI output, uploads, public entrypoint
+│   ├── routes/              # API, web, and console routes
+│   └── tests/
+├── app/                     # React 19 + Vite web application
+│   ├── rest/                # Orval-generated API client
+│   └── src/
+│       ├── components/
+│       ├── layout/
+│       ├── navigation/
+│       ├── pages/           # admin, auth, profile, renter, status, user
+│       ├── store/
+│       └── types/
+├── mobile/                  # Expo / React Native mobile app
+│   └── src/
+│       ├── app/
+│       ├── components/
+│       ├── constants/
+│       ├── hooks/
+│       └── lib/
+├── stripe/                  # Express + Stripe checkout helper service
+│   └── src/
+├── docker/                  # Container definitions for local environments
+├── GeocarsDoc/              # UI screenshot documentation grouped by role
+│   ├── Admin/
+│   ├── Auth/
+│   ├── Renter/
+│   └── User/
+└── docker-compose.yml       # Root compose orchestration
 ```
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-### Backend (API)
+### Backend
 
-- **Laravel 12** - PHP Framework
-- **Laravel Passport** - OAuth2 Authentication
-- **MySQL 8.0** - Database
-- **Swagger/OpenAPI** - API Documentation
-- **Repository Pattern** - Clean Architecture
+- Laravel 12
+- PHP 8.2+
+- Laravel Passport
+- MySQL
+- Spatie Laravel Media Library
+- Stripe PHP SDK
+- Swagger PHP / OpenAPI
 
-### Frontend (App)
+### Web App
 
-- **React 19** - UI Framework
-- **TypeScript** - Type Safety
-- **Vite** - Build Tool
-- **Tailwind CSS** - Styling
-- **Radix UI** - Component Library
-- **React Router** - Navigation
-- **Zustand** - State Management
-- **React Query** - Data Fetching
-- **React Hook Form** - Form Management
+- React 19
+- TypeScript
+- Vite 7
+- Tailwind CSS 4
+- Radix UI
+- TanStack React Query
+- React Hook Form + Zod
+- Zustand
+- React Router 7
+- Recharts
+- Leaflet and React Leaflet
 
-## 🚀 Quick Start
+### Mobile
+
+- Expo 56
+- React Native 0.85
+- Expo Router
+- Expo Camera
+- Expo Location
+- Expo Secure Store
+- React Native WebView
+
+### Payments
+
+- Express 5
+- Stripe Node SDK
+
+## Quick Start
 
 ### Prerequisites
 
-- Docker & Docker Compose
-- Node.js 18+ (for local development)
-- PHP 8.2+ (for local development)
+- Docker and Docker Compose
+- Node.js 18+
+- PHP 8.2+
+- Composer
 
-### Using Docker (Recommended)
+### Docker Workflow
 
-1. **Clone the repository**
+```bash
+docker compose up -d
+```
 
-   ```bash
-   git clone <repository-url>
-   cd geocars-agent
-   ```
+Expected local surfaces:
 
-2. **Start the application**
-
-   ```bash
-   docker-compose up -d
-   ```
-
-3. **Access the application**
-   - Frontend: http://localhost:3000
-   - API: http://localhost:8000
-   - phpMyAdmin: http://localhost:8080
+- Web app: http://localhost:3000
+- Laravel API: http://localhost:8000
+- phpMyAdmin: http://localhost:8080
 
 ### Local Development
 
-1. **Backend Setup**
+#### API
 
-   ```bash
-   cd api
-   composer install
-   cp .env.example .env
-   php artisan key:generate
-   php artisan migrate --seed
-   php artisan serve
-   ```
+```bash
+cd api
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate --seed
+php artisan serve
+```
 
-2. **Frontend Setup**
-   ```bash
-   cd app
-   npm install
-   npm run dev
-   ```
+#### Web App
 
-## 📊 Features
+```bash
+cd app
+npm install
+npm run dev
+```
 
-### Authentication & Authorization
+#### Web App with Stripe Helper
 
-- JWT-based authentication with Laravel Passport
-- Role-based access control (Admin, User)
-- Secure password hashing
-- Session management
+```bash
+cd app
+npm install
+npm run dev:with-stripe
+```
 
-### Plan Management
+#### Mobile App
 
-- Create and manage subscription plans
-- Feature-based access control
-- Plan activation/deactivation
-- Pricing management
+```bash
+cd mobile
+npm install
+npm run start
+```
 
-### Feature Management
+#### Stripe Service Only
 
-- Granular feature control
-- Feature limits per plan
-- Real-time feature validation
-- Analytics and tracking features
+```bash
+cd stripe
+npm install
+npm run dev
+```
 
-### User & Company Management
+## Environment Notes
 
-- Multi-tenant company support
-- User-company relationships
-- Profile management
-- Bulk operations
-
-### Admin Dashboard
-
-- Comprehensive admin interface
-- Real-time data visualization
-- User and plan management
-- System analytics
-
-## 🔧 Configuration
-
-### Environment Variables
-
-#### API (.env)
+### API
 
 ```env
 DB_CONNECTION=mysql
@@ -158,101 +213,148 @@ DB_PASSWORD=password
 
 PASSPORT_PRIVATE_KEY=
 PASSPORT_PUBLIC_KEY=
+STRIPE_SECRET=
 ```
 
-#### App (.env)
+### Web App
 
 ```env
 VITE_API_URL=http://localhost:8000
 ```
 
-## 📚 API Documentation
+### Stripe Service
 
-The API documentation is automatically generated using Swagger/OpenAPI:
+```env
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+PORT=4242
+```
 
-- **OpenAPI JSON**: http://localhost:8000/openapi.json
-- **OpenAPI YAML**: http://localhost:8000/openapi.yaml
+## API Documentation
 
-### Available Endpoints
+Swagger/OpenAPI output is generated by the backend:
 
-- `POST /api/Auth/login` - User authentication
-- `GET /api/User` - User management
-- `GET /api/Plan` - Plan management
-- `GET /api/PlanFeature` - Feature management
-- `GET /api/UserCompany` - Company management
-- `GET /api/Car` - Car management
-- `GET /api/CarPosting` - Car posting management
-- `GET /api/CarRental` - Car rental management
-- `GET /api/Requirement` - Requirement management
-- `GET /api/UserRequirement` - User requirement management
+- OpenAPI JSON: http://localhost:8000/openapi.json
+- OpenAPI YAML: http://localhost:8000/openapi.yaml
 
-## 🧪 Testing
+Key API areas include:
 
-### Backend Tests
+- Auth
+- Users and profiles
+- Plans and plan features
+- User companies
+- Cars and car postings
+- Car rentals
+- Requirements and user requirements
+- Payment and subscription flows
+
+To regenerate the schema:
+
+```bash
+cd api
+php artisan swagger:generate
+```
+
+To regenerate the typed web client:
+
+```bash
+cd app
+npx orval
+```
+
+## Screenshot Gallery
+
+The full UI screenshot set lives in `GeocarsDoc/`. The images below are intentionally scaled down for easier viewing in the README.
+
+### Authentication
+
+<p align="center">
+   <img src="GeocarsDoc/Auth/login.png" alt="GeoCars login" width="300" />
+   <img src="GeocarsDoc/Auth/register.png" alt="GeoCars register" width="300" />
+</p>
+
+### Admin Console
+
+<p align="center">
+   <img src="GeocarsDoc/Admin/admin-dashboard.png" alt="Admin dashboard" width="300" />
+   <img src="GeocarsDoc/Admin/admin-user-config1.png" alt="Admin user configuration" width="300" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/Admin/admin-company-config1.png" alt="Admin company configuration" width="300" />
+   <img src="GeocarsDoc/Admin/admin-plan-config2.png" alt="Admin plan features configuration" width="300" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/Admin/admin-requirement-config1.png" alt="Admin requirement configuration" width="300" />
+   <img src="GeocarsDoc/Admin/admin-profile1.png" alt="Admin profile" width="300" />
+</p>
+
+### Company Owner Experience
+
+<p align="center">
+   <img src="GeocarsDoc/User/user-dashboard.png" alt="Owner dashboard" width="300" />
+   <img src="GeocarsDoc/User/user-company-config1.png" alt="Owner company configuration" width="300" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/User/user-manage-car1.png" alt="Owner car management" width="300" />
+   <img src="GeocarsDoc/User/user-car-posting1.png" alt="Owner car postings" width="300" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/User/user-car-rental1.png" alt="Owner car rental management" width="300" />
+   <img src="GeocarsDoc/User/user-car-rental4.png" alt="Owner rental location tracking" width="300" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/User/user-account1.png" alt="Owner payout accounts" width="300" />
+   <img src="GeocarsDoc/User/user-subscription1.png" alt="Owner subscription management" width="300" />
+</p>
+
+### Renter Experience
+
+<p align="center">
+   <img src="GeocarsDoc/Renter/renter-browse.png" alt="Renter browse cars" width="31%" />
+   <img src="GeocarsDoc/Renter/renter-rental-history.png" alt="Renter rental history" width="31%" />
+   <img src="GeocarsDoc/Renter/renter-rental-history-details.png" alt="Renter rental detail" width="31%" />
+</p>
+<p align="center">
+   <img src="GeocarsDoc/Renter/renter-profile1.png" alt="Renter profile" width="300" />
+   <img src="GeocarsDoc/Renter/renter-profile2.png" alt="Renter requirements" width="300" />
+</p>
+
+## Testing
+
+### Backend
 
 ```bash
 cd api
 php artisan test
 ```
 
-### Frontend Tests
+### Web App
 
 ```bash
 cd app
-npm test
+npm run lint
+npm run build
 ```
 
-## 📦 Deployment
-
-### Production Build
-
-1. **Build Frontend**
-
-   ```bash
-   cd app
-   npm run build
-   ```
-
-2. **Deploy Backend**
-   ```bash
-   cd api
-   composer install --optimize-autoloader --no-dev
-   php artisan config:cache
-   php artisan route:cache
-   php artisan view:cache
-   ```
-
-### Docker Production
+### Mobile
 
 ```bash
-docker-compose -f docker-compose.prod.yml up -d
+cd mobile
+npm run lint
 ```
 
-## 🤝 Contributing
+### Stripe Service
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests
-5. Submit a pull request
+```bash
+cd stripe
+npm run build
+```
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for details.
 
-## 🆘 Support
-
-For support and questions:
-
-- Create an issue in the repository
-- Contact the development team
-- Check the documentation
-
----
-
-**Built with ❤️ using Laravel and React**
-
-## 📊 Development Progress
+## Development Activity
 
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/HolliShake/geocars-fullstack-laravel)](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/commit-activity)
 [![GitHub contributors](https://img.shields.io/github/contributors/HolliShake/geocars-fullstack-laravel)](https://github.com/HolliShake/geocars-fullstack-laravel/graphs/contributors)
