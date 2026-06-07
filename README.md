@@ -269,42 +269,42 @@ The full UI screenshot set lives in `GeocarsDoc/`. The images below are intentio
 ### Authentication
 
 <p align="center">
-   <img src="GeocarsDoc/Auth/login.png" alt="GeoCars login" width="48%" />
-   <img src="GeocarsDoc/Auth/register.png" alt="GeoCars register" width="48%" />
+   <img src="GeocarsDoc/Auth/login.png" alt="GeoCars login" width="300" />
+   <img src="GeocarsDoc/Auth/register.png" alt="GeoCars register" width="300" />
 </p>
 
 ### Admin Console
 
 <p align="center">
-   <img src="GeocarsDoc/Admin/admin-dashboard.png" alt="Admin dashboard" width="48%" />
-   <img src="GeocarsDoc/Admin/admin-user-config1.png" alt="Admin user configuration" width="48%" />
+   <img src="GeocarsDoc/Admin/admin-dashboard.png" alt="Admin dashboard" width="300" />
+   <img src="GeocarsDoc/Admin/admin-user-config1.png" alt="Admin user configuration" width="300" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/Admin/admin-company-config1.png" alt="Admin company configuration" width="48%" />
-   <img src="GeocarsDoc/Admin/admin-plan-config2.png" alt="Admin plan features configuration" width="48%" />
+   <img src="GeocarsDoc/Admin/admin-company-config1.png" alt="Admin company configuration" width="300" />
+   <img src="GeocarsDoc/Admin/admin-plan-config2.png" alt="Admin plan features configuration" width="300" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/Admin/admin-requirement-config1.png" alt="Admin requirement configuration" width="48%" />
-   <img src="GeocarsDoc/Admin/admin-profile1.png" alt="Admin profile" width="48%" />
+   <img src="GeocarsDoc/Admin/admin-requirement-config1.png" alt="Admin requirement configuration" width="300" />
+   <img src="GeocarsDoc/Admin/admin-profile1.png" alt="Admin profile" width="300" />
 </p>
 
 ### Company Owner Experience
 
 <p align="center">
-   <img src="GeocarsDoc/User/user-dashboard.png" alt="Owner dashboard" width="48%" />
-   <img src="GeocarsDoc/User/user-company-config1.png" alt="Owner company configuration" width="48%" />
+   <img src="GeocarsDoc/User/user-dashboard.png" alt="Owner dashboard" width="300" />
+   <img src="GeocarsDoc/User/user-company-config1.png" alt="Owner company configuration" width="300" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/User/user-manage-car1.png" alt="Owner car management" width="48%" />
-   <img src="GeocarsDoc/User/user-car-posting1.png" alt="Owner car postings" width="48%" />
+   <img src="GeocarsDoc/User/user-manage-car1.png" alt="Owner car management" width="300" />
+   <img src="GeocarsDoc/User/user-car-posting1.png" alt="Owner car postings" width="300" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/User/user-car-rental1.png" alt="Owner car rental management" width="48%" />
-   <img src="GeocarsDoc/User/user-car-rental4.png" alt="Owner rental location tracking" width="48%" />
+   <img src="GeocarsDoc/User/user-car-rental1.png" alt="Owner car rental management" width="300" />
+   <img src="GeocarsDoc/User/user-car-rental4.png" alt="Owner rental location tracking" width="300" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/User/user-account1.png" alt="Owner payout accounts" width="48%" />
-   <img src="GeocarsDoc/User/user-subscription1.png" alt="Owner subscription management" width="48%" />
+   <img src="GeocarsDoc/User/user-account1.png" alt="Owner payout accounts" width="300" />
+   <img src="GeocarsDoc/User/user-subscription1.png" alt="Owner subscription management" width="300" />
 </p>
 
 ### Renter Experience
@@ -315,8 +315,8 @@ The full UI screenshot set lives in `GeocarsDoc/`. The images below are intentio
    <img src="GeocarsDoc/Renter/renter-rental-history-details.png" alt="Renter rental detail" width="31%" />
 </p>
 <p align="center">
-   <img src="GeocarsDoc/Renter/renter-profile1.png" alt="Renter profile" width="48%" />
-   <img src="GeocarsDoc/Renter/renter-profile2.png" alt="Renter requirements" width="48%" />
+   <img src="GeocarsDoc/Renter/renter-profile1.png" alt="Renter profile" width="300" />
+   <img src="GeocarsDoc/Renter/renter-profile2.png" alt="Renter requirements" width="300" />
 </p>
 
 ## Testing
