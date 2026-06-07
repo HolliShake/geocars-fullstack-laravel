@@ -5,21 +5,24 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useGetAdminDashboard, useGetMachineInfo } from '@rest/api';
 import {
+  Building2,
   Car,
   ChartArea,
+  Check,
   CreditCard,
-  MapPin,
   Navigation,
+  Rocket,
   Settings,
-  TrendingUp,
   UserPlus,
   Users,
 } from 'lucide-react';
 import type React from 'react';
+import { useNavigate } from 'react-router';
 
 import { Area, AreaChart, CartesianGrid, ReferenceLine, XAxis, YAxis } from 'recharts';
 
 import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
+import { RouteKey } from '@/navigation/route';
 import { useMemo } from 'react';
 
 export default function AdminDashboardPage(): React.ReactNode {
@@ -34,6 +37,7 @@ export default function AdminDashboardPage(): React.ReactNode {
   };
 
   const { role } = useAuth();
+  const navigate = useNavigate();
   const { data: machineInfo, isLoading } = useGetMachineInfo({
     query: {
       refetchInterval: 3000,
@@ -100,6 +104,45 @@ export default function AdminDashboardPage(): React.ReactNode {
       color: 'hsl(var(--chart-1))', // Matches your theme's chart variables
     },
   };
+
+  const quickActions = [
+    {
+      label: 'Dashboard',
+      icon: <ChartArea className="w-4 h-4 mr-2" />,
+      path: RouteKey.Admin.Dashboard.key,
+      variant: 'default' as const,
+      className:
+        'w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 hover:from-cyan-500/90 hover:via-blue-600/90 hover:to-purple-700/90',
+    },
+    {
+      label: 'User Configuration',
+      icon: <Users className="w-4 h-4 mr-2" />,
+      path: RouteKey.Admin.UserConfig.key,
+      variant: 'outline' as const,
+      className: 'w-full',
+    },
+    {
+      label: 'Company Configuration',
+      icon: <Building2 className="w-4 h-4 mr-2" />,
+      path: RouteKey.Admin.CompanyConfig.key,
+      variant: 'outline' as const,
+      className: 'w-full',
+    },
+    {
+      label: 'Plan Configuration',
+      icon: <Rocket className="w-4 h-4 mr-2" />,
+      path: RouteKey.Admin.PlanConfig.key,
+      variant: 'outline' as const,
+      className: 'w-full',
+    },
+    {
+      label: 'Requirement Configuration',
+      icon: <Check className="w-4 h-4 mr-2" />,
+      path: RouteKey.Admin.RequirementConfig.key,
+      variant: 'outline' as const,
+      className: 'w-full',
+    },
+  ];
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-cyan-500/5 via-blue-500/5 to-purple-500/5 p-6">
@@ -290,25 +333,20 @@ export default function AdminDashboardPage(): React.ReactNode {
             <Card className="border-border bg-card/50 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>Common tasks and shortcuts</CardDescription>
+                <CardDescription>Admin navigation shortcuts</CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 hover:from-cyan-500/90 hover:via-blue-600/90 hover:to-purple-700/90">
-                  <Car className="w-4 h-4 mr-2" />
-                  Book New Car
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <MapPin className="w-4 h-4 mr-2" />
-                  Find Locations
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <TrendingUp className="w-4 h-4 mr-2" />
-                  View History
-                </Button>
-                <Button variant="outline" className="w-full">
-                  <CreditCard className="w-4 h-4 mr-2" />
-                  Payment Methods
-                </Button>
+                {quickActions.map((action) => (
+                  <Button
+                    key={action.path}
+                    variant={action.variant}
+                    className={action.className}
+                    onClick={() => navigate(action.path)}
+                  >
+                    {action.icon}
+                    {action.label}
+                  </Button>
+                ))}
               </CardContent>
             </Card>
 
