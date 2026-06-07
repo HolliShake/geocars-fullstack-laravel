@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\MachineController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarController;
 use App\Http\Controllers\CarPostingController;
@@ -20,6 +21,11 @@ use App\Http\Controllers\UserDashboardController;
 use Illuminate\Support\Facades\Route;
 
 Route::get("/Machine/info", [MachineController::class, "info"]);
+
+Route::middleware(["auth:api", "role:admin"])->
+    controller(DashboardController::class)->group(function() {
+        Route::get("/Dashboard/admin", "adminDashboard");
+});
 
 Route::controller(AuthController::class)->group(function () {
     Route::middleware("auth:api")->get("/Auth/user", "user");

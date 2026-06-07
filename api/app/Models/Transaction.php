@@ -86,7 +86,7 @@ class Transaction extends Model
     protected $fillable = [
         'car_rental_id',
         'amount',
-        'type',
+        'type', // Payment | Refund
         'reference_number',
     ];
 

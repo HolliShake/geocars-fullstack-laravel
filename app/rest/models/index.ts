@@ -6,6 +6,13 @@
  * OpenAPI spec version: 1.0.0
  */
 
+export * from './adminDashboardResponse200';
+export * from './adminDashboardResponse200RevenueHistoryItem';
+export * from './adminDashboardResponse200Stats';
+export * from './adminDashboardResponse200StatsActiveRentals';
+export * from './adminDashboardResponse200StatsMonthlyRevenue';
+export * from './adminDashboardResponse200StatsNewUsers';
+export * from './adminDashboardResponse200StatsSubscriptionRenewals';
 export * from './auth';
 export * from './authResponse200';
 export * from './badRequestResponse';

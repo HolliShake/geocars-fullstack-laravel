@@ -116,6 +116,8 @@ class User extends Authenticatable implements HasMedia, OAuthenticatable
 
     protected $table = "users";
 
+    public $timestamps = true;
+
     /**
      * The attributes that are mass assignable.
      *

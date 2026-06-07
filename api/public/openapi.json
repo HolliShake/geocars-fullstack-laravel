@@ -1617,6 +1617,28 @@
                 }
             }
         },
+        "\/api\/Dashboard\/admin": {
+            "get": {
+                "tags": [
+                    "Admin"
+                ],
+                "summary": "Get admin dashboard data",
+                "description": "Retrieve admin dashboard stats and revenue history",
+                "operationId": "getAdminDashboard",
+                "responses": {
+                    "200": {
+                        "description": "Successful operation",
+                        "content": {
+                            "application\/json": {
+                                "schema": {
+                                    "$ref": "#\/components\/schemas\/AdminDashboardResponse200"
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "\/api\/Device": {
             "get": {
                 "tags": [
@@ -6938,6 +6960,106 @@
                 },
                 "type": "object"
             },
+            "AdminDashboardResponse200": {
+                "properties": {
+                    "stats": {
+                        "properties": {
+                            "newUsers": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 124
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+12.5%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "subscriptionRenewals": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 8
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "-2.0%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": false
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "monthlyRevenue": {
+                                "properties": {
+                                    "value": {
+                                        "type": "number",
+                                        "format": "float",
+                                        "example": 10100
+                                    },
+                                    "formatted": {
+                                        "type": "string",
+                                        "example": "$10,100"
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+5.2%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            },
+                            "activeRentals": {
+                                "properties": {
+                                    "value": {
+                                        "type": "integer",
+                                        "example": 892
+                                    },
+                                    "change": {
+                                        "type": "string",
+                                        "example": "+10.1%"
+                                    },
+                                    "isPositive": {
+                                        "type": "boolean",
+                                        "example": true
+                                    }
+                                },
+                                "type": "object"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "revenueHistory": {
+                        "type": "array",
+                        "items": {
+                            "properties": {
+                                "month": {
+                                    "type": "string",
+                                    "example": "Jan"
+                                },
+                                "revenue": {
+                                    "type": "number",
+                                    "format": "float",
+                                    "example": 8000
+                                }
+                            },
+                            "type": "object"
+                        }
+                    }
+                },
+                "type": "object"
+            },
             "UserSubscription": {
                 "title": "UserSubscription",
                 "required": [
@@ -7181,6 +7303,10 @@
         {
             "name": "Comment",
             "description": "Comment"
+        },
+        {
+            "name": "Admin",
+            "description": "Admin"
         },
         {
             "name": "Device",

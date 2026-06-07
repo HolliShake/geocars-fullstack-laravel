@@ -82,5 +82,23 @@ use OpenApi\Attributes as OA;
 
 class SubscriptionTransaction extends Model
 {
-    //
+    protected $table = 'subscription_transactions';
+
+    public $timestamps = true;
+
+    protected $fillable = [
+        'user_subscription_id',
+        'amount',
+        'type',
+    ];
+
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'type'   => TransactionTypeEnum::class,
+    ];
+
+    public function userSubscription(): BelongsTo
+    {
+        return $this->belongsTo(UserSubscription::class);
+    }
 }

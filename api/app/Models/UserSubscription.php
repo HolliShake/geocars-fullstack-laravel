@@ -6,6 +6,67 @@ use Illuminate\Database\Eloquent\Model;
 use OpenApi\Attributes as OA;
 
 #[OA\Schema(
+    schema: "AdminDashboardResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(
+            property: "stats",
+            type: "object",
+            properties: [
+                new OA\Property(
+                    property: "newUsers",
+                    type: "object",
+                    properties: [
+                        new OA\Property(property: "value", type: "integer", example: 124),
+                        new OA\Property(property: "change", type: "string", example: "+12.5%"),
+                        new OA\Property(property: "isPositive", type: "boolean", example: true),
+                    ]
+                ),
+                new OA\Property(
+                    property: "subscriptionRenewals",
+                    type: "object",
+                    properties: [
+                        new OA\Property(property: "value", type: "integer", example: 8),
+                        new OA\Property(property: "change", type: "string", example: "-2.0%"),
+                        new OA\Property(property: "isPositive", type: "boolean", example: false),
+                    ]
+                ),
+                new OA\Property(
+                    property: "monthlyRevenue",
+                    type: "object",
+                    properties: [
+                        new OA\Property(property: "value", type: "number", format: "float", example: 10100.00),
+                        new OA\Property(property: "formatted", type: "string", example: "$10,100"),
+                        new OA\Property(property: "change", type: "string", example: "+5.2%"),
+                        new OA\Property(property: "isPositive", type: "boolean", example: true),
+                    ]
+                ),
+                new OA\Property(
+                    property: "activeRentals",
+                    type: "object",
+                    properties: [
+                        new OA\Property(property: "value", type: "integer", example: 892),
+                        new OA\Property(property: "change", type: "string", example: "+10.1%"),
+                        new OA\Property(property: "isPositive", type: "boolean", example: true),
+                    ]
+                ),
+            ]
+        ),
+        new OA\Property(
+            property: "revenueHistory",
+            type: "array",
+            items: new OA\Items(
+                type: "object",
+                properties: [
+                    new OA\Property(property: "month", type: "string", example: "Jan"),
+                    new OA\Property(property: "revenue", type: "number", format: "float", example: 8000.00),
+                ]
+            )
+        ),
+    ]
+)]
+
+#[OA\Schema(
     schema: "UserSubscription",
     title: "UserSubscription",
     type: "object",
@@ -92,7 +153,7 @@ class UserSubscription extends Model
     protected $fillable = [
         'user_id',
         'plan_id',
-        'status'
+        'status', // active | inactive
     ];
 
     function plan() {
