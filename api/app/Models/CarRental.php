@@ -35,6 +35,8 @@ use OpenApi\Attributes as OA;
         new OA\Property(property: "rental_status", type: "string", enum: ["pending", "confirmed", "cancelled", "completed", "rejected"], example: "pending"),
         new OA\Property(property: "payment_method", type: "string", enum: ["cash", "online"], example: "cash", nullable: true),
         new OA\Property(property: "payment_reference", type: "string", nullable: true, example: "TXN123456"),
+        new OA\Property(property: "cash_debt", type: "number", format: "float", nullable: true, example: 1500.00, description: "Outstanding cash owed by the renter. Set when confirmed with cash payment; null for online or unsettled."),
+        new OA\Property(property: "cash_debt_settled", type: "boolean", example: false, description: "Whether the cash debt has been collected."),
         new OA\Property(property: "created_at", type: "string", format: "date-time", example: "2023-01-01T00:00:00Z"),
         new OA\Property(property: "updated_at", type: "string", format: "date-time", example: "2023-01-01T00:00:00Z"),
     ]
@@ -99,6 +101,26 @@ use OpenApi\Attributes as OA;
     ]
 )]
 
+#[OA\Schema(
+    schema: "FinishCarRentalResponse200",
+    type: "object",
+    properties: [
+        new OA\Property(property: "success", type: "boolean", example: true),
+        new OA\Property(
+            property: "data",
+            type: "object",
+            properties: [
+                new OA\Property(property: "rental", ref: "#/components/schemas/CarRental"),
+                new OA\Property(property: "refundable_amount", type: "number", format: "float", example: 500.00),
+                new OA\Property(property: "additional_charges", type: "number", format: "float", example: 0.00),
+                new OA\Property(property: "refund_transaction", nullable: true, ref: "#/components/schemas/Transaction"),
+                new OA\Property(property: "stripe_refund_id", type: "string", nullable: true, example: "re_3Pq..."),
+                new OA\Property(property: "payout_account", nullable: true, ref: "#/components/schemas/UserAccount"),
+            ]
+        ),
+    ]
+)]
+
 class CarRental extends Model
 {
     protected $table = 'car_rentals';
@@ -113,11 +135,15 @@ class CarRental extends Model
         // 'rental_status',
         // 'payment_method',
         // 'payment_reference',
+        // 'cash_debt',
+        // 'cash_debt_settled',
     ];
 
     protected $casts = [
-        'start_date' => 'datetime',
-        'return_date' => 'datetime',
+        'start_date'        => 'datetime',
+        'return_date'       => 'datetime',
+        'cash_debt'         => 'decimal:2',
+        'cash_debt_settled' => 'boolean',
     ];
 
     protected $appends = ['refundable_amount', 'additional_charges'];

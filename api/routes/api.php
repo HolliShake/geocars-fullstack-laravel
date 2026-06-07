@@ -87,6 +87,9 @@ Route::middleware(["auth:api", "role:admin,user,renter"])
         Route::middleware("role:user")
             ->delete("/CarRental/{id}", "destroy")
             ->where("id", "[0-9]+");
+        Route::middleware("role:user")
+            ->post("/CarRental/{id}/finish", "finishRental")
+            ->where("id", "[0-9]+");
     });
 
 Route::middleware(["auth:api", "role:admin"])
